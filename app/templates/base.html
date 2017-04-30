@@ -1,15 +1,9 @@
 <!-- app/templates/base.html -->
+{% extends "bootstrap/base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>{{ title }} | IAI</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-</head>
-<body>
+
+{% block title %}{{ title }} | IAI{% endblock %}
+{% block navbar %}
     <nav class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
         <div class="container topnav">
           <div class="navbar-header">
@@ -38,8 +32,18 @@
           </div>
         </div>
     </nav>
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.15/datatables.min.css"/>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+{% endblock %}
+
+{% block content %}
     <div class="wrapper">
-      {% block body %}
+      {% block content2 %}
       {% endblock %}
       <div class="push"></div>
     </div>
@@ -63,5 +67,5 @@
             </div>
         </div>
     </footer>
-</body>
-</html>
+{% endblock %}
+
