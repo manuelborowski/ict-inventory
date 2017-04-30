@@ -46,8 +46,8 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
-    #from .item import home as item_blueprint
-    #app.register_blueprint(item_blueprint)
+    from .user import user as user_blueprint
+    app.register_blueprint(user_blueprint)
 
     #from .table import table as table_blueprint
     #app.register_blueprint(table_blueprint)
