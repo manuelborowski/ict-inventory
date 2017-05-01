@@ -1,82 +1,65 @@
 # -*- coding: utf-8 -*-
-# app/auth/views.py
+# app/user/views.py
 
-from flask import flash, redirect, render_template, url_for
-from flask_login import login_required, login_user, logout_user
+from flask import render_template, flash, redirect, url_for
+from flask_login import login_required
+from flask_table import Table, Col
 
-from . import auth
-from forms import LoginForm, RegistrationForm
+from .forms import RegistrationForm
 from .. import db
+from . import user
 from ..models import User
 
 
-@auth.route('/register', methods=['GET', 'POST'])
-def register():
+class UserTable(Table):
+    id = Col('Id')
+    email = Col('Email')
+    username = Col('Username')
+    first_name = Col('First name')
+    last_name = Col('Last name')
+    is_admin = Col('Admin')
+    classes = ['table ' 'table-striped ' 'table-bordered ']
+    html_attrs = {'id': 'usertable', 'cellspacing': '0', 'width': '100%'}
+
+
+#show a list of users
+@user.route('/user', methods=['GET', 'POST'])
+@login_required
+def users():
     """
-    Handle requests to the /register route
-    Add an employee to the database through the registration form
+    Handle requests to the /user route
+    List the users
     """
+    users = User.query.all()
+    user_table = UserTable(users)
+
+    return render_template('user/user.html', title='Users', user_table=user_table, table_id='usertable')
+
+
+#add a new user
+@user.route('/user/add', methods=['GET', 'POST'])
+@login_required
+def add():
+    """
+    Handle requests to the /user/add route
+    Add a new user
+    """
+
     form = RegistrationForm()
     if form.validate_on_submit():
-        employee = Employee(email=form.email.data,
-                            username=form.username.data,
-                            first_name=form.first_name.data,
-                            last_name=form.last_name.data,
-                            password=form.password.data)
+        user = User(email=form.email.data,
+                        username=form.username.data,
+                        first_name=form.first_name.data,
+                        last_name=form.last_name.data,
+                        password=form.password.data)
 
-        # add employee to the database
-        db.session.add(employee)
+        # add user to the database
+        db.session.add(user)
         db.session.commit()
-        flash('You have successfully registered! You may now login.')
+        flash('You have added user {}'.format(form.username.data))
 
-        # redirect to the login page
-        return redirect(url_for('auth.login'))
+        # redirect to the user page
+        return redirect(url_for('user.users'))
 
     # load registration template
-    return render_template('auth/register.html', form=form, title='Register')
-
-
-@auth.route('/', methods=['GET', 'POST'])
-def login():
-    """
-    Handle requests to the /login route
-    Log an employee in through the login form
-    """
-    form = LoginForm()
-    if form.validate_on_submit():
-
-        # check whether user exists in the database and whether
-        # the password entered matches the password in the database
-        user = User.query.filter_by(username=form.username.data).first()
-        if user is not None and user.verify_password(form.password.data):
-            # log employee in
-            login_user(user)
-
-            #redirect to the appropriate page
-            if user.is_admin:
-                # redirect to the administrator dashboard page
-                return redirect(url_for('home.admin_dashboard'))
-            else:
-                # redirect to the dashboard page after login
-                return redirect(url_for('table.dashboard'))
-
-        # when login details are incorrect
-        else:
-            flash('Invalid username or password.')
-
-    # load login template
-    return render_template('auth/login.html', form=form, title='Login')
-
-
-@auth.route('/logout')
-@login_required
-def logout():
-    """
-    Handle requests to the /logout route
-    Log an employee out through the logout link
-    """
-    logout_user()
-    flash('You have successfully been logged out.')
-
-    # redirect to the login page
-    return redirect(url_for('auth.login'))
+    return render_template('user/register.html', form=form, title='Register')
