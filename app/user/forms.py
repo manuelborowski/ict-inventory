@@ -7,6 +7,7 @@ from wtforms.validators import DataRequired, Email, EqualTo
 
 from ..models import User
 
+from ..base import InlineSubmitField
 
 class UserForm(FlaskForm):
     """
@@ -20,7 +21,7 @@ class UserForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password')])
     confirm_password = PasswordField('Confirm Password')
     submit = SubmitField('Register')
-    cancel = SubmitField('Cancel')
+
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():

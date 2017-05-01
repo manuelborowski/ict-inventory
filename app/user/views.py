@@ -39,7 +39,7 @@ def users():
     """
     users = User.query.all()
     for u in users:
-        u.delete = render_template_string("<a href=\"{{ url_for('user.delete', id=" + str(u.id) + ") }}\"><i class='fa fa-trash'></i>")
+        u.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(u.id) + "><i class='fa fa-trash'></i></a>")
         u.edit = render_template_string("<a href=\"{{ url_for('user.edit', id=" + str(u.id) + ") }}\"><i class='fa fa-pencil'></i>")
     user_table = UserTable(users)
 
@@ -72,7 +72,7 @@ def add():
         return redirect(url_for('user.users'))
 
     # load registration template
-    return render_template('user/register.html', form=form, title='Register')
+    return render_template('user/add.html', form=form, title='Register')
 
 
 #delete a user
@@ -82,6 +82,7 @@ def delete(id):
     print('delete user with id {}'.format(id))
 
     return redirect(url_for('user.users'))
+
 
 #edit a user
 @user.route('/user/edit/<int:id>', methods=['GET', 'POST'])

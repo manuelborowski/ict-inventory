@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
+from flask_jsglue import JSGlue
 
 # local imports
 from config import app_config
@@ -29,6 +30,8 @@ def create_app(config_name):
     app.config.from_pyfile('config.py')
 
     Bootstrap(app)
+
+    jsglue = JSGlue(app)
 
     db.app=app  # hack :-(
     db.init_app(app)
