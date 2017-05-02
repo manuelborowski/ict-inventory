@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# app/auth/__init__.py
+# app/supplier/__init__.py
 
 from flask import Blueprint
 
-user = Blueprint('user', __name__)
+supplier = Blueprint('supplier', __name__)
 
 from . import views

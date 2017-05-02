@@ -25,11 +25,12 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
+                  <li><a href="{{ url_for('supplier.suppliers') }}">Suppliers</a></li>
                   <li><a href="{{ url_for('user.users') }}">Users</a></li>
                   <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                   <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.username }}!</a></li>
               {% else %}
-                  <li><a href="#">Home</a></li>
+                  <li><a href="#">Login</a></li>
                   {% endif %}
           </ul>
       </div>

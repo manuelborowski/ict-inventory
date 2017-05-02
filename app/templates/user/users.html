@@ -1,4 +1,4 @@
-<!-- app/templates/auth/login.html -->
+<!-- app/templates/user/users.html -->
 
 {% import "bootstrap/utils.html" as utils %}
 {% import "bootstrap/wtf.html" as wtf %}
@@ -6,11 +6,13 @@
 
 {% block content2 %}
 <div class="content-section">
-  <br/>
   {{ utils.flashed_messages() }}
-  <br/>
   <div class="center">
-  {{user_table}}
+      <div class="btn-group" role="group" aria-label="...">
+           <a class="btn btn-default" href="{{ url_for('user.add') }}" >Add user</a>
+      </div>
+      <hr />
+      {{user_table}}
   </div>
 </div>
 {% endblock %}
@@ -18,14 +20,7 @@
 {% block scripts2 %}
 <script>
 $(document).ready(function() {
-    $('#{{table_id}}').DataTable({
-            dom: 'Blfrtip',
-            buttons: [{
-                    text: 'Add user',
-                    action: function ( e, dt, node, config ) {
-                        window.location = "{{ url_for('user.add') }}"
-             }}]
-    });
+    $('#{{table_id}}').DataTable();
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');

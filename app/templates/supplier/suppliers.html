@@ -1,4 +1,4 @@
-<!-- app/templates/auth/login.html -->
+<!-- app/templates/supplier/suppliers.html -->
 
 {% import "bootstrap/utils.html" as utils %}
 {% import "bootstrap/wtf.html" as wtf %}
@@ -6,11 +6,13 @@
 
 {% block content2 %}
 <div class="content-section">
-  <br/>
   {{ utils.flashed_messages() }}
-  <br/>
   <div class="center">
-  {{user_table}}
+      <div class="btn-group" role="group" aria-label="...">
+           <a class="btn btn-default" href="{{ url_for('supplier.add') }}" >Add supplier</a>
+      </div>
+      <hr />
+     {{supplier_table}}
   </div>
 </div>
 {% endblock %}
@@ -18,20 +20,13 @@
 {% block scripts2 %}
 <script>
 $(document).ready(function() {
-    $('#{{table_id}}').DataTable({
-            dom: 'Blfrtip',
-            buttons: [{
-                    text: 'Add user',
-                    action: function ( e, dt, node, config ) {
-                        window.location = "{{ url_for('user.add') }}"
-             }}]
-    });
+    $('#{{table_id}}').DataTable();
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');
-        bootbox.confirm("Are you sure want to delete this user?", function(result) {
+        bootbox.confirm("Are you sure want to delete this supplier?", function(result) {
         if (result) {
-            window.location = Flask.url_for('user.delete', {'id' : id})
+            window.location = Flask.url_for('supplier.delete', {'id' : id})
         }
     });
   });

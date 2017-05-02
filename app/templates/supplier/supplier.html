@@ -1,4 +1,4 @@
-<!-- app/templates/auth/user.html -->
+<!-- app/templates/supplier.html -->
 <!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
 
 {% import "bootstrap/wtf.html" as wtf %}
@@ -7,22 +7,16 @@
 {% block content2 %}
 <div class="content-section">
   <div class="center">
-  <h1>{{ title }} a user</h1>
+  <h1>{{ title }} a supplier</h1>
   <br/>
   <form action="" method="post" class="form" role="form">
         {{ form.csrf_token }}
 
-        {{ wtf.form_field(form.email) }}
-        {{ wtf.form_field(form.username) }}
-        {{ wtf.form_field(form.first_name) }}
-        {{ wtf.form_field(form.last_name) }}
-        {% if title == 'Add' %}
-            {{ wtf.form_field(form.password) }}
-            {{ wtf.form_field(form.confirm_password) }}
-        {% endif %}
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.description) }}
 
     <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
-    <input class="btn btn-default" id="submit" name="button" type="submit" value="Cancel">
+    <a class="btn btn-default" href="{{ url_for('supplier.suppliers') }}" >Cancel</a>
   </form>
   </div>
 </div>

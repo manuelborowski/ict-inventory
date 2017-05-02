@@ -51,7 +51,6 @@ def users():
 @login_required
 def add():
     form = AddForm()
-    print(form)
     if form.validate_on_submit():
         user = User(email=form.email.data,
                         username=form.username.data,

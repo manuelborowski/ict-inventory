@@ -52,6 +52,9 @@ def create_app(config_name):
     from .user import user as user_blueprint
     app.register_blueprint(user_blueprint)
 
+    from .supplier import supplier as supplier_blueprint
+    app.register_blueprint(supplier_blueprint)
+
     #from .table import table as table_blueprint
     #app.register_blueprint(table_blueprint)
 
