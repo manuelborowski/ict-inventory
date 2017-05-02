@@ -1,0 +1,29 @@
+<!-- app/templates/auth/user.html -->
+<!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block content2 %}
+<div class="content-section">
+  <div class="center">
+  <h1>{{ title }} a user</h1>
+  <br/>
+  <form action="" method="post" class="form" role="form">
+        {{ form.csrf_token }}
+
+        {{ wtf.form_field(form.email) }}
+        {{ wtf.form_field(form.username) }}
+        {{ wtf.form_field(form.first_name) }}
+        {{ wtf.form_field(form.last_name) }}
+        {% if title == 'Add' %}
+            {{ wtf.form_field(form.password) }}
+            {{ wtf.form_field(form.confirm_password) }}
+        {% endif %}
+
+    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+    <input class="btn btn-default" id="submit" name="button" type="submit" value="Cancel">
+  </form>
+  </div>
+</div>
+{% endblock %}
