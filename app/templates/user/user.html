@@ -1,40 +1,29 @@
-<!-- app/templates/auth/login.html -->
+<!-- app/templates/auth/user.html -->
+<!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
 
-{% import "bootstrap/utils.html" as utils %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 
 {% block content2 %}
 <div class="content-section">
-  <br/>
-  {{ utils.flashed_messages() }}
-  <br/>
   <div class="center">
-  {{user_table}}
+  <h1>{{ title }} a user</h1>
+  <br/>
+  <form action="" method="post" class="form" role="form">
+        {{ form.csrf_token }}
+
+        {{ wtf.form_field(form.email) }}
+        {{ wtf.form_field(form.username) }}
+        {{ wtf.form_field(form.first_name) }}
+        {{ wtf.form_field(form.last_name) }}
+        {% if title == 'Add' %}
+            {{ wtf.form_field(form.password) }}
+            {{ wtf.form_field(form.confirm_password) }}
+        {% endif %}
+
+    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+    <input class="btn btn-default" id="submit" name="button" type="submit" value="Cancel">
+  </form>
   </div>
 </div>
-{% endblock %}
-
-{% block scripts2 %}
-<script>
-$(document).ready(function() {
-    $('#{{table_id}}').DataTable({
-            dom: 'Blfrtip',
-            buttons: [{
-                    text: 'Add user',
-                    action: function ( e, dt, node, config ) {
-                        window.location = "{{ url_for('user.add') }}"
-             }}]
-    });
-
-    $('.confirmBeforeDelete').click(function() {
-        id = $(this).attr('u_id');
-        bootbox.confirm("Are you sure want to delete this user?", function(result) {
-        if (result) {
-            window.location = Flask.url_for('user.delete', {'id' : id})
-        }
-    });
-  });
-} );
-</script>
 {% endblock %}
