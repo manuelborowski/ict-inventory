@@ -74,7 +74,7 @@ def edit(id):
     user = User.query.get_or_404(id)
     form = EditForm(obj=user)
     if form.validate_on_submit():
-        if request.form['button'] == u'Save':
+        if request.form['button'] == 'Save':
             form.populate_obj(user)
             db.session.commit()
             flash('You have edited user {}'.format(user.username))
