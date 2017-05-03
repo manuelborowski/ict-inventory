@@ -55,6 +55,9 @@ def create_app(config_name):
     from .supplier import supplier as supplier_blueprint
     app.register_blueprint(supplier_blueprint)
 
+    from .asset import asset as asset_blueprint
+    app.register_blueprint(asset_blueprint)
+
     #from .table import table as table_blueprint
     #app.register_blueprint(table_blueprint)
 

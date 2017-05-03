@@ -9,10 +9,10 @@
   {{ utils.flashed_messages() }}
   <div class="center">
       <div class="btn-group" role="group" aria-label="...">
-           <a class="btn btn-default" href="{{ url_for('user.add') }}" >Add user</a>
+           <a class="btn btn-default" href="{{ url_for('asset.add') }}" >Add asset</a>
       </div>
       <hr />
-      {{user_table}}
+      {{asset_table}}
   </div>
 </div>
 {% endblock %}
@@ -24,9 +24,9 @@ $(document).ready(function() {
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');
-        bootbox.confirm("Are you sure want to delete this user?", function(result) {
+        bootbox.confirm("Are you sure want to delete this asset?", function(result) {
         if (result) {
-            window.location = Flask.url_for('user.delete', {'id' : id})
+            window.location = Flask.url_for('asset.delete', {'id' : id})
         }
     });
   });

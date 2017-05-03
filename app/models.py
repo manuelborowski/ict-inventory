@@ -8,10 +8,6 @@ from app import db, login_manager
 
 
 class User(UserMixin, db.Model):
-    """
-    Create a User table
-    """
-
     # Ensures table will be named in plural and not in singular
     # as is the name of the model
     __tablename__ = 'users'
@@ -55,9 +51,18 @@ def load_user(user_id):
 
 
 class Asset(db.Model):
-    """
-    Create an Assets table
-    """
+    class Category:
+        PC = 'PC'
+        BEAMER = 'BEAMER'
+        PRINTER = 'PRINTER'
+        OTHER = 'OTHER'
+
+    class Status:
+        IN_SERVICE = 'IN SERVICE'
+        IN_REPAIR = 'IN REPAIR'
+        BROKEN = 'BROKEN'
+        TO_BE_REPLACED = 'TO BE REPLACED'
+        OTHER = 'OTHER'
 
     __tablename__ = 'assets'
 
@@ -79,10 +84,6 @@ class Asset(db.Model):
 
 
 class Supplier(db.Model):
-    """
-    Create a Supplier table
-    """
-
     __tablename__ = 'suppliers'
 
     id = db.Column(db.Integer, primary_key=True)

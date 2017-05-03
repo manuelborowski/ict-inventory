@@ -7,22 +7,23 @@
 {% block content2 %}
 <div class="content-section">
   <div class="center">
-  <h1>{{ title }} a user</h1>
+  <h1>{{ title }} a asset</h1>
   <br/>
   <form action="" method="post" class="form" role="form">
         {{ form.csrf_token }}
 
-        {{ wtf.form_field(form.email) }}
-        {{ wtf.form_field(form.username) }}
-        {{ wtf.form_field(form.first_name) }}
-        {{ wtf.form_field(form.last_name) }}
-        {% if title == 'Add' %}
-            {{ wtf.form_field(form.password) }}
-            {{ wtf.form_field(form.confirm_password) }}
-        {% endif %}
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.date_in_service) }}
+        {{ wtf.form_field(form.qr_code) }}
+        {{ wtf.form_field(form.category) }}
+        {{ wtf.form_field(form.status) }}
+        {{ wtf.form_field(form.category) }}
+        {{ wtf.form_field(form.location) }}
+        {{ wtf.form_field(form.picture) }}
+        {{ wtf.form_field(form.description) }}
 
     <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
-    <a class="btn btn-default" href="{{ url_for('user.users') }}" >Cancel</a>
+    <a class="btn btn-default" href="{{ url_for('asset.assets') }}" >Cancel</a>
 
   </form>
   </div>
