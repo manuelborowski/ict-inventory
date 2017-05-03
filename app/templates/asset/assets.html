@@ -1,0 +1,35 @@
+<!-- app/templates/user/users.html -->
+
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block content2 %}
+<div class="content-section">
+  {{ utils.flashed_messages() }}
+  <div class="center">
+      <div class="btn-group" role="group" aria-label="...">
+           <a class="btn btn-default" href="{{ url_for('user.add') }}" >Add user</a>
+      </div>
+      <hr />
+      {{user_table}}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts2 %}
+<script>
+$(document).ready(function() {
+    $('#{{table_id}}').DataTable();
+
+    $('.confirmBeforeDelete').click(function() {
+        id = $(this).attr('u_id');
+        bootbox.confirm("Are you sure want to delete this user?", function(result) {
+        if (result) {
+            window.location = Flask.url_for('user.delete', {'id' : id})
+        }
+    });
+  });
+} );
+</script>
+{% endblock %}
