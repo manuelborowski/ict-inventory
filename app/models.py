@@ -52,17 +52,27 @@ def load_user(user_id):
 
 class Asset(db.Model):
     class Category:
-        PC = 'PC'
-        BEAMER = 'BEAMER'
-        PRINTER = 'PRINTER'
-        OTHER = 'OTHER'
+        E_PC = 'PC'
+        E_BEAMER = 'BEAMER'
+        E_PRINTER = 'PRINTER'
+        E_OTHER = 'OTHER'
+        DEFAULT = E_PC
+
+        @staticmethod
+        def get_list():
+            l = [getattr(Asset.Category, a) for a in dir(Asset.Category) if a.startswith('E_')]
+            l.remove(DEFAULT)
 
     class Status:
-        IN_SERVICE = 'IN SERVICE'
-        IN_REPAIR = 'IN REPAIR'
-        BROKEN = 'BROKEN'
-        TO_BE_REPLACED = 'TO BE REPLACED'
-        OTHER = 'OTHER'
+        E_IN_SERVICE = 'IN SERVICE'
+        E_IN_REPAIR = 'IN REPAIR'
+        E_BROKEN = 'BROKEN'
+        E_TO_BE_REPLACED = 'TO BE REPLACED'
+        E_OTHER = 'OTHER'
+
+        @staticmethod
+        def get_list():
+            return [getattr(Asset.Status, a) for a in dir(Asset.Status) if a.startswith('E_')]
 
     __tablename__ = 'assets'
 
