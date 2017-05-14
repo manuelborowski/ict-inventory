@@ -61,7 +61,9 @@ class Asset(db.Model):
         @staticmethod
         def get_list():
             l = [getattr(Asset.Category, a) for a in dir(Asset.Category) if a.startswith('E_')]
-            l.remove(DEFAULT)
+            l.remove(Asset.Category.DEFAULT)
+            l.insert(0, Asset.Category.DEFAULT)
+            return l
 
     class Status:
         E_IN_SERVICE = 'IN SERVICE'
@@ -69,10 +71,14 @@ class Asset(db.Model):
         E_BROKEN = 'BROKEN'
         E_TO_BE_REPLACED = 'TO BE REPLACED'
         E_OTHER = 'OTHER'
+        DEFAULT = E_IN_SERVICE
 
         @staticmethod
         def get_list():
-            return [getattr(Asset.Status, a) for a in dir(Asset.Status) if a.startswith('E_')]
+            l = [getattr(Asset.Status, a) for a in dir(Asset.Status) if a.startswith('E_')]
+            l.remove(Asset.Status.DEFAULT)
+            l.insert(0, Asset.Status.DEFAULT)
+            return l
 
     __tablename__ = 'assets'
 
