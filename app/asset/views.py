@@ -60,10 +60,10 @@ def add():
                         qr_code=form.qr_code.data,
                         category=form.category.data,
                         status=form.status.data,
-                        value=form.value.data,
+                        value=form.value.data * 100, #from cents to euro
                         location=form.location.data,
                         picture=form.picture.data,
-                        db_status=form.db_status.data,
+                        db_status=Asset.DB_status.E_ACTIVE,
                         description=form.description.data)
         db.session.add(asset)
         db.session.commit()
@@ -80,9 +80,11 @@ def add():
 def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
+    form.value.data = asset.value / 100;
     if form.validate_on_submit():
         if request.form['button'] == 'Save':
             form.populate_obj(asset)
+            asset.value = form.value.data * 100;
             db.session.commit()
             flash('You have edited asset {}'.format(asset.name))
 

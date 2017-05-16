@@ -15,9 +15,9 @@ class EditForm(FlaskForm):
     qr_code = StringField('QR', validators=[DataRequired()])
     category = SelectField('Category', validators=[DataRequired()], choices=zip(Asset.Category.get_list(), Asset.Category.get_list()))
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
-    value = DecimalField('Value (&euro;)')
-    location = FileField('Location')
-    picture = StringField('Picture')
+    value = DecimalField('Value (&euro;)', default=0.0)
+    location = StringField('Location')
+    picture = FileField('Picture')
     description = TextAreaField('Description')
 
 

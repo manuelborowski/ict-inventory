@@ -80,6 +80,10 @@ class Asset(db.Model):
             l.insert(0, Asset.Status.DEFAULT)
             return l
 
+    class DB_status:
+        E_NEW = 'NEW'
+        E_ACTIVE = 'ACTIVE'
+
     __tablename__ = 'assets'
 
     id = db.Column(db.Integer, primary_key=True)
