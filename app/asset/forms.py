@@ -30,3 +30,14 @@ class AddForm(EditForm):
     Add an asset
     """
 
+class ViewForm(FlaskForm):
+    name = StringField('Name', render_kw={'readonly':''})
+    date_in_service = DateField('Date', render_kw={'readonly':''})
+    qr_code = StringField('QR', render_kw={'readonly':''})
+    category = StringField('Category', render_kw={'readonly':''})
+    status = StringField('Status', render_kw={'readonly':''})
+    value = DecimalField('Value (&euro;)', render_kw={'readonly':''})
+    supplier = StringField('Supplier', render_kw={'readonly':''})
+    location = StringField('Location', render_kw={'readonly':''})
+    picture = StringField('Picture', render_kw={'readonly':''})
+    description = TextAreaField('Description', render_kw={'readonly':''})

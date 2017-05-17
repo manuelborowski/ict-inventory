@@ -7,7 +7,7 @@ from flask_table import Table, Col, DateCol
 
 import datetime
 
-from .forms import AddForm, EditForm
+from .forms import AddForm, EditForm, ViewForm
 from .. import db
 from . import asset
 from ..models import Asset
@@ -27,12 +27,13 @@ class AssetTable(Table):
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
     value = Col('Value')      # value in euro
     location = Col('Location')    # eg E203
-    picture = Col('Picture')    # path to picture on disk
-    db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
-    description = Col('Description')
-    #supplier_id = Col('Supplier')
+    #picture = Col('Picture')    # path to picture on disk
+    #db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
+    #description = Col('Description')
+    supplier = Col('Supplier')
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
+    view = NoEscapeCol('')
     classes = ['table ' 'table-striped ' 'table-bordered ']
     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
@@ -44,6 +45,7 @@ def assets():
     for a in assets:
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
         a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
+        a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     asset_table = AssetTable(assets)
 
     return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable')
@@ -90,6 +92,16 @@ def edit(id):
         return redirect(url_for('asset.assets'))
 
     return render_template('asset/asset.html', form=form, title='Edit')
+
+#no login required
+@asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
+def view(id):
+    asset = Asset.query.get_or_404(id)
+    form = ViewForm(obj=asset)
+    if form.validate_on_submit():
+        return redirect(url_for('asset.assets'))
+
+    return render_template('asset/asset.html', form=form, title='View')
 
 
 #delete an asset

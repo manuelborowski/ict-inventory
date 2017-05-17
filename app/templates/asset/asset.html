@@ -7,7 +7,7 @@
 {% block content2 %}
 <div class="content-section">
   <div class="center">
-  <h1>{{ title }} a asset</h1>
+  <h1>{{ title }} an asset</h1>
   <br/>
   <form action="" method="post" class="form" role="form">
         {{ form.csrf_token }}
@@ -23,7 +23,9 @@
         {{ wtf.form_field(form.picture) }}
         {{ wtf.form_field(form.description) }}
 
+    {% if title=="Edit" or title=="Add" %}
     <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+    {% endif %}
     <a class="btn btn-default" href="{{ url_for('asset.assets') }}" >Cancel</a>
 
   </form>
