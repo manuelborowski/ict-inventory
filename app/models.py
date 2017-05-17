@@ -88,16 +88,17 @@ class Asset(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))        # eg PC245
-    date_in_service = db.Column(db.DateTime)
+    date_in_service = db.Column(db.Date)
     qr_code = db.Column(db.String(256))
     category = db.Column(db.String(256))    # one of: PC, BEAMER, PRINTER, ANDERE
     status = db.Column(db.String(256))    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    value = db.Column(db.Integer)      # 100 times value in eurocents
+    value = db.Column(db.Numeric(20,2))      # e.g. 12.12
     location = db.Column(db.String(256))    # eg E203
     picture = db.Column(db.String(256))    # path to picture on disk
     db_status = db.Column(db.String(256))    # one of: NIEW, ACTIEF, ANDERE
     description = db.Column(db.String(256))
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    supplier = db.relationship('Supplier', backref=db.backref('assets', lazy='dynamic'))
 
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
@@ -107,9 +108,9 @@ class Supplier(db.Model):
     __tablename__ = 'suppliers'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))
+    name = db.Column(db.String(256), unique=True)
     description = db.Column(db.String(1024))
-    assets = db.relationship('Asset', backref='supplier', lazy='dynamic')
 
     def __repr__(self):
-        return '<Supplier: {}>'.format(self.name)
+        return '{}'.format(self.name)
+

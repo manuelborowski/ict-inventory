@@ -14,6 +14,7 @@
 
         {{ wtf.form_field(form.name) }}
         {{ wtf.form_field(form.description) }}
+        {{ form.id }}
 
     <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
     <a class="btn btn-default" href="{{ url_for('supplier.suppliers') }}" >Cancel</a>

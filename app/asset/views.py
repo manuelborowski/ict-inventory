@@ -25,7 +25,7 @@ class AssetTable(Table):
     qr_code = Col('QR')
     category = Col('Category')    # one of: PC, BEAMER, PRINTER, ANDERE
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    value = Col('Value')      # 100 times value in eurocents
+    value = Col('Value')      # value in euro
     location = Col('Location')    # eg E203
     picture = Col('Picture')    # path to picture on disk
     db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
@@ -34,7 +34,7 @@ class AssetTable(Table):
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'usertable', 'cellspacing': '0', 'width': '100%'}
+    html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
 
 @asset.route('/asset', methods=['GET', 'POST'])
@@ -60,9 +60,10 @@ def add():
                         qr_code=form.qr_code.data,
                         category=form.category.data,
                         status=form.status.data,
-                        value=form.value.data * 100, #from cents to euro
+                        value=form.value.data,
                         location=form.location.data,
                         picture=form.picture.data,
+                        supplier = form.supplier.data,
                         db_status=Asset.DB_status.E_ACTIVE,
                         description=form.description.data)
         db.session.add(asset)
@@ -80,11 +81,9 @@ def add():
 def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
-    form.value.data = asset.value / 100;
     if form.validate_on_submit():
         if request.form['button'] == 'Save':
             form.populate_obj(asset)
-            asset.value = form.value.data * 100;
             db.session.commit()
             flash('You have edited asset {}'.format(asset.name))
 

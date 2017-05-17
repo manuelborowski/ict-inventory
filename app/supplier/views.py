@@ -23,7 +23,7 @@ class SupplierTable(Table):
     edit = NoEscapeCol('')
     delete = NoEscapeCol('')
     classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'usertable', 'cellspacing': '0', 'width': '100%'}
+    html_attrs = {'id': 'suppliertable', 'cellspacing': '0', 'width': '100%'}
 
 
 #show a list of suppliers
@@ -44,6 +44,7 @@ def suppliers():
 @login_required
 def add():
     form = AddForm()
+    del form.id # is not required here and makes validate_on_submit fail...
     if form.validate_on_submit():
         supplier = Supplier(name=form.name.data,
                         description=form.description.data)
