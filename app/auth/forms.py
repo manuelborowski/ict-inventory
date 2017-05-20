@@ -12,6 +12,6 @@ class LoginForm(FlaskForm):
     """
     For users who want to log in
     """
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()], render_kw={'autofocus': 'true'})
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')

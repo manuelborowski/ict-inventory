@@ -2,7 +2,7 @@
 # app/asset/views.py
 
 from flask import render_template, render_template_string, flash, redirect, url_for, request
-from flask_login import login_required
+from flask_login import login_required, current_user, login_user
 from flask_table import Table, Col, DateCol
 
 import datetime
@@ -11,6 +11,7 @@ from .forms import AddForm, EditForm, ViewForm
 from .. import db
 from . import asset
 from ..models import Asset
+from ..auth.login import handle_login
 
 
 #Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
@@ -57,6 +58,10 @@ def assets():
 def add():
     form = AddForm()
     del form.id # is not required here and makes validate_on_submit fail...
+    #qr_code can be inserted in 2 forms :
+    #regular number, e.g. 433
+    #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
+
     if form.validate_on_submit():
         asset = Asset(name=form.name.data,
                         date_in_service=form.date_in_service.data,
@@ -110,9 +115,6 @@ def view(id):
 def view_via_qr(qr):
     asset = Asset.query.filter_by(qr_code=qr).first_or_404()
     form = ViewForm(obj=asset)
-    if form.validate_on_submit():
-        return redirect(url_for('asset.assets'))
-
     return render_template('asset/asset.html', form=form, title='View')
 
 #delete an asset

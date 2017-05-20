@@ -31,11 +31,32 @@ class UniqueQR:
         if asset_found and (id is None or id != asset_found.id):
             raise ValidationError(self.message)
 
+class QRisValid():
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        else:
+            self.message = 'A QR-code is a number or an URL ending with .../qr/123'
+
+    def __call__(self, form, field):
+        try:
+            code = int(field.data)
+        except:
+            fl = field.data.split('/')
+            lfl = len(fl)
+            if lfl < 2 or fl[-2] != 'qr':
+                raise ValidationError(self.message)
+            try:
+                code = int(fl[-1])
+                field.data = fl[-1]
+            except:
+                raise ValidationError(self.message)
+
 
 class EditForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired()])
+    name = StringField('Name')
     date_in_service = DateField('Date', validators=[DataRequired()], format='%d/%m/%Y', default=datetime.date.today)
-    qr_code = StringField('QR', validators=[DataRequired(), UniqueQR()])
+    qr_code = StringField('QR', validators=[DataRequired(), QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
     category = SelectField('Category', validators=[DataRequired()], choices=zip(Asset.Category.get_list(), Asset.Category.get_list()))
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
     value = DecimalField('Value (&euro;)', default=0.0)
@@ -62,3 +83,4 @@ class ViewForm(FlaskForm):
     location = StringField('Location', render_kw={'readonly':''})
     picture = StringField('Picture', render_kw={'readonly':''})
     description = TextAreaField('Description', render_kw={'readonly':''})
+    id = IntegerField(widget=HiddenInput())
