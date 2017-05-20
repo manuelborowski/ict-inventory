@@ -56,6 +56,7 @@ def assets():
 @login_required
 def add():
     form = AddForm()
+    del form.id # is not required here and makes validate_on_submit fail...
     if form.validate_on_submit():
         asset = Asset(name=form.name.data,
                         date_in_service=form.date_in_service.data,
@@ -103,6 +104,16 @@ def view(id):
 
     return render_template('asset/asset.html', form=form, title='View')
 
+
+#no login required
+@asset.route('/asset/qr/<string:qr>', methods=['GET', 'POST'])
+def view_via_qr(qr):
+    asset = Asset.query.filter_by(qr_code=qr).first_or_404()
+    form = ViewForm(obj=asset)
+    if form.validate_on_submit():
+        return redirect(url_for('asset.assets'))
+
+    return render_template('asset/asset.html', form=form, title='View')
 
 #delete an asset
 @asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])

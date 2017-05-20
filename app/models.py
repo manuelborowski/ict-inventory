@@ -89,7 +89,7 @@ class Asset(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))        # eg PC245
     date_in_service = db.Column(db.Date)
-    qr_code = db.Column(db.String(256))
+    qr_code = db.Column(db.String(256), unique=True)
     category = db.Column(db.String(256))    # one of: PC, BEAMER, PRINTER, ANDERE
     status = db.Column(db.String(256))    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
     value = db.Column(db.Numeric(20,2))      # e.g. 12.12

@@ -2,9 +2,10 @@
 #app/asset/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, TextAreaField, SelectField, DecimalField, FileField
+from wtforms import StringField, DateField, TextAreaField, SelectField, DecimalField, FileField, IntegerField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, ValidationError
+from wtforms.widgets import HiddenInput
 import datetime
 
 from ..models import Asset, Supplier
@@ -12,10 +13,29 @@ from ..models import Asset, Supplier
 def get_suppliers():
     return Supplier.query.all()
 
+
+class UniqueQR:
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        else:
+            self.message = 'An asset with this QR-code already exists'
+
+    def __call__(self, form, field):
+        asset_found = Asset.query.filter(Asset.qr_code == field.data).first()
+        if 'id' in form:
+            id =form.id.data
+        else:
+            id = None
+
+        if asset_found and (id is None or id != asset_found.id):
+            raise ValidationError(self.message)
+
+
 class EditForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     date_in_service = DateField('Date', validators=[DataRequired()], format='%d/%m/%Y', default=datetime.date.today)
-    qr_code = StringField('QR', validators=[DataRequired()])
+    qr_code = StringField('QR', validators=[DataRequired(), UniqueQR()])
     category = SelectField('Category', validators=[DataRequired()], choices=zip(Asset.Category.get_list(), Asset.Category.get_list()))
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
     value = DecimalField('Value (&euro;)', default=0.0)
@@ -23,6 +43,7 @@ class EditForm(FlaskForm):
     location = StringField('Location')
     picture = FileField('Picture')
     description = TextAreaField('Description')
+    id = IntegerField(widget=HiddenInput())
 
 
 class AddForm(EditForm):
