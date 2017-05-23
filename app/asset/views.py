@@ -5,13 +5,12 @@ from flask import render_template, render_template_string, flash, redirect, url_
 from flask_login import login_required, current_user, login_user
 from flask_table import Table, Col, DateCol
 
-import datetime
+import datetime, time
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db
 from . import asset
 from ..models import Asset
-from ..auth.login import handle_login
 
 
 #Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
@@ -22,7 +21,7 @@ class NoEscapeCol(Col):
 class AssetTable(Table):
     id = Col('Id')
     name = Col('Name')        # eg PC245
-    date_in_service = DateCol('Since')
+    date_in_service = DateCol('Since', date_format='dd-MM-YYYY')
     qr_code = Col('QR')
     category = Col('Category')    # one of: PC, BEAMER, PRINTER, ANDERE
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
@@ -39,17 +38,44 @@ class AssetTable(Table):
     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
 
+def check_date_in_form(date_key, form):
+    if date_key in form and form[date_key] != '':
+        try:
+            time.strptime(form[date_key], '%d-%M-%Y')
+            return form[date_key]
+        except:
+            flash('Wrong date format, must be of form d-m-y')
+    return None
+
+
+def reverse_date(date):
+    return '-'.join(date.split('-')[::-1])
+
+class Filter():
+    date_after = ''
+
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
-    assets = Asset.query.all()
+    filter = Filter()
+    assets = Asset.query
+    date = check_date_in_form('date_after', request.form)
+    if date != None:
+        assets = assets.filter(Asset.date_in_service > reverse_date(date))
+        filter.date_after=date
+    date = check_date_in_form('date_before', request.form)
+    if date != None:
+        assets = assets.filter(Asset.date_in_service < reverse_date(date))
+        filter.date_before=date
+    print(assets)
+    assets=assets.all()
     for a in assets:
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
         a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     asset_table = AssetTable(assets)
 
-    return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable')
+    return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable', filter=filter)
 
 
 #add a new asset

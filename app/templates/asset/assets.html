@@ -8,6 +8,26 @@
 <div class="content-section">
   {{ utils.flashed_messages() }}
   <div class="center">
+      <form method="post" action="{{ url_for('asset.assets') }}">
+      <div class="btn-group" role="group" aria-label="...">
+          <div class="panel panel-default">
+              <div class="panel-body">
+               <a >Since : After : </a><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}">
+              </div>
+              <div class="panel-body">
+               <a>Before : </a><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}">
+              </div>
+           </div>
+           <a >Value : From : </a><input id="value_from" class="filter" name="value_from" type="text" size="8" value="{{ filter.value_from }}">
+           <a >Till : </a><input id="value_till" class="filter" name="value_till" type="text" size="8" value="{{ filter.value_till }}">
+      </div>
+      <br>
+      <div class="btn-group" role="group" aria-label="...">
+            <input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">
+            <a class="btn btn-default" id="clear">Clear</a>
+      </div>
+      </form>
+      <hr />
       <div class="btn-group" role="group" aria-label="...">
            <a class="btn btn-default" href="{{ url_for('asset.add') }}" >Add asset</a>
       </div>
@@ -20,16 +40,20 @@
 {% block scripts2 %}
 <script>
 $(document).ready(function() {
-    $('#{{table_id}}').DataTable();
+    var table = $('#{{table_id}}').DataTable();
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');
         bootbox.confirm("Are you sure want to delete this asset?", function(result) {
-        if (result) {
-            window.location = Flask.url_for('asset.delete', {'id' : id})
-        }
+            if (result) {
+                window.location = Flask.url_for('asset.delete', {'id' : id})
+            }
+        });
     });
-  });
-} );
+
+    $('#clear').click(function() {
+        $('.filter').val('');
+    });
+});
 </script>
 {% endblock %}
