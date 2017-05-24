@@ -44,7 +44,12 @@
 {% block scripts2 %}
 <script>
 $(document).ready(function() {
-    var table = $('#{{table_id}}').DataTable();
+    var table = $('#{{table_id}}').DataTable( {
+        dom: 'lBfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');

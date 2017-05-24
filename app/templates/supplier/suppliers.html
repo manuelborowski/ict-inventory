@@ -20,7 +20,12 @@
 {% block scripts2 %}
 <script>
 $(document).ready(function() {
-    $('#{{table_id}}').DataTable();
+    $('#{{table_id}}').DataTable({
+       dom: 'lBfrtip',
+       buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+       ]
+});
 
     $('.confirmBeforeDelete').click(function() {
         id = $(this).attr('u_id');
