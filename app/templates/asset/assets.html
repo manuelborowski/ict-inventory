@@ -57,6 +57,7 @@ $(document).ready(function() {
 
     $('#clear').click(function() {
         $('.filter').val('');
+        window.location = Flask.url_for('asset.assets')
     });
 });
 </script>

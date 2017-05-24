@@ -47,24 +47,44 @@ def check_date_in_form(date_key, form):
             flash('Wrong date format, must be of form d-m-y')
     return None
 
+def check_value_in_form(value_key, form):
+    if value_key in form and form[value_key] != '':
+        try:
+            float(form[value_key])
+            return form[value_key]
+        except:
+            flash('Wrong value format')
+    return None
+
 
 class Filter():
     date_after = ''
+    date_before = ''
+    value_from = ''
+    value_till = ''
 
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
+    print(request.form)
     filter = Filter()
     assets = Asset.query
     date = check_date_in_form('date_after', request.form)
-    if date != None:
+    if date:
         assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
         filter.date_after=date
     date = check_date_in_form('date_before', request.form)
-    if date != None:
+    if date:
         assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
         filter.date_before=date
-    print(assets)
+    value = check_value_in_form('value_from', request.form)
+    if value:
+        assets = assets.filter(Asset.value > value)
+        filter.value_from = value
+    value = check_value_in_form('value_till', request.form)
+    if value:
+        assets = assets.filter(Asset.value < value)
+        filter.value_till = value
     assets=assets.all()
     for a in assets:
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
