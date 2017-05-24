@@ -48,9 +48,6 @@ def check_date_in_form(date_key, form):
     return None
 
 
-def reverse_date(date):
-    return '-'.join(date.split('-')[::-1])
-
 class Filter():
     date_after = ''
 
@@ -61,11 +58,11 @@ def assets():
     assets = Asset.query
     date = check_date_in_form('date_after', request.form)
     if date != None:
-        assets = assets.filter(Asset.date_in_service > reverse_date(date))
+        assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
         filter.date_after=date
     date = check_date_in_form('date_before', request.form)
     if date != None:
-        assets = assets.filter(Asset.date_in_service < reverse_date(date))
+        assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
         filter.date_before=date
     print(assets)
     assets=assets.all()

@@ -86,6 +86,10 @@ class Asset(db.Model):
 
     __tablename__ = 'assets'
 
+    @staticmethod
+    def reverse_date(date):
+        return '-'.join(date.split('-')[::-1])
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))        # eg PC245
     date_in_service = db.Column(db.Date)

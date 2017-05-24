@@ -55,7 +55,7 @@ class QRisValid():
 
 class EditForm(FlaskForm):
     name = StringField('Name')
-    date_in_service = DateField('Date', validators=[DataRequired()], format='%d/%m/%Y', default=datetime.date.today)
+    date_in_service = DateField('Date', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     qr_code = StringField('QR', validators=[DataRequired(), QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
     category = SelectField('Category', validators=[DataRequired()], choices=zip(Asset.Category.get_list(), Asset.Category.get_list()))
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
@@ -74,7 +74,7 @@ class AddForm(EditForm):
 
 class ViewForm(FlaskForm):
     name = StringField('Name', render_kw={'readonly':''})
-    date_in_service = DateField('Date', render_kw={'readonly':''})
+    date_in_service = DateField('Date', render_kw={'readonly':''}, format='%d-%m-%Y')
     qr_code = StringField('QR', render_kw={'readonly':''})
     category = StringField('Category', render_kw={'readonly':''})
     status = StringField('Status', render_kw={'readonly':''})
