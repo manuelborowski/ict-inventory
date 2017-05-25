@@ -32,11 +32,13 @@
       </div>
       </form>
       <hr />
+      <form method="post" action="{{ url_for('asset.add') }}" novalidate>
       <div class="btn-group" role="group" aria-label="...">
-           <a class="btn btn-default" href="{{ url_for('asset.add') }}" >Add asset</a>
+           <input class="btn btn-default" id="add" name="add" type="submit" value="Add Asset">
       </div>
       <hr />
       {{asset_table}}
+      </form>
   </div>
 </div>
 {% endblock %}

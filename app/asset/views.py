@@ -19,6 +19,8 @@ class NoEscapeCol(Col):
         return content
 
 class AssetTable(Table):
+
+    copy_from = NoEscapeCol('Copy')
     id = Col('Id')
     name = Col('Name')        # eg PC245
     date_in_service = DateCol('Since', date_format='dd-MM-YYYY')
@@ -66,7 +68,6 @@ class Filter():
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
-    print(request.form)
     filter = Filter()
     assets = Asset.query
     date = check_date_in_form('date_after', request.form)
@@ -87,6 +88,7 @@ def assets():
         filter.value_till = value
     assets=assets.all()
     for a in assets:
+        a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
         a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
@@ -99,13 +101,20 @@ def assets():
 @asset.route('/asset/add', methods=['GET', 'POST'])
 @login_required
 def add():
-    form = AddForm()
-    del form.id # is not required here and makes validate_on_submit fail...
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
-
-    if form.validate_on_submit():
+    if 'copy_from' in request.form:
+        asset = Asset.query.get_or_404(int(request.form['copy_from']))
+        form = AddForm(obj=asset)
+        form.qr_code.data=''
+        #No idea why only these 2 fields need to be copied explicitly???
+        form.name.data = asset.name
+        form.location.data = asset.location
+    else:
+        form = AddForm()
+    del form.id # is not required here and makes validate_on_submit fail...
+    if not 'add' in request.form and form.validate_on_submit():
         asset = Asset(name=form.name.data,
                         date_in_service=form.date_in_service.data,
                         qr_code=form.qr_code.data,
