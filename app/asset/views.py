@@ -3,7 +3,7 @@
 
 from flask import render_template, render_template_string, flash, redirect, url_for, request
 from flask_login import login_required, current_user, login_user
-from flask_table import Table, Col, DateCol
+from flask_table import Table, Col, DateCol, LinkCol
 
 import datetime, time
 
@@ -20,8 +20,6 @@ class NoEscapeCol(Col):
 
 class AssetTable(Table):
 
-    copy_from = NoEscapeCol('Copy')
-    id = Col('Id')
     name = Col('Name')        # eg PC245
     date_in_service = DateCol('Since', date_format='dd-MM-YYYY')
     qr_code = Col('QR')
@@ -32,10 +30,12 @@ class AssetTable(Table):
     #picture = Col('Picture')    # path to picture on disk
     #db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
     #description = Col('Description')
-    supplier = Col('Supplier')
+    supplier = LinkCol('Supplier', 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
+    id = Col('Id')
+    copy_from = NoEscapeCol('C')
     classes = ['table ' 'table-striped ' 'table-bordered ']
     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
@@ -92,6 +92,8 @@ def assets():
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
         a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
+        #a.supplier = render_template_string("<a href=\"{{ url_for('supplier.edit', id=" + str(a.supplier_id) + ") }}\">blabla</a>")
+        # a.supplier = render_template_string("<a href=\"192.168.1.4:5000/supplier/edit/2\"></a>")
     asset_table = AssetTable(assets)
 
     return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable', filter=filter)
