@@ -21,16 +21,16 @@ class NoEscapeCol(Col):
 class AssetTable(Table):
 
     name = Col(_(u'Name'))        # eg PC245
-    date_in_service = DateCol('Since', date_format='dd-MM-YYYY')
+    date_in_service = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
     qr_code = Col('QR')
-    category = Col('Category')    # one of: PC, BEAMER, PRINTER, ANDERE
+    category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    value = Col('Value')      # value in euro
-    location = Col('Location')    # eg E203
+    value = Col(_(u'Value'))      # value in euro
+    location = Col(_(u'Location'))    # eg E203
     #picture = Col('Picture')    # path to picture on disk
     #db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
     #description = Col('Description')
-    supplier = LinkCol('Supplier', 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
+    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
@@ -46,7 +46,7 @@ def check_date_in_form(date_key, form):
             time.strptime(form[date_key], '%d-%M-%Y')
             return form[date_key]
         except:
-            flash('Wrong date format, must be of form d-m-y')
+            flash(_(u'Wrong date format, must be of form d-m-y'))
     return None
 
 def check_value_in_form(value_key, form):
@@ -55,7 +55,7 @@ def check_value_in_form(value_key, form):
             float(form[value_key])
             return form[value_key]
         except:
-            flash('Wrong value format')
+            flash(_(u'Wrong value format'))
     return None
 
 
@@ -130,11 +130,11 @@ def add():
                         description=form.description.data)
         db.session.add(asset)
         db.session.commit()
-        flash('You have added asset {}'.format(asset.name))
+        flash(_(u'You have added asset {}').format(asset.name))
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='Add')
+    return render_template('asset/asset.html', form=form, title=_(u'Add'))
 
 
 #edit a asset
@@ -144,14 +144,14 @@ def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == _(u'Save'):
             form.populate_obj(asset)
             db.session.commit()
-            flash('You have edited asset {}'.format(asset.name))
+            flash(_(u'You have edited asset {}').format(asset.name))
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='Edit')
+    return render_template('asset/asset.html', form=form, title=_(u'Edit'))
 
 #no login required
 @asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
@@ -161,7 +161,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='View')
+    return render_template('asset/asset.html', form=form, title=_(u'View'))
 
 
 #no login required
@@ -169,7 +169,7 @@ def view(id):
 def view_via_qr(qr):
     asset = Asset.query.filter_by(qr_code=qr).first_or_404()
     form = ViewForm(obj=asset)
-    return render_template('asset/asset.html', form=form, title='View')
+    return render_template('asset/asset.html', form=form, title=_(u'View'))
 
 #delete an asset
 @asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])
@@ -178,7 +178,7 @@ def delete(id):
     asset = Asset.query.get_or_404(id)
     db.session.delete(asset)
     db.session.commit()
-    flash('You have successfully deleted the asset.')
+    flash(_('You have successfully deleted the asset.'))
 
     return redirect(url_for('asset.assets'))
 
