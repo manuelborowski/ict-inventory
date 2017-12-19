@@ -10,8 +10,17 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 
+import gettext
+
+# Set up message catalog access
+t = gettext.translation('messages', 'app/translations', fallback=True, languages=['nl'])
+t.install()
+_ = t.ugettext
+
+
 # local imports
 from config import app_config
+
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -32,7 +41,6 @@ def create_app(config_name):
     Bootstrap(app)
 
     jsglue = JSGlue(app)
-
     db.app=app  # hack :-(
     db.init_app(app)
 
@@ -78,3 +86,4 @@ def create_app(config_name):
         abort(500)
 
     return app
+

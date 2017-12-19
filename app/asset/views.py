@@ -8,7 +8,7 @@ from flask_table import Table, Col, DateCol, LinkCol
 import datetime, time
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db
+from .. import db, _
 from . import asset
 from ..models import Asset
 
@@ -20,7 +20,7 @@ class NoEscapeCol(Col):
 
 class AssetTable(Table):
 
-    name = Col('Name')        # eg PC245
+    name = Col(_(u'Name'))        # eg PC245
     date_in_service = DateCol('Since', date_format='dd-MM-YYYY')
     qr_code = Col('QR')
     category = Col('Category')    # one of: PC, BEAMER, PRINTER, ANDERE
