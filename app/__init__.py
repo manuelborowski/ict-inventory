@@ -54,6 +54,11 @@ def create_app(config_name):
 
     #create_admin(db) # Only once
 
+    #flask db migrate
+    #flask db upgrade
+    #uncheck when migrating database
+    #return app
+
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 

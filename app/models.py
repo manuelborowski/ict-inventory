@@ -51,19 +51,7 @@ def load_user(user_id):
 
 
 class Asset(db.Model):
-    class Category:
-        E_PC = 'PC'
-        E_BEAMER = 'BEAMER'
-        E_PRINTER = 'PRINTER'
-        E_OTHER = 'OTHER'
-        DEFAULT = E_PC
-
-        @staticmethod
-        def get_list():
-            l = [getattr(Asset.Category, a) for a in dir(Asset.Category) if a.startswith('E_')]
-            l.remove(Asset.Category.DEFAULT)
-            l.insert(0, Asset.Category.DEFAULT)
-            return l
+    __tablename__ = 'assets'
 
     class Status:
         E_IN_SERVICE = 'IN SERVICE'
@@ -84,29 +72,69 @@ class Asset(db.Model):
         E_NEW = 'NEW'
         E_ACTIVE = 'ACTIVE'
 
-    __tablename__ = 'assets'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))        # eg PC245
+    qr_code = db.Column(db.String(256), unique=True)
+    status = db.Column(db.String(256))    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
+    location = db.Column(db.String(256))    # eg E203
+    db_status = db.Column(db.String(256))    # one of: NIEW, ACTIEF, ANDERE
+    serial = db.Column(db.String(256))      # serial number
+    description = db.Column(db.String(256))
+    purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'))
+    purchase = db.relationship('Purchase', backref=db.backref('assets', lazy='dynamic'))
+
+    def __repr__(self):
+        return '<Asset: {}>'.format(self.name)
+
+class Purchase(db.Model):
+    __tablename__= 'purchases'
 
     @staticmethod
     def reverse_date(date):
         return '-'.join(date.split('-')[::-1])
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))        # eg PC245
-    date_in_service = db.Column(db.Date)
-    qr_code = db.Column(db.String(256), unique=True)
-    category = db.Column(db.String(256))    # one of: PC, BEAMER, PRINTER, ANDERE
-    status = db.Column(db.String(256))    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
+    since = db.Column(db.Date)
     value = db.Column(db.Numeric(20,2))      # e.g. 12.12
-    location = db.Column(db.String(256))    # eg E203
-    picture = db.Column(db.String(256))    # path to picture on disk
-    db_status = db.Column(db.String(256))    # one of: NIEW, ACTIEF, ANDERE
-    description = db.Column(db.String(256))
+    commissioning = db.Column(db.String(256))    # path to commissioning document on disk
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-    supplier = db.relationship('Supplier', backref=db.backref('assets', lazy='dynamic'))
+    p2supplier = db.relationship('Supplier', backref=db.backref('purchases', lazy='dynamic'))
+    device_id = db.Column(db.Integer, db.ForeignKey('devices.id'))
+    d2supplier = db.relationship('Supplier', backref=db.backref('devices', lazy='dynamic'))
 
     def __repr__(self):
-        return '<Asset: {}>'.format(self.name)
+        return '{}'.format(self.since)
 
+class Device(db.Model):
+    __tablename__ = 'devices'
+
+    class Category:
+        E_PC = 'PC'
+        E_BEAMER = 'BEAMER'
+        E_PRINTER = 'PRINTER'
+        E_OTHER = 'OTHER'
+        DEFAULT = E_PC
+
+        @staticmethod
+        def get_list():
+            l = [getattr(Asset.Category, a) for a in dir(Asset.Category) if a.startswith('E_')]
+            l.remove(Asset.Category.DEFAULT)
+            l.insert(0, Asset.Category.DEFAULT)
+            return l
+
+    id = db.Column(db.Integer, primary_key=True)
+    brand = db.Column(db.String(256))       # the brand of the device
+    type = db.Column(db.String(256))        # the type of the device
+    category = db.Column(db.String(256))    # one of: PC, BEAMER, PRINTER, ANDERE
+    power = db.Column(db.Numeric(20,1))      # e.g. 12.1
+    photo = db.Column(db.String(256))    # path to photo on disk
+    risk_analysis = db.Column(db.String(256))    # path to risk analysis document on disk
+    manual = db.Column(db.String(256))    # path to manual document on disk
+    safety_information = db.Column(db.String(256))    # path to safety information document on disk
+    ce = db.Column(db.Boolean, default=False)       # conform CE regulations
+
+    def __repr__(self):
+        return '{}'.format(self.brand)
 
 class Supplier(db.Model):
     __tablename__ = 'suppliers'
