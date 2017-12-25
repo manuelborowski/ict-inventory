@@ -1,0 +1,77 @@
+<!-- app/templates/user/users.html -->
+
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block content2 %}
+<div class="content-section">
+  {{ utils.flashed_messages() }}
+  <div class="center">
+      <form method="post" action="{{ url_for('asset.assets') }}">
+      <table class="table-condensed">
+          <tr>
+              <td>Since : </td>
+              <td>After</td>
+              <td><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}"></td>
+              <td>Before</td>
+              <td><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}"></td>
+          </tr>
+          <tr>
+              <td>Value : </td>
+              <td>From</td>
+              <td><input id="value_from" class="filter" name="value_from" type="text" size="8" value="{{ filter.value_from }}"></td>
+              <td>Till</td>
+              <td><input id="value_till" class="filter" name="value_till" type="text" size="8" value="{{ filter.value_till }}"></td>
+          </tr>
+      </table>
+      <br>
+      <div class="btn-group" role="group" aria-label="...">
+            <input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">
+            <a class="btn btn-default" id="clear">Clear</a>
+      </div>
+      </form>
+      <hr />
+      <form method="post" action="{{ url_for('asset.add') }}" novalidate>
+      <div class="btn-group" role="group" aria-label="...">
+           <input class="btn btn-default" id="add" name="add" type="submit" value="Add Asset">
+      </div>
+      <hr />
+      {{asset_table}}
+      </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts2 %}
+<script>
+$(document).ready(function() {
+    var table = $('#{{table_id}}').DataTable( {
+        dom: 'lBfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+
+    // When the length-changer or pager of the table is used, not all delete-buttons have the confirm-before-delete event
+    // attached.  The event draw.dt makes sure that, after the table is redrawn (length change or repaged) that all rows
+    // are bound to the confirm-before-delete event.
+    $('#{{table_id}}').on('draw.dt', function() {
+        $('.confirmBeforeDelete').unbind();
+        $('.confirmBeforeDelete').click(function() {
+            id = $(this).attr('u_id');
+            bootbox.confirm("Are you sure want to delete this asset?", function(result) {
+                if (result) {
+                    window.location = Flask.url_for('asset.delete', {'id' : id})
+                }
+            });
+        });
+    });
+
+    $('#clear').click(function() {
+        $('.filter').val('');
+        window.location = Flask.url_for('asset.assets')
+    });
+});
+</script>
+{% endblock %}

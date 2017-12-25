@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-19 13:42+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: asset/views.py:23
+msgid "Name"
+msgstr "Naam"
+
+#: asset/views.py:24
+msgid "Since"
+msgstr "Sinds"
+
+#: asset/views.py:26
+msgid "Category"
+msgstr "Categorie"
+
+#: asset/views.py:28
+msgid "Value"
+msgstr "Waarde"
+
+#: asset/views.py:29
+msgid "Location"
+msgstr "Locatie"
+
+#: asset/views.py:33
+msgid "Supplier"
+msgstr "Leverancier"
+
+#: asset/views.py:49
+msgid "Wrong date format, must be of form d-m-y"
+msgstr "Fout datumformaat, moet van de vorm d-m-j zijn"
+
+#: asset/views.py:58
+msgid "Wrong value format"
+msgstr "Verkeerde getalnotatie"
+
+#: asset/views.py:133
+msgid "You have added asset {}"
+msgstr "Je hebt volgend item toegevoegd {}"
+
+#: asset/views.py:137
+msgid "Add"
+msgstr "Voeg toe"
+
+#: asset/views.py:147
+msgid "Save"
+msgstr "Bewaar"
+
+#: asset/views.py:150
+msgid "You have edited asset {}"
+msgstr "Je hebt volgend item aangepast {}"
+
+#: asset/views.py:154
+msgid "Edit"
+msgstr "Pas aan"
+
+#: asset/views.py:164 asset/views.py:172
+msgid "View"
+msgstr "Bekijk"
+
+#: asset/views.py:181
+msgid "You have successfully deleted the asset."
+msgstr "Je hebt het item met succes verwijderd"
