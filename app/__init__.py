@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
+import config
 
 import gettext
 
@@ -44,51 +45,55 @@ def create_app(config_name):
     db.app=app  # hack :-(
     db.init_app(app)
 
-    login_manager.init_app(app)
-    login_manager.login_message = 'You must be logged in to access this page'
-    login_manager.login_view = 'auth.login'
+    if not config.DB_TOOLS:
+        login_manager.init_app(app)
+        login_manager.login_message = 'You must be logged in to access this page'
+        login_manager.login_view = 'auth.login'
 
-    migrate = Migrate(app, db)
+        migrate = Migrate(app, db)
 
-    from app import models
+        from app import models
 
-    #create_admin(db) # Only once
+        #create_admin(db) # Only once
 
-    #flask db migrate
-    #flask db upgrade
-    #uncheck when migrating database
-    #return app
+        #flask db migrate
+        #flask db upgrade
+        #uncheck when migrating database
+        #return app
 
-    from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint)
+        from .auth import auth as auth_blueprint
+        app.register_blueprint(auth_blueprint)
 
-    from .user import user as user_blueprint
-    app.register_blueprint(user_blueprint)
+        from .user import user as user_blueprint
+        app.register_blueprint(user_blueprint)
 
-    from .supplier import supplier as supplier_blueprint
-    app.register_blueprint(supplier_blueprint)
+        from .asset import asset as asset_blueprint
+        app.register_blueprint(asset_blueprint)
 
-    from .asset import asset as asset_blueprint
-    app.register_blueprint(asset_blueprint)
+        from .supplier import supplier as supplier_blueprint
+        app.register_blueprint(supplier_blueprint)
+        #
+        # from .device import device as device_blueprint
+        # app.register_blueprint(device_blueprint)
+        #
+        # from .purchase import purchase as purchase_blueprint
+        # app.register_blueprint(purchase_blueprint)
 
-    #from .table import table as table_blueprint
-    #app.register_blueprint(table_blueprint)
+        @app.errorhandler(403)
+        def forbidden(error):
+            return render_template('errors/403.html', title='Forbidden'), 403
 
-    @app.errorhandler(403)
-    def forbidden(error):
-        return render_template('errors/403.html', title='Forbidden'), 403
+        @app.errorhandler(404)
+        def page_not_found(error):
+            return render_template('errors/404.html', title='Page Not Found'), 404
 
-    @app.errorhandler(404)
-    def page_not_found(error):
-        return render_template('errors/404.html', title='Page Not Found'), 404
+        @app.errorhandler(500)
+        def internal_server_error(error):
+            return render_template('errors/500.html', title='Server Error'), 500
 
-    @app.errorhandler(500)
-    def internal_server_error(error):
-        return render_template('errors/500.html', title='Server Error'), 500
-
-    @app.route('/500')
-    def error_500():
-        abort(500)
+        @app.route('/500')
+        def error_500():
+            abort(500)
 
     return app
 

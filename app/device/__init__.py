@@ -3,6 +3,6 @@
 
 from flask import Blueprint
 
-asset = Blueprint('asset', __name__)
+device = Blueprint('device', __name__)
 
 from . import views

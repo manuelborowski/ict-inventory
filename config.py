@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+DB_TOOLS = False
+
 
 class Config(object):
     """

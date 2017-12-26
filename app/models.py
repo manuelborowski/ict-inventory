@@ -81,7 +81,6 @@ class Asset(db.Model):
     serial = db.Column(db.String(256))      # serial number
     description = db.Column(db.String(256))
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'))
-    purchase = db.relationship('Purchase', backref=db.backref('assets', lazy='dynamic'))
 
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
@@ -98,9 +97,9 @@ class Purchase(db.Model):
     value = db.Column(db.Numeric(20,2))      # e.g. 12.12
     commissioning = db.Column(db.String(256))    # path to commissioning document on disk
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-    p2supplier = db.relationship('Supplier', backref=db.backref('purchases', lazy='dynamic'))
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id'))
-    d2supplier = db.relationship('Supplier', backref=db.backref('devices', lazy='dynamic'))
+    assets = db.relationship('Asset', backref='purchase', lazy='dynamic')
+
 
     def __repr__(self):
         return '{}'.format(self.since)
@@ -132,6 +131,7 @@ class Device(db.Model):
     manual = db.Column(db.String(256))    # path to manual document on disk
     safety_information = db.Column(db.String(256))    # path to safety information document on disk
     ce = db.Column(db.Boolean, default=False)       # conform CE regulations
+    purchases = db.relationship('Purchase', backref='device', lazy='dynamic')
 
     def __repr__(self):
         return '{}'.format(self.brand)
@@ -142,6 +142,7 @@ class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
     description = db.Column(db.String(1024))
+    purchases = db.relationship('Purchase', backref='supplier', lazy='dynamic')
 
     def __repr__(self):
         return '{}'.format(self.name)

@@ -21,16 +21,13 @@ class NoEscapeCol(Col):
 class AssetTable(Table):
 
     name = Col(_(u'Name'))        # eg PC245
-    date_in_service = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
+    #date_in_service = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
     qr_code = Col('QR')
-    category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
+    #category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    value = Col(_(u'Value'))      # value in euro
+    #value = Col(_(u'Value'))      # value in euro
     location = Col(_(u'Location'))    # eg E203
-    #picture = Col('Picture')    # path to picture on disk
-    #db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
-    #description = Col('Description')
-    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
+    #supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
@@ -70,22 +67,22 @@ class Filter():
 def assets():
     filter = Filter()
     assets = Asset.query
-    date = check_date_in_form('date_after', request.form)
-    if date:
-        assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
-        filter.date_after=date
-    date = check_date_in_form('date_before', request.form)
-    if date:
-        assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
-        filter.date_before=date
-    value = check_value_in_form('value_from', request.form)
-    if value:
-        assets = assets.filter(Asset.value > value)
-        filter.value_from = value
-    value = check_value_in_form('value_till', request.form)
-    if value:
-        assets = assets.filter(Asset.value < value)
-        filter.value_till = value
+    # date = check_date_in_form('date_after', request.form)
+    # if date:
+    #     assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
+    #     filter.date_after=date
+    # date = check_date_in_form('date_before', request.form)
+    # if date:
+    #     assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
+    #     filter.date_before=date
+    # value = check_value_in_form('value_from', request.form)
+    # if value:
+    #     assets = assets.filter(Asset.value > value)
+    #     filter.value_from = value
+    # value = check_value_in_form('value_till', request.form)
+    # if value:
+    #     assets = assets.filter(Asset.value < value)
+    #     filter.value_till = value
     assets=assets.all()
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")

@@ -3,6 +3,6 @@
 
 from flask import Blueprint
 
-asset = Blueprint('asset', __name__)
+purchase = Blueprint('purchase', __name__)
 
 from . import views
