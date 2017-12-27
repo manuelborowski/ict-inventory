@@ -102,7 +102,7 @@ class Purchase(db.Model):
 
 
     def __repr__(self):
-        return '{}'.format(self.since)
+        return '{} / {}'.format(self.since, self.value)
 
 class Device(db.Model):
     __tablename__ = 'devices'
@@ -134,7 +134,7 @@ class Device(db.Model):
     purchases = db.relationship('Purchase', backref='device', lazy='dynamic')
 
     def __repr__(self):
-        return '{}'.format(self.brand)
+        return '{} / {}'.format(self.brand, self.type)
 
 class Supplier(db.Model):
     __tablename__ = 'suppliers'

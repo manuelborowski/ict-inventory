@@ -9,12 +9,7 @@ from .forms import AddForm, EditForm
 from .. import db
 from . import user
 from ..models import User
-
-
-#Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
-class NoEscapeCol(Col):
-    def td_format(self, content):
-        return content
+from ..views import NoEscapeCol
 
 class UserTable(Table):
     id = Col('Id')
@@ -27,7 +22,6 @@ class UserTable(Table):
     edit = NoEscapeCol('')
     classes = ['table ' 'table-striped ' 'table-bordered ']
     html_attrs = {'id': 'usertable', 'cellspacing': '0', 'width': '100%'}
-
 
 #show a list of users
 @user.route('/user', methods=['GET', 'POST'])
@@ -43,7 +37,7 @@ def users():
         u.edit = render_template_string("<a href=\"{{ url_for('user.edit', id=" + str(u.id) + ") }}\"><i class='fa fa-pencil'></i>")
     user_table = UserTable(users)
 
-    return render_template('user/users.html', title='Users', user_table=user_table, table_id='usertable')
+    return render_template('user/users.html', title='Users', route='user.users', subject='user', table=user_table)
 
 
 #add a new user

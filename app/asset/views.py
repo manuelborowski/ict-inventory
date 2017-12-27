@@ -11,12 +11,7 @@ from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import asset
 from ..models import Asset, Purchase
-
-
-#Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
-class NoEscapeCol(Col):
-    def td_format(self, content):
-        return content
+from ..views import NoEscapeCol
 
 class AssetTable(Table):
 
@@ -130,7 +125,7 @@ def add():
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Add'))
+    return render_template('asset/asset.html', form=form, title=_(u'Add an asset'), role='add', route='asset.assets', subject='asset')
 
 
 #edit a asset

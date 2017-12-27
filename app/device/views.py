@@ -5,18 +5,11 @@ from flask import render_template, render_template_string, flash, redirect, url_
 from flask_login import login_required, current_user, login_user
 from flask_table import Table, Col, DateCol, LinkCol
 
-import datetime, time
-
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import device
 from ..models import Device
-
-
-#Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
-class NoEscapeCol(Col):
-    def td_format(self, content):
-        return content
+from ..views import NoEscapeCol
 
 class DeviceTable(Table):
 
@@ -55,7 +48,7 @@ def devices():
         d.view = render_template_string("<a href=\"{{ url_for('device.view', id=" + str(d.id) + ") }}\"><i class='fa fa-eye'></i>")
     device_table = DeviceTable(devices)
 
-    return render_template('device/devices.html', title='devices', device_table = device_table, table_id='devicetable', filter=filter)
+    return render_template('device/devices.html', title='devices', route='device.device', subject='device', table = device_table, filter=filter)
 
 
 #add a new device
@@ -65,9 +58,11 @@ def add():
     if 'copy_from' in request.form:
         device = Device.query.get_or_404(int(request.form['copy_from']))
         form = AddForm(obj=device)
-        #No idea why only these 2 fields need to be copied explicitly???
-        #form.name.data = asset.name
-        #form.location.data = asset.location
+        #The instruction above is not perfect : it stops copying attributes a soon as it encounters an attribute in the device
+        #which does not have a counterpart in the form.
+        form.brand.data = device.brand
+        form.type.data = device.type
+        form.ce.data = device.ce
     else:
         form = AddForm()
     del form.id # is not required here and makes validate_on_submit fail...
@@ -83,7 +78,7 @@ def add():
 
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_(u'Add'))
+    return render_template('device/device.html', form=form, title=_('Add a device'), role='add', subject='device', route='device.devices')
 
 
 #edit a device
@@ -101,7 +96,7 @@ def edit(id):
 
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_(u'Edit'))
+    return render_template('device/device.html', form=form, title=_('Edit a device'), role='edit', subject='device', route='device.devices')
 
 #no login required
 @device.route('/device/view/<int:id>', methods=['GET', 'POST'])
@@ -111,7 +106,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_(u'View'))
+    return render_template('device/device.html', form=form, title=_('View a device'), role='view', subject='device', route='device.devices')
 
 #delete a device
 @device.route('/device/delete/<int:id>', methods=['GET', 'POST'])

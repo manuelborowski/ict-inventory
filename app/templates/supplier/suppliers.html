@@ -2,7 +2,7 @@
 
 {% import "bootstrap/utils.html" as utils %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% extends "base.html" %}
+{% extends "base_scripts.html" %}
 
 {% block content2 %}
 <div class="content-section">
@@ -12,36 +12,8 @@
            <a class="btn btn-default" href="{{ url_for('supplier.add') }}" >Add supplier</a>
       </div>
       <hr />
-     {{supplier_table}}
+     {{table}}
   </div>
 </div>
 {% endblock %}
 
-{% block scripts2 %}
-<script>
-$(document).ready(function() {
-    $('#{{table_id}}').DataTable({
-       dom: 'lBfrtip',
-       buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-       ]
-    });
-
-    // When the length-changer or pager of the table is used, not all delete-buttons have the confirm-before-delete event
-    // attached.  The event draw.dt makes sure that, after the table is redrawn (length change or repaged) that all rows
-    // are bound to the confirm-before-delete event.
-    $('#{{table_id}}').on('draw.dt', function() {
-        $('.confirmBeforeDelete').unbind();
-        $('.confirmBeforeDelete').click(function() {
-            id = $(this).attr('u_id');
-            bootbox.confirm("Are you sure want to delete this supplier?", function(result) {
-                if (result) {
-                    window.location = Flask.url_for('supplier.delete', {'id' : id})
-                }
-            });
-        });
-    });
-
-});
-</script>
-{% endblock %}
