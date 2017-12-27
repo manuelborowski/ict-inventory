@@ -27,8 +27,8 @@ class AssetTable(Table):
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
-    id = Col('Id')
-    copy_from = NoEscapeCol('C')
+    #id = Col('Id')
+    copy_from = NoEscapeCol("C")
     classes = ['table ' 'table-striped ' 'table-bordered ']
     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
@@ -142,17 +142,21 @@ def edit(id):
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Edit'))
+    return render_template('asset/asset.html', form=form, title=_(u'Edit an asset'), role='edit', subject='asset', route='asset.assets')
 
 #no login required
 @asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
 def view(id):
     asset = Asset.query.get_or_404(id)
     form = ViewForm(obj=asset)
+    form.since.data = asset.purchase.since
+    form.category.data = asset.purchase.device.category
+    form.value.data = asset.purchase.value
+    form.supplier.data = asset.purchase.supplier
     if form.validate_on_submit():
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'View'))
+    return render_template('asset/asset.html', form=form, title=_(u'View an asset'), role='view', subject='asset', route='asset.assets')
 
 
 #no login required
@@ -160,7 +164,11 @@ def view(id):
 def view_via_qr(qr):
     asset = Asset.query.filter_by(qr_code=qr).first_or_404()
     form = ViewForm(obj=asset)
-    return render_template('asset/asset.html', form=form, title=_(u'View'))
+    form.since.data = asset.purchase.since
+    form.category.data = asset.purchase.device.category
+    form.value.data = asset.purchase.value
+    form.supplier.data = asset.purchase.supplier
+    return render_template('asset/asset.html', form=form, title=_(u'View an asset'), role='view', subject='asset', route='asset.assets')
 
 #delete an asset
 @asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])
