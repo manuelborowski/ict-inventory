@@ -6,11 +6,15 @@
 
 {% block content3 %}
     {{ wtf.form_field(form.name) }}
-    {{ wtf.form_field(form.since) }}
-    {{ wtf.form_field(form.qr_code) }}
-    {{ wtf.form_field(form.category) }}
-    {{ wtf.form_field(form.status) }}
-    {{ wtf.form_field(form.value) }}
     {{ wtf.form_field(form.location) }}
+    {{ wtf.form_field(form.qr_code) }}
+    {{ wtf.form_field(form.status) }}
+    {{ wtf.form_field(form.purchase) }}
+    {{ wtf.form_field(form.serial) }}
+{% if role == 'view' %}
+    {{ wtf.form_field(form.since) }}
+    {{ wtf.form_field(form.value) }}
     {{ wtf.form_field(form.supplier) }}
+    {{ wtf.form_field(form.category) }}
+    {% endif %}
 {% endblock %}

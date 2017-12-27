@@ -13,6 +13,9 @@ from ..models import Asset, Supplier, Purchase, Device
 def get_suppliers():
     return Supplier.query.all()
 
+def get_purchases():
+    return Purchase.query.all()
+
 
 class UniqueQR:
     def __init__(self, message=None):
@@ -55,28 +58,26 @@ class QRisValid():
 
 class EditForm(FlaskForm):
     name = StringField('Name')
-    since = DateField('Date', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
-    qr_code = StringField('QR', validators=[DataRequired(), QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
-    category = SelectField('Category', validators=[DataRequired()], choices=zip(Device.Category.get_list(), Device.Category.get_list()))
-    status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
-    value = DecimalField('Value (&euro;)', default=0.0)
-    supplier = QuerySelectField('Supplier', query_factory=get_suppliers)
     location = StringField('Location')
+    qr_code = StringField('QR', validators=[DataRequired(), QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
+    status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
+    purchase = QuerySelectField('Purchase', query_factory=get_purchases)
+    serial = StringField('Serial')
     id = IntegerField(widget=HiddenInput())
 
 
 class AddForm(EditForm):
-    """
-    Add an asset
-    """
+    pass
 
 class ViewForm(FlaskForm):
     name = StringField('Name', render_kw={'readonly':''})
-    since = DateField('Date', render_kw={'readonly':''}, format='%d-%m-%Y')
+    location = StringField('Location', render_kw={'readonly':''})
     qr_code = StringField('QR', render_kw={'readonly':''})
-    category = StringField('Category', render_kw={'readonly':''})
     status = StringField('Status', render_kw={'readonly':''})
+    purchase = StringField('Purchase', render_kw={'readonly':''})
+    since = DateField('Date', render_kw={'readonly':''}, format='%d-%m-%Y')
     value = DecimalField('Value (&euro;)', render_kw={'readonly':''})
     supplier = StringField('Supplier', render_kw={'readonly':''})
-    location = StringField('Location', render_kw={'readonly':''})
+    category = StringField('Category', render_kw={'readonly':''})
+    serial = StringField('Serial', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())

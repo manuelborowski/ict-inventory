@@ -23,6 +23,7 @@ class AssetTable(Table):
     qr_code = Col('QR')
     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
     supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='purchase.supplier', url_kwargs=dict(id='purchase.supplier_id'))
+    device = LinkCol(_(u'Device'), 'device.edit', attr='purchase.device', url_kwargs=dict(id='purchase.device_id'))
     serial = Col('Serial')
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
@@ -109,16 +110,10 @@ def add():
     del form.id # is not required here and makes validate_on_submit fail...
     if not 'add' in request.form and form.validate_on_submit():
         asset = Asset(name=form.name.data,
-                        date_in_service=form.date_in_service.data,
                         qr_code=form.qr_code.data,
-                        category=form.category.data,
                         status=form.status.data,
-                        value=form.value.data,
                         location=form.location.data,
-                        picture=form.picture.data,
-                        supplier = form.supplier.data,
-                        db_status=Asset.DB_status.E_ACTIVE,
-                        description=form.description.data)
+                        purchase=form.purchase.data)
         db.session.add(asset)
         db.session.commit()
         flash(_(u'You have added asset {}').format(asset.name))
