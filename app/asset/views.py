@@ -10,7 +10,7 @@ import datetime, time
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import asset
-from ..models import Asset
+from ..models import Asset, Purchase
 
 
 #Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
@@ -21,13 +21,14 @@ class NoEscapeCol(Col):
 class AssetTable(Table):
 
     name = Col(_(u'Name'))        # eg PC245
-    #date_in_service = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
-    qr_code = Col('QR')
-    #category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
-    status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    #value = Col(_(u'Value'))      # value in euro
+    category = Col(_(u'Category'), attr='purchase.device.category')    # one of: PC, BEAMER, PRINTER, ANDERE
     location = Col(_(u'Location'))    # eg E203
-    #supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
+    since = DateCol(_(u'Since'), date_format='dd-MM-YYYY', attr='purchase.since')
+    value = Col(_(u'Value'), attr='purchase.value')      # value in euro
+    qr_code = Col('QR')
+    status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
+    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='purchase.supplier', url_kwargs=dict(id='purchase.supplier_id'))
+    serial = Col('Serial')
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
@@ -66,31 +67,29 @@ class Filter():
 @login_required
 def assets():
     filter = Filter()
-    assets = Asset.query
-    # date = check_date_in_form('date_after', request.form)
-    # if date:
-    #     assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
-    #     filter.date_after=date
-    # date = check_date_in_form('date_before', request.form)
-    # if date:
-    #     assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
-    #     filter.date_before=date
-    # value = check_value_in_form('value_from', request.form)
-    # if value:
-    #     assets = assets.filter(Asset.value > value)
-    #     filter.value_from = value
-    # value = check_value_in_form('value_till', request.form)
-    # if value:
-    #     assets = assets.filter(Asset.value < value)
-    #     filter.value_till = value
+    assets = Asset.query.join(Asset.purchase)
+    date = check_date_in_form('date_after', request.form)
+    if date:
+        assets = assets.filter(Purchase.since > Purchase.reverse_date(date))
+        filter.date_after=date
+    date = check_date_in_form('date_before', request.form)
+    if date:
+        assets = assets.filter(Purchase.since < Purchase.reverse_date(date))
+        filter.date_before=date
+    value = check_value_in_form('value_from', request.form)
+    if value:
+        assets = assets.filter(Purchase.value > value)
+        filter.value_from = value
+    value = check_value_in_form('value_till', request.form)
+    if value:
+        assets = assets.filter(Purchase.value < value)
+        filter.value_till = value
     assets=assets.all()
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
         a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
-        #a.supplier = render_template_string("<a href=\"{{ url_for('supplier.edit', id=" + str(a.supplier_id) + ") }}\">blabla</a>")
-        # a.supplier = render_template_string("<a href=\"192.168.1.4:5000/supplier/edit/2\"></a>")
     asset_table = AssetTable(assets)
 
     return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable', filter=filter)

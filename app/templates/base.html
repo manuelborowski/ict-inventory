@@ -26,6 +26,8 @@
           <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
                   <li><a href="{{ url_for('asset.assets') }}">Assets</a></li>
+                  <li><a href="{{ url_for('purchase.purchases') }}">Purchases</a></li>
+                  <li><a href="{{ url_for('device.devices') }}">Devices</a></li>
                   <li><a href="{{ url_for('supplier.suppliers') }}">Suppliers</a></li>
                   <li><a href="{{ url_for('user.users') }}">Users</a></li>
                   <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>

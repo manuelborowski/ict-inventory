@@ -8,7 +8,7 @@
 <div class="content-section">
   {{ utils.flashed_messages() }}
   <div class="center">
-      <form method="post" action="{{ url_for('asset.assets') }}">
+      <form method="post" action="{{ url_for('purchase.purchases') }}">
       <table class="table-condensed">
           <tr>
               <td>Since : </td>
@@ -32,12 +32,12 @@
       </div>
       </form>
       <hr />
-      <form method="post" action="{{ url_for('asset.add') }}" novalidate>
+      <form method="post" action="{{ url_for('purchase.add') }}" novalidate>
       <div class="btn-group" role="group" aria-label="...">
-           <input class="btn btn-default" id="add" name="add" type="submit" value="Add Asset">
+           <input class="btn btn-default" id="add" name="add" type="submit" value="Add Purchase">
       </div>
       <hr />
-      {{asset_table}}
+      {{purchase_table}}
       </form>
   </div>
 </div>
@@ -62,7 +62,7 @@ $(document).ready(function() {
             id = $(this).attr('u_id');
             bootbox.confirm("Are you sure want to delete this asset?", function(result) {
                 if (result) {
-                    window.location = Flask.url_for('asset.delete', {'id' : id})
+                    window.location = Flask.url_for('purchase.delete', {'id' : id})
                 }
             });
         });
@@ -70,7 +70,7 @@ $(document).ready(function() {
 
     $('#clear').click(function() {
         $('.filter').val('');
-        window.location = Flask.url_for('asset.assets')
+        window.location = Flask.url_for('purchase.purchases')
     });
 });
 </script>

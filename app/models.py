@@ -116,9 +116,9 @@ class Device(db.Model):
 
         @staticmethod
         def get_list():
-            l = [getattr(Asset.Category, a) for a in dir(Asset.Category) if a.startswith('E_')]
-            l.remove(Asset.Category.DEFAULT)
-            l.insert(0, Asset.Category.DEFAULT)
+            l = [getattr(Device.Category, a) for a in dir(Device.Category) if a.startswith('E_')]
+            l.remove(Device.Category.DEFAULT)
+            l.insert(0, Device.Category.DEFAULT)
             return l
 
     id = db.Column(db.Integer, primary_key=True)

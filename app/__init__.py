@@ -72,12 +72,12 @@ def create_app(config_name):
 
         from .supplier import supplier as supplier_blueprint
         app.register_blueprint(supplier_blueprint)
-        #
-        # from .device import device as device_blueprint
-        # app.register_blueprint(device_blueprint)
-        #
-        # from .purchase import purchase as purchase_blueprint
-        # app.register_blueprint(purchase_blueprint)
+
+        from .device import device as device_blueprint
+        app.register_blueprint(device_blueprint)
+
+        from .purchase import purchase as purchase_blueprint
+        app.register_blueprint(purchase_blueprint)
 
         @app.errorhandler(403)
         def forbidden(error):

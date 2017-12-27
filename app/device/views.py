@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# app/asset/views.py
+# app/device/views.py
 
 from flask import render_template, render_template_string, flash, redirect, url_for, request
 from flask_login import login_required, current_user, login_user
@@ -9,8 +9,8 @@ import datetime, time
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
-from . import asset
-from ..models import Asset
+from . import device
+from ..models import Device
 
 
 #Special column to add html-tags.  Note : this can be dangerous, so whatch out!!!
@@ -18,36 +18,20 @@ class NoEscapeCol(Col):
     def td_format(self, content):
         return content
 
-class AssetTable(Table):
+class DeviceTable(Table):
 
-    name = Col(_(u'Name'))        # eg PC245
-    date_in_service = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
-    qr_code = Col('QR')
     category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
-    status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    value = Col(_(u'Value'))      # value in euro
-    location = Col(_(u'Location'))    # eg E203
-    #picture = Col('Picture')    # path to picture on disk
-    #db_status = Col('DB status')    # one of: NIEW, ACTIEF, ANDERE
-    #description = Col('Description')
-    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
+    brand = Col(_(u'Brand'))
+    type = Col(_(u'Type'))
+    power = Col(_(u'Power'))
+    ce = Col(_(u'CE'))
     delete = NoEscapeCol('')
     edit = NoEscapeCol('')
     view = NoEscapeCol('')
     id = Col('Id')
     copy_from = NoEscapeCol('C')
     classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
-
-
-def check_date_in_form(date_key, form):
-    if date_key in form and form[date_key] != '':
-        try:
-            time.strptime(form[date_key], '%d-%M-%Y')
-            return form[date_key]
-        except:
-            flash(_(u'Wrong date format, must be of form d-m-y'))
-    return None
+    html_attrs = {'id': 'devicetable', 'cellspacing': '0', 'width': '100%'}
 
 def check_value_in_form(value_key, form):
     if value_key in form and form[value_key] != '':
@@ -59,126 +43,84 @@ def check_value_in_form(value_key, form):
     return None
 
 
-class Filter():
-    date_after = ''
-    date_before = ''
-    value_from = ''
-    value_till = ''
 
-@asset.route('/asset', methods=['GET', 'POST'])
+@device.route('/device', methods=['GET', 'POST'])
 @login_required
-def assets():
-    filter = Filter()
-    assets = Asset.query
-    date = check_date_in_form('date_after', request.form)
-    if date:
-        assets = assets.filter(Asset.date_in_service > Asset.reverse_date(date))
-        filter.date_after=date
-    date = check_date_in_form('date_before', request.form)
-    if date:
-        assets = assets.filter(Asset.date_in_service < Asset.reverse_date(date))
-        filter.date_before=date
-    value = check_value_in_form('value_from', request.form)
-    if value:
-        assets = assets.filter(Asset.value > value)
-        filter.value_from = value
-    value = check_value_in_form('value_till', request.form)
-    if value:
-        assets = assets.filter(Asset.value < value)
-        filter.value_till = value
-    assets=assets.all()
-    for a in assets:
-        a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
-        a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
-        a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
-        a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
-        #a.supplier = render_template_string("<a href=\"{{ url_for('supplier.edit', id=" + str(a.supplier_id) + ") }}\">blabla</a>")
-        # a.supplier = render_template_string("<a href=\"192.168.1.4:5000/supplier/edit/2\"></a>")
-    asset_table = AssetTable(assets)
+def devices():
+    devices = Device.query.all()
+    for d in devices:
+        d.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(d.id) + "'>")
+        d.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(d.id) + "><i class='fa fa-trash'></i></a>")
+        d.edit = render_template_string("<a href=\"{{ url_for('device.edit', id=" + str(d.id) + ") }}\"><i class='fa fa-pencil'></i>")
+        d.view = render_template_string("<a href=\"{{ url_for('device.view', id=" + str(d.id) + ") }}\"><i class='fa fa-eye'></i>")
+    device_table = DeviceTable(devices)
 
-    return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable', filter=filter)
+    return render_template('device/devices.html', title='devices', device_table = device_table, table_id='devicetable', filter=filter)
 
 
-#add a new asset
-@asset.route('/asset/add', methods=['GET', 'POST'])
+#add a new device
+@device.route('/device/add', methods=['GET', 'POST'])
 @login_required
 def add():
-    #qr_code can be inserted in 2 forms :
-    #regular number, e.g. 433
-    #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
     if 'copy_from' in request.form:
-        asset = Asset.query.get_or_404(int(request.form['copy_from']))
-        form = AddForm(obj=asset)
-        form.qr_code.data=''
+        device = Device.query.get_or_404(int(request.form['copy_from']))
+        form = AddForm(obj=device)
         #No idea why only these 2 fields need to be copied explicitly???
-        form.name.data = asset.name
-        form.location.data = asset.location
+        #form.name.data = asset.name
+        #form.location.data = asset.location
     else:
         form = AddForm()
     del form.id # is not required here and makes validate_on_submit fail...
     if not 'add' in request.form and form.validate_on_submit():
-        asset = Asset(name=form.name.data,
-                        date_in_service=form.date_in_service.data,
-                        qr_code=form.qr_code.data,
-                        category=form.category.data,
-                        status=form.status.data,
-                        value=form.value.data,
-                        location=form.location.data,
-                        picture=form.picture.data,
-                        supplier = form.supplier.data,
-                        db_status=Asset.DB_status.E_ACTIVE,
-                        description=form.description.data)
-        db.session.add(asset)
+        device = Device(category=form.category.data,
+                        brand=form.brand.data,
+                        type=form.type.data,
+                        power=form.power.data,
+                        ce=form.ce.data)
+        db.session.add(device)
         db.session.commit()
-        flash(_(u'You have added asset {}').format(asset.name))
+        flash(_(u'You have added device {}/{}').format(device.brand, device.type))
 
-        return redirect(url_for('asset.assets'))
+        return redirect(url_for('device.devices'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Add'))
+    return render_template('device/device.html', form=form, title=_(u'Add'))
 
 
-#edit a asset
-@asset.route('/asset/edit/<int:id>', methods=['GET', 'POST'])
+#edit a device
+@device.route('/device/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
-    asset = Asset.query.get_or_404(id)
-    form = EditForm(obj=asset)
+    device = Device.query.get_or_404(id)
+    form = EditForm(obj=device)
+
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
-            form.populate_obj(asset)
+            form.populate_obj(device)
             db.session.commit()
-            flash(_(u'You have edited asset {}').format(asset.name))
+            flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
-        return redirect(url_for('asset.assets'))
+        return redirect(url_for('device.devices'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Edit'))
+    return render_template('device/device.html', form=form, title=_(u'Edit'))
 
 #no login required
-@asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
+@device.route('/device/view/<int:id>', methods=['GET', 'POST'])
 def view(id):
-    asset = Asset.query.get_or_404(id)
-    form = ViewForm(obj=asset)
+    device = Device.query.get_or_404(id)
+    form = ViewForm(obj=device)
     if form.validate_on_submit():
-        return redirect(url_for('asset.assets'))
+        return redirect(url_for('device.devices'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'View'))
+    return render_template('device/device.html', form=form, title=_(u'View'))
 
-
-#no login required
-@asset.route('/asset/qr/<string:qr>', methods=['GET', 'POST'])
-def view_via_qr(qr):
-    asset = Asset.query.filter_by(qr_code=qr).first_or_404()
-    form = ViewForm(obj=asset)
-    return render_template('asset/asset.html', form=form, title=_(u'View'))
-
-#delete an asset
-@asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])
+#delete a device
+@device.route('/device/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete(id):
-    asset = Asset.query.get_or_404(id)
-    db.session.delete(asset)
+    device = Device.query.get_or_404(id)
+    db.session.delete(device)
     db.session.commit()
-    flash(_('You have successfully deleted the asset.'))
+    flash(_('You have successfully deleted the device.'))
 
-    return redirect(url_for('asset.assets'))
+    return redirect(url_for('device.devices'))
 
