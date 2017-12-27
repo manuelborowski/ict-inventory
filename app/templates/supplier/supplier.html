@@ -2,23 +2,10 @@
 <!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
 
 {% import "bootstrap/wtf.html" as wtf %}
-{% extends "base.html" %}
+{% extends "base_single_item.html" %}
 
-{% block content2 %}
-<div class="content-section">
-  <div class="center">
-  <h1>{{ title }} a supplier</h1>
-  <br/>
-  <form action="" method="post" class="form" role="form">
-        {{ form.csrf_token }}
-
-        {{ wtf.form_field(form.name) }}
-        {{ wtf.form_field(form.description) }}
-        {{ form.id }}
-
-    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
-    <a class="btn btn-default" href="{{ url_for('supplier.suppliers') }}" >Cancel</a>
-  </form>
-  </div>
-</div>
+{% block content3 %}
+    {{ wtf.form_field(form.name) }}
+    {{ wtf.form_field(form.description) }}
+    {{ form.id }}
 {% endblock %}

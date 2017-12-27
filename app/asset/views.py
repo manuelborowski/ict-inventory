@@ -7,15 +7,15 @@ from flask_table import Table, Col, DateCol, LinkCol
 
 import datetime, time
 
-from .forms import AddForm, EditForm, ViewForm
+from .forms import AddForm, EditForm, ViewForm, CategoryFilter
 from .. import db, _
 from . import asset
-from ..models import Asset, Purchase
+from ..models import Asset, Purchase, Device
 from ..views import NoEscapeCol
 
 class AssetTable(Table):
 
-    name = Col(_(u'Name'))        # eg PC245
+    name = LinkCol(_(u'Name'), 'asset.edit', attr='name', url_kwargs=dict(id='id'))        # eg PC245
     category = Col(_(u'Category'), attr='purchase.device.category')    # one of: PC, BEAMER, PRINTER, ANDERE
     location = Col(_(u'Location'))    # eg E203
     since = DateCol(_(u'Since'), date_format='dd-MM-YYYY', attr='purchase.since')
@@ -26,7 +26,7 @@ class AssetTable(Table):
     device = LinkCol(_(u'Device'), 'device.edit', attr='purchase.device', url_kwargs=dict(id='purchase.device_id'))
     serial = Col('Serial')
     delete = NoEscapeCol('')
-    edit = NoEscapeCol('')
+    #edit = NoEscapeCol('')
     view = NoEscapeCol('')
     #id = Col('Id')
     copy_from = NoEscapeCol("C")
@@ -52,19 +52,25 @@ def check_value_in_form(value_key, form):
             flash(_(u'Wrong value format'))
     return None
 
+def check_string_in_form(value_key, form):
+    if value_key in form and form[value_key] != '':
+        try:
+            str(form[value_key])
+            return form[value_key]
+        except:
+            flash(_(u'Wrong string format'))
+    return None
 
 class Filter():
-    date_after = ''
-    date_before = ''
-    value_from = ''
-    value_till = ''
+    pass
 
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
     filter = Filter()
-    assets = Asset.query.join(Asset.purchase)
-    date = check_date_in_form('date_after', request.form)
+    print '>>>>>>' + str(request.form)
+    assets = Asset.query.join(Purchase).join(Device)
+    date = check_date_in_form('date_after', request .form)
     if date:
         assets = assets.filter(Purchase.since > Purchase.reverse_date(date))
         filter.date_after=date
@@ -80,6 +86,11 @@ def assets():
     if value:
         assets = assets.filter(Purchase.value < value)
         filter.value_till = value
+    value = check_string_in_form('category', request.form)
+    filter.form = CategoryFilter()
+    if value:
+        assets = assets.filter(Device.category== value)
+        filter.form.category.data = value
     assets=assets.all()
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")

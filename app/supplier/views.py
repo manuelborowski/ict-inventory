@@ -68,7 +68,7 @@ def edit(id):
 
         return redirect(url_for('supplier.suppliers'))
 
-    return render_template('supplier/supplier.html', form=form, title='Edit')
+    return render_template('supplier/supplier.html', form=form, title=_('Edit a supplier'), role='edit', subject='supplier', route='supplier.suppliers')
 
 #no login required
 @supplier.route('/supplier/view/<int:id>', methods=['GET', 'POST'])

@@ -81,3 +81,6 @@ class ViewForm(FlaskForm):
     category = StringField('Category', render_kw={'readonly':''})
     serial = StringField('Serial', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())
+
+class CategoryFilter(FlaskForm):
+    category = SelectField('', choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))

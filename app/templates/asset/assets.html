@@ -9,20 +9,22 @@
   {{ utils.flashed_messages() }}
   <div class="center">
       <form method="post" action="{{ url_for('asset.assets') }}">
-      <table class="table-condensed">
+      <table class="table-condensed table-bordered">
           <tr>
               <td>Since : </td>
-              <td>After</td>
-              <td><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}"></td>
-              <td>Before</td>
-              <td><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}"></td>
+              <td>Value : </td>
+              <td>Location : </td>
+              <td>Category : </td>
           </tr>
           <tr>
-              <td>Value : </td>
-              <td>From</td>
-              <td><input id="value_from" class="filter" name="value_from" type="text" size="8" value="{{ filter.value_from }}"></td>
-              <td>Till</td>
-              <td><input id="value_till" class="filter" name="value_till" type="text" size="8" value="{{ filter.value_till }}"></td>
+              <td><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}"></td>
+              <td><input id="value_from" class="filter" name="value_from" type="text" size="12" value="{{ filter.value_from }}"></td>
+              <td><input id="location" class="filter" name="location" type="text" size="12" value="{{ filter.location }}"></td>
+              <td rowspan="2">{{ wtf.form_field(filter.form.category) }}</td>
+          </tr>
+          <tr>
+              <td><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}"></td>
+              <td><input id="value_till" class="filter" name="value_till" type="text" size="12" value="{{ filter.value_till }}"></td>
           </tr>
       </table>
       <br>

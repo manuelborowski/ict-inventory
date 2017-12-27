@@ -121,6 +121,13 @@ class Device(db.Model):
             l.insert(0, Device.Category.DEFAULT)
             return l
 
+        @staticmethod
+        def get_list_with_empty():
+            l = [getattr(Device.Category, a) for a in dir(Device.Category) if a.startswith('E_')]
+            #l.remove(Device.Category.DEFAULT)
+            l.insert(0, '')
+            return l
+
     id = db.Column(db.Integer, primary_key=True)
     brand = db.Column(db.String(256))       # the brand of the device
     type = db.Column(db.String(256))        # the type of the device

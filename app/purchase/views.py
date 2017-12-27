@@ -15,14 +15,14 @@ from ..views import NoEscapeCol
 
 class PurchaseTable(Table):
 
+    value = LinkCol(_(u'Value'), 'purchase.edit', attr='value', url_kwargs=dict(id='id'))      # value in euro
     since = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
-    value = Col(_(u'Value'))      # value in euro
     supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
     device = LinkCol(_(u'Device'), 'device.edit', attr='device', url_kwargs=dict(id='device_id'))
     delete = NoEscapeCol('')
-    edit = NoEscapeCol('')
+    #edit = NoEscapeCol('')
     view = NoEscapeCol('')
-    id = Col('Id')
+    #id = Col('Id')
     copy_from = NoEscapeCol('C')
     classes = ['table ' 'table-striped ' 'table-bordered ']
     html_attrs = {'id': 'purchasetable', 'cellspacing': '0', 'width': '100%'}
@@ -93,7 +93,7 @@ def edit(id):
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
             db.session.commit()
-            flash(_(u'You have edited purchase {}').format(format.since))
+            flash(_(u'You have edited purchase {}').format(purchase))
 
         return redirect(url_for('purchase.purchases'))
 
