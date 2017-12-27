@@ -37,41 +37,11 @@
            <input class="btn btn-default" id="add" name="add" type="submit" value="Add Asset">
       </div>
       <hr />
-      {{asset_table}}
+      {{table}}
       </form>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts2 %}
-<script>    
-$(document).ready(function() {
-    var table = $('#{{table_id}}').DataTable( {
-        dom: 'lBfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
-    });
-
-    // When the length-changer or pager of the table is used, not all delete-buttons have the confirm-before-delete event
-    // attached.  The event draw.dt makes sure that, after the table is redrawn (length change or repaged) that all rows
-    // are bound to the confirm-before-delete event.
-    $('#{{table_id}}').on('draw.dt', function() {
-        $('.confirmBeforeDelete').unbind();
-        $('.confirmBeforeDelete').click(function() {
-            id = $(this).attr('u_id');
-            bootbox.confirm("Are you sure want to delete this asset?", function(result) {
-                if (result) {
-                    window.location = Flask.url_for('asset.delete', {'id' : id})
-                }
-            });
-        });
-    });
-
-    $('#clear').click(function() {
-        $('.filter').val('');
-        window.location = Flask.url_for('asset.assets')
-    });
-});
-</script>
 {% endblock %}

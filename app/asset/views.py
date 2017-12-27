@@ -92,7 +92,7 @@ def assets():
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     asset_table = AssetTable(assets)
 
-    return render_template('asset/assets.html', title='assets', asset_table=asset_table, table_id='assettable', filter=filter)
+    return render_template('asset/assets.html', title='assets', route='asset.assets', subject='asset', table=asset_table, filter=filter)
 
 
 #add a new asset
