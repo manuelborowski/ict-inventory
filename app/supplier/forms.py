@@ -2,10 +2,10 @@
 #app/suppliers/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, StringField, IntegerField
+from wtforms import TextAreaField, StringField, IntegerField, SelectField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms.widgets import HiddenInput
-from ..models import Supplier
+from ..models import Supplier, Device, Asset
 
 class UniqueName:
     def __init__(self, message=None):
@@ -47,3 +47,19 @@ class ViewForm(FlaskForm):
     name = StringField(_(u'Name'), render_kw={'readonly':''})
     description = TextAreaField('Description', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput(), render_kw={'readonly':''})
+
+class CategoryFilter(FlaskForm):
+    category = SelectField('', choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
+
+class StatusFilter(FlaskForm):
+    status = SelectField('', choices=zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty()))
+
+class SupplierFilter(FlaskForm):
+    sl = Supplier.query.all()
+    sl.insert(0, '')
+    supplier = SelectField('', choices=zip(sl, sl))
+
+class DeviceFilter(FlaskForm):
+    dl = Device.query.all()
+    dl.insert(0, '')
+    device = SelectField('', choices=zip(dl, dl))

@@ -13,6 +13,8 @@ from . import asset
 from ..models import Asset, Purchase, Device, Supplier
 from ..views import NoEscapeCol
 
+from ..base import build_filter
+
 class AssetTable(Table):
 
     name = LinkCol(_(u'Name'), 'asset.edit', attr='name', url_kwargs=dict(id='id'))        # eg PC245
@@ -34,85 +36,10 @@ class AssetTable(Table):
     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
 
-def check_date_in_form(date_key, form):
-    if date_key in form and form[date_key] != '':
-        try:
-            time.strptime(form[date_key], '%d-%M-%Y')
-            return form[date_key]
-        except:
-            flash(_(u'Wrong date format, must be of form d-m-y'))
-    return None
-
-def check_value_in_form(value_key, form):
-    if value_key in form and form[value_key] != '':
-        try:
-            float(form[value_key])
-            return form[value_key]
-        except:
-            flash(_(u'Wrong value format'))
-    return None
-
-def check_string_in_form(value_key, form):
-    if value_key in form and form[value_key] != '':
-        try:
-            str(form[value_key])
-            return form[value_key]
-        except:
-            flash(_(u'Wrong string format'))
-    return None
-
-class Filter():
-    pass
-
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
-    filter = Filter()
-    print '>>>>>>' + str(request.form)
-    assets = Asset.query.join(Purchase).join(Device).join(Supplier)
-    date = check_date_in_form('date_after', request .form)
-    if date:
-        assets = assets.filter(Purchase.since > Purchase.reverse_date(date))
-        filter.date_after=date
-    date = check_date_in_form('date_before', request.form)
-    if date:
-        assets = assets.filter(Purchase.since < Purchase.reverse_date(date))
-        filter.date_before=date
-    value = check_value_in_form('value_from', request.form)
-    if value:
-        assets = assets.filter(Purchase.value > value)
-        filter.value_from = value
-    value = check_value_in_form('value_till', request.form)
-    if value:
-        assets = assets.filter(Purchase.value < value)
-        filter.value_till = value
-    value = check_string_in_form('location', request.form)
-    if value:
-        assets = assets.filter(Asset.location.contains(value))
-        filter.location = value
-    filter.category = CategoryFilter()
-    value = check_string_in_form('category', request.form)
-    if value:
-        assets = assets.filter(Device.category== value)
-        filter.category.category.data = value
-    filter.status = StatusFilter()
-    value = check_string_in_form('status', request.form)
-    if value:
-        assets = assets.filter(Asset.status==value)
-        filter.status.status.data = value
-    filter.supplier = SupplierFilter()
-    value = check_string_in_form('supplier', request.form)
-    if value:
-        assets = assets.filter(Supplier.name == value)
-        filter.supplier.supplier.data=value
-    filter.device = DeviceFilter()
-    value = check_string_in_form('device', request.form)
-    if value:
-        s = value.split('/')
-        print '((((((((((((((((( ' + str(s)
-        assets = assets.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
-        filter.device.device.data = value
-    assets=assets.all()
+    assets, filter = build_filter(Asset, since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
         a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
@@ -120,8 +47,7 @@ def assets():
         a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     asset_table = AssetTable(assets)
 
-    return render_template('asset/assets.html', title='assets', route='asset.assets', subject='asset', table=asset_table, filter=filter)
-
+    return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset', table=asset_table, filter=filter)
 
 #add a new asset
 @asset.route('/asset/add', methods=['GET', 'POST'])
@@ -153,7 +79,6 @@ def add():
         return redirect(url_for('asset.assets'))
 
     return render_template('asset/asset.html', form=form, title=_(u'Add an asset'), role='add', route='asset.assets', subject='asset')
-
 
 #edit a asset
 @asset.route('/asset/edit/<int:id>', methods=['GET', 'POST'])

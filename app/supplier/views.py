@@ -5,11 +5,13 @@ from flask import render_template, render_template_string, flash, redirect, url_
 from flask_login import login_required
 from flask_table import Table, Col
 
-from .forms import AddForm, EditForm, ViewForm
+from .forms import AddForm, EditForm, ViewForm, CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 from .. import db
 from . import supplier
-from ..models import Supplier
+from ..models import Supplier, Asset, Purchase, Device
 from ..views import NoEscapeCol
+
+from ..base import build_filter
 
 class SupplierTable(Table):
     id = Col('Id')
@@ -22,18 +24,20 @@ class SupplierTable(Table):
     html_attrs = {'id': 'suppliertable', 'cellspacing': '0', 'width': '100%'}
 
 
+
 #show a list of suppliers
 @supplier.route('/supplier', methods=['GET', 'POST'])
 @login_required
 def suppliers():
-    suppliers = Supplier.query.all()
+    suppliers, filter = build_filter(Supplier, supplier=True)
+
     for s in suppliers:
         s.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(s.id) + "><i class='fa fa-trash'></i></a>")
         s.view = render_template_string("<a href=\"{{ url_for('supplier.view', id=" + str(s.id) + ") }}\"><i class='fa fa-eye'></i>")
         s.edit = render_template_string("<a href=\"{{ url_for('supplier.edit', id=" + str(s.id) + ") }}\"><i class='fa fa-pencil'></i>")
     suppliers_table = SupplierTable(suppliers)
 
-    return render_template('supplier/suppliers.html', title='suppliers', route='supplier.supplier', subject='supplier', table=suppliers_table)
+    return render_template('base_multiple_items.html', title='suppliers', route='supplier.suppliers', subject='supplier', table=suppliers_table, filter=filter)
 
 
 #add a new supplier

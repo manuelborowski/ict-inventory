@@ -13,6 +13,8 @@ from . import purchase
 from ..models import Purchase
 from ..views import NoEscapeCol
 
+from ..base import build_filter
+
 class PurchaseTable(Table):
 
     value = LinkCol(_(u'Value'), 'purchase.edit', attr='value', url_kwargs=dict(id='id'))      # value in euro
@@ -49,7 +51,7 @@ def check_value_in_form(value_key, form):
 @purchase.route('/purchase', methods=['GET', 'POST'])
 @login_required
 def purchases():
-    purchases = Purchase.query.all()
+    purchases, filter = build_filter(Purchase, since=True, value=True)
     for p in purchases:
         p.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(p.id) + "'>")
         p.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(p.id) + "><i class='fa fa-trash'></i></a>")
@@ -57,7 +59,7 @@ def purchases():
         p.view = render_template_string("<a href=\"{{ url_for('purchase.view', id=" + str(p.id) + ") }}\"><i class='fa fa-eye'></i>")
     purchase_table = PurchaseTable(purchases)
 
-    return render_template('purchase/purchases.html', title='purchases', route='purchase.purchases', subject='purchase', table=purchase_table, filter=filter)
+    return render_template('base_multiple_items.html', title='purchases', route='purchase.purchases', subject='purchase', table=purchase_table, filter=filter)
 
 
 #add a new purchase

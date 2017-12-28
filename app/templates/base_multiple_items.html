@@ -1,0 +1,127 @@
+<!-- app/templates/base_multiple_items.html -->
+{% extends "base.html" %}
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block content2 %}
+<div class="content-section">
+  {{ utils.flashed_messages() }}
+  <div class="center">
+      <form method="post" action="{{ url_for(route) }}">
+      <table class="table-condensed ">
+          <tr>
+{% if filter.since %}
+              <th>Since</th>
+{% endif %}
+{% if filter.value %}
+              <th>Value</th>
+{% endif %}
+{% if filter.location %}
+              <th>Location</th>
+{% endif %}
+{% if filter.category %}
+              <th>Category </th>
+{% endif %}
+{% if filter.status %}
+              <th>Status</th>
+{% endif %}
+{% if filter.supplier %}
+              <th>Supplier</th>
+{% endif %}
+{% if filter.device %}
+              <th>Device</th>
+{% endif %}
+          </tr>
+          <tr>
+{% if filter.since %}
+              <td><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}"></td>
+{% endif %}
+{% if filter.value %}
+              <td><input id="value_from" class="filter" name="value_from" type="text" size="12" value="{{ filter.value_from }}"></td>
+{% endif %}
+{% if filter.location %}
+              <td><input id="location" class="filter" name="room" type="text" size="12" value="{{ filter.room }}"></td>
+{% endif %}
+{% if filter.category %}
+              <td rowspan="2">{{ wtf.form_field(filter.category.category) }}</td>
+{% endif %}
+{% if filter.status %}
+              <td rowspan="2">{{ wtf.form_field(filter.status.status) }}</td>
+{% endif %}
+{% if filter.supplier %}
+              <td rowspan="2">{{ wtf.form_field(filter.supplier.supplier) }}</td>
+{% endif %}
+{% if filter.device %}
+              <td rowspan="2">{{ wtf.form_field(filter.device.device) }}</td>
+{% endif %}
+          </tr>
+          <tr>
+{% if filter.since %}
+              <td><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}"></td>
+{% endif %}
+{% if filter.value %}
+              <td><input id="value_till" class="filter" name="value_till" type="text" size="12" value="{{ filter.value_till }}"></td>
+{% endif %}
+          </tr>
+      </table>
+      <br>
+      <div class="btn-group" role="group" aria-label="...">
+            <input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">
+            <a class="btn btn-default" id="clear">Clear</a>
+      </div>
+      </form>
+      <hr />
+      <form method="post" action="{{ url_for(subject + '.add') }}" novalidate>
+      <div class="btn-group" role="group" aria-label="...">
+           <input class="btn btn-default" id="add" name="add" type="submit" value="Add {{subject}}">
+      </div>
+      <hr />
+      {{table}}
+      </form>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+//Before removing an entry, a confirm-box is shown.  This function works together with on-draw.dt event here below
+function confirm_before_delete() {
+    id = $(this).attr('u_id');
+    bootbox.confirm("Are you sure want to delete this " + '{{subject}}' + "?", function(result) {
+        if (result) {
+            window.location = Flask.url_for('{{subject}}' + ".delete", {'id' : id})
+        }
+    });
+}
+
+$(document).ready(function() {
+    // When the length-changer or pager of the table is used, not all delete-buttons have the confirm-before-delete event
+    // attached.  The event draw.dt makes sure that, after the table is redrawn (length change or repaged) that all rows
+    // are bound to the confirm-before-delete event.
+
+    $('.confirmBeforeDelete').click(confirm_before_delete); //when page is loaded, default attach confirm_before_delete function
+
+    $('#{{table.html_attrs.id}}').on('draw.dt', function() {
+        $('.confirmBeforeDelete').unbind();
+        $('.confirmBeforeDelete').click(confirm_before_delete);
+    });
+
+    //The clear button of the filter is pushed
+    $('#clear').click(function() {
+        $('.filter').val('');
+        window.location = Flask.url_for('{{route}}')
+    });
+
+
+    //Add the pager and export buttons above the table
+    var table = $('#{{table.html_attrs.id}}').DataTable( {
+        dom: 'lBfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+});
+</script>
+{% endblock %}

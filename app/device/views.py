@@ -11,6 +11,8 @@ from . import device
 from ..models import Device
 from ..views import NoEscapeCol
 
+from ..base import build_filter
+
 class DeviceTable(Table):
 
     category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
@@ -40,7 +42,8 @@ def check_value_in_form(value_key, form):
 @device.route('/device', methods=['GET', 'POST'])
 @login_required
 def devices():
-    devices = Device.query.all()
+    #devices = Device.query.all()
+    devices, filter = build_filter(Device, category=True, device=True)
     for d in devices:
         d.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(d.id) + "'>")
         d.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(d.id) + "><i class='fa fa-trash'></i></a>")
@@ -48,7 +51,7 @@ def devices():
         d.view = render_template_string("<a href=\"{{ url_for('device.view', id=" + str(d.id) + ") }}\"><i class='fa fa-eye'></i>")
     device_table = DeviceTable(devices)
 
-    return render_template('device/devices.html', title='devices', route='device.device', subject='device', table = device_table, filter=filter)
+    return render_template('base_multiple_items.html', title='devices', route='device.devices', subject='device', table = device_table, filter=filter)
 
 
 #add a new device
