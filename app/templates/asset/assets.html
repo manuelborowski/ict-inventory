@@ -16,6 +16,8 @@
               <th>Location</th>
               <th>Category </th>
               <th>Status</th>
+              <th>Supplier</th>
+              <th>Device</th>
           </tr>
           <tr>
               <td><input id="date_after" class="filter" name="date_after" type="text" size="12" value="{{ filter.date_after }}"></td>
@@ -23,6 +25,8 @@
               <td><input id="location" class="filter" name="location" type="text" size="12" value="{{ filter.location }}"></td>
               <td rowspan="2">{{ wtf.form_field(filter.category.category) }}</td>
               <td rowspan="2">{{ wtf.form_field(filter.status.status) }}</td>
+              <td rowspan="2">{{ wtf.form_field(filter.supplier.supplier) }}</td>
+              <td rowspan="2">{{ wtf.form_field(filter.device.device) }}</td>
           </tr>
           <tr>
               <td><input id="date_before" class="filter" name="date_before" type="text" size="12" value="{{ filter.date_before }}"></td>

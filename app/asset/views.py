@@ -7,10 +7,10 @@ from flask_table import Table, Col, DateCol, LinkCol
 
 import datetime, time
 
-from .forms import AddForm, EditForm, ViewForm, CategoryFilter, StatusFilter
+from .forms import AddForm, EditForm, ViewForm, CategoryFilter, StatusFilter, SupplierFilter, DeviceFilter
 from .. import db, _
 from . import asset
-from ..models import Asset, Purchase, Device
+from ..models import Asset, Purchase, Device, Supplier
 from ..views import NoEscapeCol
 
 class AssetTable(Table):
@@ -69,7 +69,7 @@ class Filter():
 def assets():
     filter = Filter()
     print '>>>>>>' + str(request.form)
-    assets = Asset.query.join(Purchase).join(Device)
+    assets = Asset.query.join(Purchase).join(Device).join(Supplier)
     date = check_date_in_form('date_after', request .form)
     if date:
         assets = assets.filter(Purchase.since > Purchase.reverse_date(date))
@@ -100,6 +100,18 @@ def assets():
     if value:
         assets = assets.filter(Asset.status==value)
         filter.status.status.data = value
+    filter.supplier = SupplierFilter()
+    value = check_string_in_form('supplier', request.form)
+    if value:
+        assets = assets.filter(Supplier.name == value)
+        filter.supplier.supplier.data=value
+    filter.device = DeviceFilter()
+    value = check_string_in_form('device', request.form)
+    if value:
+        s = value.split('/')
+        print '((((((((((((((((( ' + str(s)
+        assets = assets.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
+        filter.device.device.data = value
     assets=assets.all()
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
