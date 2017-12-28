@@ -68,6 +68,12 @@ class Asset(db.Model):
             l.insert(0, Asset.Status.DEFAULT)
             return l
 
+        @staticmethod
+        def get_list_with_empty():
+            l = Asset.Status.get_list()
+            l.insert(0, '')
+            return l
+
     class DB_status:
         E_NEW = 'NEW'
         E_ACTIVE = 'ACTIVE'
@@ -123,8 +129,7 @@ class Device(db.Model):
 
         @staticmethod
         def get_list_with_empty():
-            l = [getattr(Device.Category, a) for a in dir(Device.Category) if a.startswith('E_')]
-            #l.remove(Device.Category.DEFAULT)
+            l = Device.Category.get_list()
             l.insert(0, '')
             return l
 

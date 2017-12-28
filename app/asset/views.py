@@ -7,7 +7,7 @@ from flask_table import Table, Col, DateCol, LinkCol
 
 import datetime, time
 
-from .forms import AddForm, EditForm, ViewForm, CategoryFilter
+from .forms import AddForm, EditForm, ViewForm, CategoryFilter, StatusFilter
 from .. import db, _
 from . import asset
 from ..models import Asset, Purchase, Device
@@ -86,11 +86,20 @@ def assets():
     if value:
         assets = assets.filter(Purchase.value < value)
         filter.value_till = value
+    value = check_string_in_form('location', request.form)
+    if value:
+        assets = assets.filter(Asset.location.contains(value))
+        filter.location = value
+    filter.category = CategoryFilter()
     value = check_string_in_form('category', request.form)
-    filter.form = CategoryFilter()
     if value:
         assets = assets.filter(Device.category== value)
-        filter.form.category.data = value
+        filter.category.category.data = value
+    filter.status = StatusFilter()
+    value = check_string_in_form('status', request.form)
+    if value:
+        assets = assets.filter(Asset.status==value)
+        filter.status.status.data = value
     assets=assets.all()
     for a in assets:
         a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")

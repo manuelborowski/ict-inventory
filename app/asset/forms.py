@@ -84,3 +84,6 @@ class ViewForm(FlaskForm):
 
 class CategoryFilter(FlaskForm):
     category = SelectField('', choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
+
+class StatusFilter(FlaskForm):
+    status = SelectField('', choices=zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty()))
