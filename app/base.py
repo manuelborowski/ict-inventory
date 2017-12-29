@@ -74,8 +74,6 @@ def build_filter(table, since=False, value=False, location=False, category=False
     if supplier and table is not Supplier :
         il = il.join(Supplier)
 
-    print '>>>>>>>>>>>>>>>>> ' + str(request.form   )
-
     if since:
         filter['since'] = 'True'
         date = check_date_in_form('date_after', request.form)

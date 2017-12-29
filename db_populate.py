@@ -122,12 +122,20 @@ def dropTables():
         db.session.execute(table.delete())
     db.session.commit()
 
+def create_admin():
+    from app.models import User
+    admin = User(username='admin', password='admin', is_admin=True)
+    db.session.add(admin)
+    db.session.commit()
+
+
 from app import create_app
 
 config_name = os.getenv('FLASK_CONFIG')
 app = create_app(config_name)
 
 dropTables()
+create_admin()
 fillTables()
 
 print('stop db tools')
