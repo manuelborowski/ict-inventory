@@ -2,10 +2,10 @@
 from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
-from flask import render_template, render_template_string, flash, redirect, url_for, request
+from flask import render_template, render_template_string, flash, redirect, url_for, request, get_flashed_messages
 import time
 
-from models import Purchase, Device, Supplier
+from models import Asset, Purchase, Device, Supplier
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 
 
@@ -31,7 +31,6 @@ class InlineSubmitField(BooleanField):
     submit button has been pressed.
     """
     widget = InlineButtonWidget()
-
 
 ######################################################################################################
 ###                                       Build a generic filter
@@ -64,8 +63,9 @@ def check_string_in_form(value_key, form):
             flash(_(u'Wrong string format'))
     return None
 
-def build_filter(table, since=False, value=False, location=False, category=False, status=False, supplier=False, device=False):
-    filter = dict()
+def build_filter(table, template, since=False, value=False, location=False, category=False, status=False, supplier=False, device=False):
+    __filter = {}
+    #depending on the table, multiple joins are required to get the necessary data
     il = table.query
     if (since or value) and table is not Purchase:
         il = il.join(Purchase)
@@ -74,56 +74,95 @@ def build_filter(table, since=False, value=False, location=False, category=False
     if supplier and table is not Supplier :
         il = il.join(Supplier)
 
+    __total_count = il.count()
+
+    #Create the sql-request with the appriorate filters
     if since:
-        filter['since'] = 'True'
-        date = check_date_in_form('date_after', request.form)
+        __filter['since'] = 'True'
+        date = check_date_in_form('date_after', request.values)
         if date:
             il = il.filter(Purchase.since > Purchase.reverse_date(date))
-            filter['date_after'] = date
-        date = check_date_in_form('date_before', request.form)
+            __filter['date_after'] = date
+        date = check_date_in_form('date_before', request.values)
         if date:
             il = il.filter(Purchase.since < Purchase.reverse_date(date))
-            filter['date_before'] = date
+            __filter['date_before'] = date
     if value:
-        filter['value'] = 'True'
-        value = check_value_in_form('value_from', request.form)
+        __filter['value'] = 'True'
+        value = check_value_in_form('value_from', request.values)
         if value:
             il = il.filter(Purchase.value > value)
-            filter['value_from'] = value
-        value = check_value_in_form('value_till', request.form)
+            __filter['value_from'] = value
+        value = check_value_in_form('value_till', request.values)
         if value:
             il = il.filter(Purchase.value < value)
-            filter['value_till'] = value
+            __filter['value_till'] = value
     if location:
-        filter['location'] = 'True'
-        value = check_string_in_form('room', request.form)
+        __filter['location'] = 'True'
+        value = check_string_in_form('room', request.values)
         if value:
             il = il.filter(table.location.contains(value))
-            filter['room'] = value
+            __filter['room'] = value
     if category:
-        filter['category'] = CategoryFilter()
-        value = check_string_in_form('category', request.form)
+        __filter['category'] = CategoryFilter()
+        value = check_string_in_form('category', request.values)
         if value:
             il = il.filter(Device.category == value)
-            filter['category'].category.data = value
+            __filter['category'].category.data = value
     if status:
-        filter['status'] = StatusFilter()
-        value = check_string_in_form('status', request.form)
+        __filter['status'] = StatusFilter()
+        value = check_string_in_form('status', request.values)
         if value:
             il = il.filter(table.status == value)
-            filter['status'].status.data = value
+            __filter['status'].status.data = value
     if supplier:
-        filter['supplier'] = SupplierFilter()
-        value = check_string_in_form('supplier', request.form)
+        __filter['supplier'] = SupplierFilter()
+        value = check_string_in_form('supplier', request.values)
         if value:
             il = il.filter(Supplier.name == value)
-            filter['supplier'].supplier.data = value
+            __filter['supplier'].supplier.data = value
     if device:
-        filter['device'] = DeviceFilter()
-        value = check_string_in_form('device', request.form)
+        __filter['device'] = DeviceFilter()
+        value = check_string_in_form('device', request.values)
         if value:
             s = value.split('/')
             il = il.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
-            filter['device'].device.data = value
+            __filter['device'].device.data = value
+
+    __filtered_count = il.count()
+
+    #order, if required
+    column_number = check_value_in_form('order[0][column]', request.values)
+    if column_number:
+        column_name = check_string_in_form('columns[' + str(column_number) + '][data]', request.values)
+        direction = check_string_in_form('order[0][dir]', request.values)
+        if direction == 'desc':
+            il = il.order_by(template[int(column_number)]['order_by'].desc())
+        else:
+            il = il.order_by(template[int(column_number)]['order_by'])
+
+        #paginate, if required
+        start = int(check_value_in_form('start', request.values))
+        length = int(check_value_in_form('length', request.values))
+        il = il.slice(start, start+length)
+
     il = il.all()
-    return il, filter
+
+    print '>>>>>>>>> total/filtered {}/{}'.format(__total_count, __filtered_count)
+
+    return il, __total_count, __filtered_count, __filter
+
+
+
+
+asset_template = [{'name': 'Name', 'data':'name', 'order_by': Asset.name},
+      {'name': 'Category', 'data':'purchase.device.category', 'order_by': Device.category},
+      {'name': 'Location', 'data':'location', 'order_by': Asset.location},
+      {'name': 'Since', 'data':'purchase.since', 'order_by': Purchase.since},
+      {'name': 'Value', 'data':'purchase.value', 'order_by': Purchase.value},
+      {'name': 'QR', 'data':'qr_code', 'order_by': Asset.qr_code},
+      {'name': 'Status', 'data':'status', 'order_by': Asset.status},
+      {'name': 'Supplier', 'data':'purchase.supplier.name', 'order_by': Supplier.name},
+      {'name': 'Device', 'data':'purchase.device.brandtype', 'order_by': Device.brand},
+      {'name': 'Serial', 'data': 'serial', 'order_by': Asset.serial},
+      ]

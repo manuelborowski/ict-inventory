@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, render_template_string, flash, redirect, url_for, request
+from flask import render_template, render_template_string, flash, redirect, url_for, request, jsonify, get_flashed_messages
 from flask_login import login_required, current_user, login_user
 from flask_table import Table, Col, DateCol, LinkCol
+import json
 
 import datetime, time
 
@@ -13,41 +14,65 @@ from . import asset
 from ..models import Asset, Purchase, Device, Supplier
 from ..views import NoEscapeCol
 
-from ..base import build_filter
+from ..base import build_filter, asset_template
 
-class AssetTable(Table):
+# class AssetTable(Table):
+#
+#     name = LinkCol(_(u'Name'), 'asset.edit', attr='name', url_kwargs=dict(id='id'))        # eg PC245
+#     category = Col(_(u'Category'), attr='purchase.device.category')    # one of: PC, BEAMER, PRINTER, ANDERE
+#     location = Col(_(u'Location'))    # eg E203
+#     since = DateCol(_(u'Since'), date_format='dd-MM-YYYY', attr='purchase.since')
+#     value = Col(_(u'Value'), attr='purchase.value')      # value in euro
+#     qr_code = Col('QR')
+#     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
+#     supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='purchase.supplier', url_kwargs=dict(id='purchase.supplier_id'))
+#     device = LinkCol(_(u'Device'), 'device.edit', attr='purchase.device', url_kwargs=dict(id='purchase.device_id'))
+#     serial = Col('Serial')
+#     delete = NoEscapeCol('')
+#     #edit = NoEscapeCol('')
+#     view = NoEscapeCol('')
+#     #id = Col('Id')
+#     copy_from = NoEscapeCol("C")
+#     classes = ['table ' 'table-striped ' 'table-bordered ']
+#     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
-    name = LinkCol(_(u'Name'), 'asset.edit', attr='name', url_kwargs=dict(id='id'))        # eg PC245
-    category = Col(_(u'Category'), attr='purchase.device.category')    # one of: PC, BEAMER, PRINTER, ANDERE
-    location = Col(_(u'Location'))    # eg E203
-    since = DateCol(_(u'Since'), date_format='dd-MM-YYYY', attr='purchase.since')
-    value = Col(_(u'Value'), attr='purchase.value')      # value in euro
-    qr_code = Col('QR')
-    status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='purchase.supplier', url_kwargs=dict(id='purchase.supplier_id'))
-    device = LinkCol(_(u'Device'), 'device.edit', attr='purchase.device', url_kwargs=dict(id='purchase.device_id'))
-    serial = Col('Serial')
-    delete = NoEscapeCol('')
-    #edit = NoEscapeCol('')
-    view = NoEscapeCol('')
-    #id = Col('Id')
-    copy_from = NoEscapeCol("C")
-    classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
 
+#This route is called by an ajax call on the assets-page to populate the table.
+@asset.route('/asset/data', methods=['GET', 'POST'])
+@login_required
+def source_data():
+    #print '>>>>>>>>>>>>>> REQUEST.VALUES ' + str(request.values)
 
+    assets, tc, fc, filter = build_filter(Asset, asset_template,
+                                  since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
+    # for a in assets:
+    #     a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
+    #     a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
+    #     a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
+    #     a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
+    assets_dict = [a.ret_dict() for a in assets]
+    output = {}
+    output['draw'] = str(int(request.values['draw']))
+    output['recordsTotal'] = str(tc)
+    output['recordsFiltered'] = str(fc)
+    output['data'] = assets_dict
+    #add the (non-standard) flash-tag to display flash-messages via ajax
+    fml = get_flashed_messages()
+    if not not fml:
+        output['flash'] = fml
+    #print '>>>>>>>>>>>> OUTPUT ' + str(output)
+    return jsonify(output)
+
+#add a new asset
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
-    assets, filter = build_filter(Asset, since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
-    for a in assets:
-        a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
-        a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
-        a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
-        a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
-    asset_table = AssetTable(assets)
-
-    return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset', table=asset_table, filter=filter)
+    #The following line is required only to build the filter-fields on the page.
+    assets, tc, fc, filter = build_filter(Asset, asset_template,
+                                  since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
+    #flash('test')
+    return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset',
+                           header_list=asset_template, filter=filter)
 
 #add a new asset
 @asset.route('/asset/add', methods=['GET', 'POST'])

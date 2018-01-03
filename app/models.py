@@ -91,6 +91,11 @@ class Asset(db.Model):
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
 
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location,
+                'db_status':self.db_status,  'serial':self.serial, 'description':self.description,'purchase':self.purchase.ret_dict()}
+
+
 class Purchase(db.Model):
     __tablename__= 'purchases'
 
@@ -104,11 +109,16 @@ class Purchase(db.Model):
     commissioning = db.Column(db.String(256))    # path to commissioning document on disk
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id'))
-    assets = db.relationship('Asset', backref='purchase', lazy='dynamic')
+    assets = db.relationship('Asset', backref='purchase')
 
 
     def __repr__(self):
         return '{} / {}'.format(self.since, self.value)
+
+    def ret_dict(self):
+        return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value), 'commissioning':self.commissioning,
+                'supplier': self.supplier.ret_dict(), 'device':self.device.ret_dict()}
+
 
 class Device(db.Model):
     __tablename__ = 'devices'
@@ -148,6 +158,11 @@ class Device(db.Model):
     def __repr__(self):
         return '{} / {}'.format(self.brand, self.type)
 
+    def ret_dict(self):
+        return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category, 'power':float(self.power), 'photo':self.photo,
+        'risk_analysis': self.risk_analysis, 'manual':self.manual, 'safety_information':self.safety_information, 'ce':self.ce,
+        'brandtype':self.brand + ' / ' + self.type}
+
 class Supplier(db.Model):
     __tablename__ = 'suppliers'
 
@@ -158,4 +173,7 @@ class Supplier(db.Model):
 
     def __repr__(self):
         return '{}'.format(self.name)
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name, 'description':self.description}
 

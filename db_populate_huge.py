@@ -1,17 +1,19 @@
 import config, os
-
 print config.DB_TOOLS
 config.DB_TOOLS = True
 from app import models, db
+from app import create_app
+config_name = os.getenv('FLASK_CONFIG')
+app = create_app(config_name)
 
 print('start db tools')
 
 # start...
 def fillTables():
-    NBR_SUPPLIER=13
-    NBR_DEVICE=23
-    NBR_PURCHASE=57
-    NBR_ASSET=123
+    NBR_SUPPLIER=91
+    NBR_DEVICE=111
+    NBR_PURCHASE=743
+    NBR_ASSET=5012
     for i in range(0, NBR_SUPPLIER):
         db.session.add(models.Supplier(name="Leverancier{}".format(i), description="Beschrijving Leverancier{} : telefoonnummer, adres, contactpersoon".format(i)))
     db.session.commit()

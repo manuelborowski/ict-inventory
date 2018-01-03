@@ -6,6 +6,16 @@
 {% block content2 %}
 <div class="content-section">
   {{ utils.flashed_messages() }}
+    <!-- begin message block -->
+<div class="container flashed-messages">
+  <div class="row">
+    <div class="col-md-12" id="flash-list">
+      <!--<div class="alert alert-info" role="alert">Wrong date format, must be of form d-m-y</div>-->
+    </div>
+  </div>
+</div>
+<!-- end message block -->
+
   <div class="center">
       <form method="post" action="{{ url_for(route) }}">
       <table class="table-condensed ">
@@ -40,10 +50,10 @@
               <td><input id="value_from" class="filter" name="value_from" type="text" size="12" value="{{ filter.value_from }}"></td>
 {% endif %}
 {% if filter.location %}
-              <td><input id="location" class="filter" name="room" type="text" size="12" value="{{ filter.room }}"></td>
+              <td><input id="room" class="filter" name="room" type="text" size="12" value="{{ filter.room }}"></td>
 {% endif %}
 {% if filter.category %}
-              <td rowspan="2">{{ wtf.form_field(filter.category.category) }}</td>
+              <td rowspan="2"  >{{ wtf.form_field(filter.category.category) }}</td>
 {% endif %}
 {% if filter.status %}
               <td rowspan="2">{{ wtf.form_field(filter.status.status) }}</td>
@@ -66,7 +76,8 @@
       </table>
       <br>
       <div class="btn-group" role="group" aria-label="...">
-            <input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">
+            <!--<input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">-->
+          <a class="btn btn-default" id="filter"">Filter</a>
             <a class="btn btn-default" id="clear">Clear</a>
       </div>
       </form>
@@ -76,7 +87,13 @@
            <input class="btn btn-default" id="add" name="add" type="submit" value="Add {{subject}}">
       </div>
       <hr />
-      {{table}}
+      <table cellspacing="0" class="table table-striped table-bordered " id="datatable" width="100%">
+          <thead><tr>
+              {% for h in header_list %}
+                <th>{{h.name}}</th>
+              {% endfor %}
+          </thead>
+      </table>
       </form>
   </div>
 </div>
@@ -91,7 +108,7 @@ function confirm_before_delete() {
     id = $(this).attr('u_id');
     bootbox.confirm("Are you sure want to delete this " + '{{subject}}' + "?", function(result) {
         if (result) {
-            window.location = Flask.url_for('{{subject}}' + ".delete", {'id' : id})
+            window.location.href = Flask.url_for('{{subject}}' + ".delete", {'id' : id})
         }
     });
 }
@@ -103,7 +120,7 @@ $(document).ready(function() {
 
     $('.confirmBeforeDelete').click(confirm_before_delete); //when page is loaded, default attach confirm_before_delete function
 
-    $('#{{table.html_attrs.id}}').on('draw.dt', function() {
+    $('#datatable').on('draw.dt', function() {
         $('.confirmBeforeDelete').unbind();
         $('.confirmBeforeDelete').click(confirm_before_delete);
     });
@@ -111,17 +128,64 @@ $(document).ready(function() {
     //The clear button of the filter is pushed
     $('#clear').click(function() {
         $('.filter').val('');
-        window.location = Flask.url_for('{{route}}')
+        $('#category').val('');
+        $('#status').val('');
+        $('#device').val('');
+        $('#supplier').val('');
+        table.ajax.reload();
     });
 
+    //The filter button of the filter is pushed
+    $('#filter').click(function() {
+        table.ajax.reload();
+    });
 
-    //Add the pager and export buttons above the table
-    var table = $('#{{table.html_attrs.id}}').DataTable( {
-        dom: 'lBfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
+     var table = $('#datatable').DataTable({
+        serverSide: true,
+        dom : 'liptp',
+        ajax: {
+            url: '/{{subject}}/data',
+            type: 'POST',
+            data : function (d) {
+                return $.extend( {}, d, {
+                    "date_before" : $('#date_before').val(),
+                    "date_after" : $('#date_after').val(),
+                    "value_from" : $('#value_from').val(),
+                    "value_till" : $('#value_till').val(),
+                    "category" : $('#category').val(),
+                    "status" : $('#status').val(),
+                    "device" : $('#device').val(),
+                    "supplier" : $('#supplier').val(),
+                    "room" : $('#room').val()
+                });
+            }
+        },
+        searching : false,
+        pagingType: "full_numbers",
+        lengthMenu: [5, 25, 50, 100],
+        "columns": [
+        {% for h in header_list %}
+            {data: "{{h.data}}", name: "{{h.name}}"},
+        {% endfor %}
         ]
-    });
+      });
+
+        table.on( 'draw', function () {
+            var j = table.ajax.json();
+            if(typeof j.redirect == 'string') {
+                window.location.href = Flask.url_for('asset.assets');
+            }
+
+            $("#flash-list").html('');
+            if(j.flash && j.flash.length) {
+                var flash_string="";
+                for(let s of j.flash) {
+                    flash_string += "<div class=\"alert alert-info\" role=\"alert\">" + s +"</div>";
+                }
+                    $("#flash-list").html(flash_string);
+            }
+        } );
+
 });
 </script>
 {% endblock %}
