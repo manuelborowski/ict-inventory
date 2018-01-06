@@ -1,56 +1,34 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, render_template_string, flash, redirect, url_for, request, jsonify, get_flashed_messages
-from flask_login import login_required, current_user, login_user
-from flask_table import Table, Col, DateCol, LinkCol
-import json
+from flask import render_template, flash, redirect, url_for, request, jsonify, get_flashed_messages
+from flask_login import login_required
 
-import datetime, time
-
-from .forms import AddForm, EditForm, ViewForm, CategoryFilter, StatusFilter, SupplierFilter, DeviceFilter
+from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import asset
-from ..models import Asset, Purchase, Device, Supplier
-from ..views import NoEscapeCol
+from ..models import Asset
 
 from ..base import build_filter, asset_template
-
-# class AssetTable(Table):
-#
-#     name = LinkCol(_(u'Name'), 'asset.edit', attr='name', url_kwargs=dict(id='id'))        # eg PC245
-#     category = Col(_(u'Category'), attr='purchase.device.category')    # one of: PC, BEAMER, PRINTER, ANDERE
-#     location = Col(_(u'Location'))    # eg E203
-#     since = DateCol(_(u'Since'), date_format='dd-MM-YYYY', attr='purchase.since')
-#     value = Col(_(u'Value'), attr='purchase.value')      # value in euro
-#     qr_code = Col('QR')
-#     status = Col('Status')    # one of: IN_DIENST, HERSTELLING, STUK, TE_VERVANGEN, ANDERE
-#     supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='purchase.supplier', url_kwargs=dict(id='purchase.supplier_id'))
-#     device = LinkCol(_(u'Device'), 'device.edit', attr='purchase.device', url_kwargs=dict(id='purchase.device_id'))
-#     serial = Col('Serial')
-#     delete = NoEscapeCol('')
-#     #edit = NoEscapeCol('')
-#     view = NoEscapeCol('')
-#     #id = Col('Id')
-#     copy_from = NoEscapeCol("C")
-#     classes = ['table ' 'table-striped ' 'table-bordered ']
-#     html_attrs = {'id': 'assettable', 'cellspacing': '0', 'width': '100%'}
-
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
-    #print '>>>>>>>>>>>>>> REQUEST.VALUES ' + str(request.values)
+    print '>>>>>>>>>>>>>> REQUEST.VALUES ' + str(request.values)
 
     assets, tc, fc, filter = build_filter(Asset, asset_template,
                                   since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
-    # for a in assets:
+
     #     a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
     #     a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
     #     a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
     #     a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     assets_dict = [a.ret_dict() for a in assets]
+    print '>>>>>>>>>>>>> assets_dict  {}'.format(assets_dict)
+    for a in assets_dict:
+        a['name'] = "<a href=\"{}\">{}</a>".format(url_for('asset.view', id=a['id']), a['name'])
+        a['DT_RowId'] = a['id']
     output = {}
     output['draw'] = str(int(request.values['draw']))
     output['recordsTotal'] = str(tc)
@@ -75,16 +53,23 @@ def assets():
                            header_list=asset_template, filter=filter)
 
 #add a new asset
+@asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
 @asset.route('/asset/add', methods=['GET', 'POST'])
 @login_required
-def add():
+def add(id=-1):
+    print '>>>>>>>>>>>>> REQUEST.FORM {}'.format(request.form)
+    print '>>>>>>>>>>>>> REQUEST.VALUES {}'.format(request.values)
+    print '>>>>>>>>>>>>> ID {}'.format(id)
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
-    if 'copy_from' in request.form:
-        asset = Asset.query.get_or_404(int(request.form['copy_from']))
+    if id > -1:
+        asset = Asset.query.get_or_404(int(id))
+    # if 'copy_from' in request.form:
+    #     asset = Asset.query.get_or_404(int(request.form['copy_from']))
         form = AddForm(obj=asset)
         form.qr_code.data=''
+        form.serial.data=''
         #No idea why only these 2 fields need to be copied explicitly???
         form.name.data = asset.name
         form.location.data = asset.location
@@ -96,10 +81,12 @@ def add():
                         qr_code=form.qr_code.data,
                         status=form.status.data,
                         location=form.location.data,
-                        purchase=form.purchase.data)
+                        purchase=form.purchase.data,
+                        serial=form.serial.data)
         db.session.add(asset)
         db.session.commit()
-        flash(_(u'You have added asset {}').format(asset.name))
+        print '>>>>>>>>>> ASSET SAVED'
+        #flash(_(u'You have added asset {}').format(asset.name))
 
         return redirect(url_for('asset.assets'))
 
@@ -115,7 +102,7 @@ def edit(id):
         if request.form['button'] == _(u'Save'):
             form.populate_obj(asset)
             db.session.commit()
-            flash(_(u'You have edited asset {}').format(asset.name))
+            #flash(_(u'You have edited asset {}').format(asset.name))
 
         return redirect(url_for('asset.assets'))
 
@@ -154,7 +141,7 @@ def delete(id):
     asset = Asset.query.get_or_404(id)
     db.session.delete(asset)
     db.session.commit()
-    flash(_('You have successfully deleted the asset.'))
+    #flash(_('You have successfully deleted the asset.'))
 
     return redirect(url_for('asset.assets'))
 

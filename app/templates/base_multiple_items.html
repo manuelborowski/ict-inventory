@@ -10,7 +10,6 @@
 <div class="container flashed-messages">
   <div class="row">
     <div class="col-md-12" id="flash-list">
-      <!--<div class="alert alert-info" role="alert">Wrong date format, must be of form d-m-y</div>-->
     </div>
   </div>
 </div>
@@ -97,34 +96,22 @@
       </form>
   </div>
 </div>
+
+
+<div id="menu">
+  <a id="edit_menu_item" href="">Edit</a>
+  <a id="copy_menu_item" href="">Copy from</a>
+  <a id="add_menu_item" href="">Add</a>
+  <a id="view_menu_item" href="">View</a>
+  <a id="delete_menu_item">Delete</a>
+</div>
 {% endblock %}
 
 
 {% block scripts %}
 {{ super() }}
 <script>
-//Before removing an entry, a confirm-box is shown.  This function works together with on-draw.dt event here below
-function confirm_before_delete() {
-    id = $(this).attr('u_id');
-    bootbox.confirm("Are you sure want to delete this " + '{{subject}}' + "?", function(result) {
-        if (result) {
-            window.location.href = Flask.url_for('{{subject}}' + ".delete", {'id' : id})
-        }
-    });
-}
-
 $(document).ready(function() {
-    // When the length-changer or pager of the table is used, not all delete-buttons have the confirm-before-delete event
-    // attached.  The event draw.dt makes sure that, after the table is redrawn (length change or repaged) that all rows
-    // are bound to the confirm-before-delete event.
-
-    $('.confirmBeforeDelete').click(confirm_before_delete); //when page is loaded, default attach confirm_before_delete function
-
-    $('#datatable').on('draw.dt', function() {
-        $('.confirmBeforeDelete').unbind();
-        $('.confirmBeforeDelete').click(confirm_before_delete);
-    });
-
     //The clear button of the filter is pushed
     $('#clear').click(function() {
         $('.filter').val('');
@@ -140,51 +127,85 @@ $(document).ready(function() {
         table.ajax.reload();
     });
 
-     var table = $('#datatable').DataTable({
-        serverSide: true,
-        dom : 'liptp',
-        ajax: {
-            url: '/{{subject}}/data',
-            type: 'POST',
-            data : function (d) {
-                return $.extend( {}, d, {
-                    "date_before" : $('#date_before').val(),
-                    "date_after" : $('#date_after').val(),
-                    "value_from" : $('#value_from').val(),
-                    "value_till" : $('#value_till').val(),
-                    "category" : $('#category').val(),
-                    "status" : $('#status').val(),
-                    "device" : $('#device').val(),
-                    "supplier" : $('#supplier').val(),
-                    "room" : $('#room').val()
-                });
-            }
-        },
-        searching : false,
-        pagingType: "full_numbers",
-        lengthMenu: [5, 25, 50, 100],
-        "columns": [
-        {% for h in header_list %}
-            {data: "{{h.data}}", name: "{{h.name}}"},
-        {% endfor %}
-        ]
-      });
+    //Configure datatable.
+    var table = $('#datatable').DataTable({
+       serverSide: true,
+       dom : 'liptp',
+       ajax: {
+           url: '/{{subject}}/data',
+           type: 'POST',
+           data : function (d) {
+               return $.extend( {}, d, {
+                   "date_before" : $('#date_before').val(),
+                   "date_after" : $('#date_after').val(),
+                   "value_from" : $('#value_from').val(),
+                   "value_till" : $('#value_till').val(),
+                   "category" : $('#category').val(),
+                   "status" : $('#status').val(),
+                   "device" : $('#device').val(),
+                   "supplier" : $('#supplier').val(),
+                   "room" : $('#room').val()
+               });
+           }
+       },
+       searching : false,
+       pagingType: "full_numbers",
+       lengthMenu: [5, 25, 50, 100],
+       "columns": [
+       {% for h in header_list %}
+           {data: "{{h.data}}", name: "{{h.name}}"},
+       {% endfor %}
+       ]
+    });
 
-        table.on( 'draw', function () {
-            var j = table.ajax.json();
-            if(typeof j.redirect == 'string') {
-                window.location.href = Flask.url_for('asset.assets');
+     //flash messages, if required
+     table.on( 'draw', function () {
+        var j = table.ajax.json();
+        $("#flash-list").html('');
+        if(j.flash && j.flash.length) {
+            var flash_string="";
+            for(let s of j.flash) {
+                flash_string += "<div class=\"alert alert-info\" role=\"alert\">" + s +"</div>";
             }
+                $("#flash-list").html(flash_string);
+        }
+     });
 
-            $("#flash-list").html('');
-            if(j.flash && j.flash.length) {
-                var flash_string="";
-                for(let s of j.flash) {
-                    flash_string += "<div class=\"alert alert-info\" role=\"alert\">" + s +"</div>";
-                }
-                    $("#flash-list").html(flash_string);
+    //Before removing an entry, a confirm-box is shown.
+    function confirm_before_delete(id) {
+        //id = $(this).attr('u_id');
+        bootbox.confirm("Are you sure want to delete this " + '{{subject}}' + "?", function(result) {
+            if (result) {
+                window.location.href = Flask.url_for('{{subject}}' + ".delete", {'id' : id})
             }
-        } );
+        });
+    }
+
+    //right click on an item in the table.  A menu pops up to execute an action on the selected row/item
+    var i = document.getElementById("menu").style;
+    document.getElementById("datatable").addEventListener('contextmenu', function(e) {
+        var posX = e.clientX;
+        var posY = e.clientY;
+        menu(posX, posY);
+        e.preventDefault();
+        var item_id = $(e.target).closest('tr').prop('id');
+        document.getElementById("edit_menu_item").href = Flask.url_for('{{subject}}' + ".edit", {'id' : item_id});
+        document.getElementById("add_menu_item").href = Flask.url_for('{{subject}}' + ".add");
+        document.getElementById("copy_menu_item").href = Flask.url_for('{{subject}}' + ".add", {'id' : item_id});
+        document.getElementById("view_menu_item").href = Flask.url_for('{{subject}}' + ".view", {'id' : item_id});
+        document.getElementById("delete_menu_item").onclick= function(){ confirm_before_delete(item_id)};
+    }, false);
+    document.getElementById("datatable").addEventListener('click', function(e) {
+        i.opacity = "0";
+        setTimeout(function() {i.visibility = "hidden";}, 1);
+    }, false);
+
+    function menu(x, y) {
+      i.top = y + "px";
+      i.left = x + "px";
+      i.visibility = "visible";
+      i.opacity = "1";
+    }
 
 });
 </script>

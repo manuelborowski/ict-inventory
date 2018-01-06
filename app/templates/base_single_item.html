@@ -6,28 +6,32 @@
 
 {% block content2 %}
 <div class="content-section">
-  <div class="center">
-  <h1>{{title}}</h1>
-  <br/>
-  <form action="" method="post" class="form" role="form">
-      {{ form.csrf_token }}
+    <div class="center">
+        <h1>{{title}}</h1>
+        <br/>
+        {% if role == "add" %}
+            <form action="{{ url_for('asset.add')}}" method="post" class="form" role="form">
+        {% else %}
+            <form action="" method="post" class="form" role="form">
+        {% endif %}
+                {{ form.csrf_token }}
 
-      {% block content3 %}
-      {% endblock %}
+                {% block content3 %}
+                {% endblock %}
 
-{% if role == "view" %}
-      {% if current_user.is_authenticated %}
-        <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}" >Edit</a>
-        <a class="btn btn-default" href="javascript:history.back()" >Cancel</a>
-      {% else %}
-        <a class="btn btn-default" href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}" >Edit</a>
-      {% endif %}
+                {% if role == "view" %}
+                {% if current_user.is_authenticated %}
+                <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Edit</a>
+                {% else %}
+                <a class="btn btn-default"
+                   href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Edit</a>
+                {% endif %}
 
-{% else %}
-    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
-    <a class="btn btn-default" href="javascript:history.back()" >Cancel</a>
-{% endif %}
-  </form>
-  </div>
+                {% else %}
+                <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+                {% endif %}
+                <a class="btn btn-default" href="javascript:history.back()">Cancel</a>
+            </form>
+    </div>
 </div>
 {% endblock %}

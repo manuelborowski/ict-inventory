@@ -39,8 +39,8 @@ class InlineSubmitField(BooleanField):
 def check_date_in_form(date_key, form):
     if date_key in form and form[date_key] != '':
         try:
-            time.strptime(form[date_key], '%d-%M-%Y')
-            return form[date_key]
+            time.strptime(form[date_key].strip(), '%d-%M-%Y')
+            return form[date_key].strip()
         except:
             flash(_(u'Wrong date format, must be of form d-m-y'))
     return None
@@ -81,21 +81,21 @@ def build_filter(table, template, since=False, value=False, location=False, cate
         __filter['since'] = 'True'
         date = check_date_in_form('date_after', request.values)
         if date:
-            il = il.filter(Purchase.since > Purchase.reverse_date(date))
+            il = il.filter(Purchase.since >= Purchase.reverse_date(date))
             __filter['date_after'] = date
         date = check_date_in_form('date_before', request.values)
         if date:
-            il = il.filter(Purchase.since < Purchase.reverse_date(date))
+            il = il.filter(Purchase.since <= Purchase.reverse_date(date))
             __filter['date_before'] = date
     if value:
         __filter['value'] = 'True'
         value = check_value_in_form('value_from', request.values)
         if value:
-            il = il.filter(Purchase.value > value)
+            il = il.filter(Purchase.value >= value)
             __filter['value_from'] = value
         value = check_value_in_form('value_till', request.values)
         if value:
-            il = il.filter(Purchase.value < value)
+            il = il.filter(Purchase.value <= value)
             __filter['value_till'] = value
     if location:
         __filter['location'] = 'True'
