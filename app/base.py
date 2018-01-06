@@ -63,8 +63,10 @@ def check_string_in_form(value_key, form):
             flash(_(u'Wrong string format'))
     return None
 
+global_filter = {}
+
 def build_filter(table, template, since=False, value=False, location=False, category=False, status=False, supplier=False, device=False):
-    __filter = {}
+    global global_filter
     #depending on the table, multiple joins are required to get the necessary data
     il = table.query
     if (since or value) and table is not Purchase:
@@ -78,56 +80,56 @@ def build_filter(table, template, since=False, value=False, location=False, cate
 
     #Create the sql-request with the appriorate filters
     if since:
-        __filter['since'] = 'True'
+        global_filter['since'] = 'True'
         date = check_date_in_form('date_after', request.values)
         if date:
             il = il.filter(Purchase.since >= Purchase.reverse_date(date))
-            __filter['date_after'] = date
+            global_filter['date_after'] = date
         date = check_date_in_form('date_before', request.values)
         if date:
             il = il.filter(Purchase.since <= Purchase.reverse_date(date))
-            __filter['date_before'] = date
+            global_filter['date_before'] = date
     if value:
-        __filter['value'] = 'True'
+        global_filter['value'] = 'True'
         value = check_value_in_form('value_from', request.values)
         if value:
             il = il.filter(Purchase.value >= value)
-            __filter['value_from'] = value
+            global_filter['value_from'] = value
         value = check_value_in_form('value_till', request.values)
         if value:
             il = il.filter(Purchase.value <= value)
-            __filter['value_till'] = value
+            global_filter['value_till'] = value
     if location:
-        __filter['location'] = 'True'
+        global_filter['location'] = 'True'
         value = check_string_in_form('room', request.values)
         if value:
             il = il.filter(table.location.contains(value))
-            __filter['room'] = value
+            global_filter['room'] = value
     if category:
-        __filter['category'] = CategoryFilter()
+        global_filter['category'] = CategoryFilter()
         value = check_string_in_form('category', request.values)
         if value:
             il = il.filter(Device.category == value)
-            __filter['category'].category.data = value
+            global_filter['category'].category.data = value
     if status:
-        __filter['status'] = StatusFilter()
+        global_filter['status'] = StatusFilter()
         value = check_string_in_form('status', request.values)
         if value:
             il = il.filter(table.status == value)
-            __filter['status'].status.data = value
+            global_filter['status'].status.data = value
     if supplier:
-        __filter['supplier'] = SupplierFilter()
+        global_filter['supplier'] = SupplierFilter()
         value = check_string_in_form('supplier', request.values)
         if value:
             il = il.filter(Supplier.name == value)
-            __filter['supplier'].supplier.data = value
+            global_filter['supplier'].supplier.data = value
     if device:
-        __filter['device'] = DeviceFilter()
+        global_filter['device'] = DeviceFilter()
         value = check_string_in_form('device', request.values)
         if value:
             s = value.split('/')
             il = il.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
-            __filter['device'].device.data = value
+            global_filter['device'].device.data = value
 
     __filtered_count = il.count()
 
@@ -150,7 +152,7 @@ def build_filter(table, template, since=False, value=False, location=False, cate
 
     print '>>>>>>>>> total/filtered {}/{}'.format(__total_count, __filtered_count)
 
-    return il, __total_count, __filtered_count, __filter
+    return il, __total_count, __filtered_count, global_filter
 
 
 

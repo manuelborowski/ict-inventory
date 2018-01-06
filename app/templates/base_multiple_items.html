@@ -75,9 +75,8 @@
       </table>
       <br>
       <div class="btn-group" role="group" aria-label="...">
-            <!--<input class="btn btn-default" id="submit" name="button" type="submit" value="Filter">-->
           <a class="btn btn-default" id="filter"">Filter</a>
-            <a class="btn btn-default" id="clear">Clear</a>
+          <a class="btn btn-default" id="clear">Clear</a>
       </div>
       </form>
       <hr />
@@ -130,6 +129,7 @@ $(document).ready(function() {
     //Configure datatable.
     var table = $('#datatable').DataTable({
        serverSide: true,
+       stateSave: true,
        dom : 'liptp',
        ajax: {
            url: '/{{subject}}/data',

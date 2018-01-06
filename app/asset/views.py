@@ -9,7 +9,7 @@ from .. import db, _
 from . import asset
 from ..models import Asset
 
-from ..base import build_filter, asset_template
+from ..base import build_filter, asset_template, global_filter
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
@@ -50,7 +50,7 @@ def assets():
                                   since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
     #flash('test')
     return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset',
-                           header_list=asset_template, filter=filter)
+                           header_list=asset_template, filter=global_filter)
 
 #add a new asset
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
