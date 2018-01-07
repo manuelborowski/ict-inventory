@@ -10,10 +10,10 @@ print('start db tools')
 
 # start...
 def fillTables():
-    NBR_SUPPLIER=91
-    NBR_DEVICE=111
-    NBR_PURCHASE=743
-    NBR_ASSET=5012
+    NBR_SUPPLIER=331
+    NBR_DEVICE=991
+    NBR_PURCHASE=5023
+    NBR_ASSET=33987
     for i in range(0, NBR_SUPPLIER):
         db.session.add(models.Supplier(name="Leverancier{}".format(i), description="Beschrijving Leverancier{} : telefoonnummer, adres, contactpersoon".format(i)))
     db.session.commit()

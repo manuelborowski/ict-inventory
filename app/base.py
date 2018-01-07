@@ -3,6 +3,7 @@ from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
 from flask import render_template, render_template_string, flash, redirect, url_for, request, get_flashed_messages, session
+from sqlalchemy import or_
 import time
 
 from models import Asset, Purchase, Device, Supplier
@@ -76,6 +77,7 @@ def build_filter(table, template, since=False, value=False, location=False, cate
     __total_count = il.count()
 
     filter = {}
+
     #Create the sql-request with the appriorate filters
     if since:
         filter['since'] = 'True'
@@ -120,6 +122,43 @@ def build_filter(table, template, since=False, value=False, location=False, cate
             s = value.split('/')
             il = il.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
 
+    #from template, take order_by and put in a list.  This is user later on, to get the columns in which can be searched
+    column_list = [a['order_by'] for a in template]
+
+    #search, if required
+    search_value = check_string_in_form('search[value]', request.values)
+    if search_value:
+        a = search_value.split('-')[::-1]
+        a[0] += '%'
+        search_date = '%' + '-'.join(a) + '%'
+        search_value = '%' + search_value + '%'
+    search_constraints = []
+    if search_value:
+        if Asset.name in column_list:
+            search_constraints.append(Asset.name.like(search_value))
+        if Device.category in column_list:
+            search_constraints.append(Device.category.like(search_value))
+        if Asset.location in column_list:
+            search_constraints.append(Asset.location.like(search_value))
+        if Purchase.since in column_list:
+            search_constraints.append(Purchase.since.like(search_date))
+        if Purchase.value in column_list:
+            search_constraints.append(Purchase.value.like(search_value))
+        if Asset.qr_code in column_list:
+            search_constraints.append(Asset.qr_code.like(search_value))
+        if Asset.status in column_list:
+            search_constraints.append(Asset.status.like(search_value))
+        if Supplier.name in column_list:
+            search_constraints.append(Supplier.name.like(search_value))
+        if Device.brand in column_list:
+            search_constraints.append(Device.brand.like(search_value))
+            search_constraints.append(Device.type.like(search_value))
+        if Asset.serial in column_list:
+            search_constraints.append(Asset.serial.like(search_value))
+
+    if search_constraints:
+        il = il.filter(or_(*search_constraints))
+
     __filtered_count = il.count()
 
     #order, if required
@@ -137,10 +176,8 @@ def build_filter(table, template, since=False, value=False, location=False, cate
         length = int(check_value_in_form('length', request.values))
         il = il.slice(start, start+length)
 
+
     il = il.all()
-
-    print '>>>>>>>>> total/filtered {}/{}'.format(__total_count, __filtered_count)
-
     return il, __total_count, __filtered_count, filter
 
 

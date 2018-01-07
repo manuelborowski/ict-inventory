@@ -160,7 +160,7 @@ $(document).ready(function() {
     var table = $('#datatable').DataTable({
        serverSide: true,
        stateSave: true,
-       dom : 'liptp',
+       dom : 'lfiptp',
        ajax: {
            url: '/{{subject}}/data',
            type: 'POST',
@@ -168,7 +168,6 @@ $(document).ready(function() {
                return $.extend( {}, d, filter_settings);
            }
        },
-       searching : false,
        pagingType: "full_numbers",
        lengthMenu: [5, 25, 50, 100],
        "columns": [
