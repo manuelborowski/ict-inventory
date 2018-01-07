@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, flash, redirect, url_for, request, jsonify, get_flashed_messages
+from flask import render_template, flash, redirect, url_for, request, jsonify, get_flashed_messages, session
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
@@ -9,23 +9,15 @@ from .. import db, _
 from . import asset
 from ..models import Asset
 
-from ..base import build_filter, asset_template, global_filter
+from ..base import build_filter, asset_template
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
-    print '>>>>>>>>>>>>>> REQUEST.VALUES ' + str(request.values)
-
     assets, tc, fc, filter = build_filter(Asset, asset_template,
                                   since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
-
-    #     a.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(a.id) + "'>")
-    #     a.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(a.id) + "><i class='fa fa-trash'></i></a>")
-    #     a.edit = render_template_string("<a href=\"{{ url_for('asset.edit', id=" + str(a.id) + ") }}\"><i class='fa fa-pencil'></i>")
-    #     a.view = render_template_string("<a href=\"{{ url_for('asset.view', id=" + str(a.id) + ") }}\"><i class='fa fa-eye'></i>")
     assets_dict = [a.ret_dict() for a in assets]
-    print '>>>>>>>>>>>>> assets_dict  {}'.format(assets_dict)
     for a in assets_dict:
         a['name'] = "<a href=\"{}\">{}</a>".format(url_for('asset.view', id=a['id']), a['name'])
         a['DT_RowId'] = a['id']
@@ -38,7 +30,6 @@ def source_data():
     fml = get_flashed_messages()
     if not not fml:
         output['flash'] = fml
-    #print '>>>>>>>>>>>> OUTPUT ' + str(output)
     return jsonify(output)
 
 #add a new asset
@@ -48,9 +39,8 @@ def assets():
     #The following line is required only to build the filter-fields on the page.
     assets, tc, fc, filter = build_filter(Asset, asset_template,
                                   since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
-    #flash('test')
     return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset',
-                           header_list=asset_template, filter=global_filter)
+                           header_list=asset_template, filter=filter)
 
 #add a new asset
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
