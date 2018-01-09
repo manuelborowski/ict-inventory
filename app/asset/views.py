@@ -47,9 +47,6 @@ def assets():
 @asset.route('/asset/add', methods=['GET', 'POST'])
 @login_required
 def add(id=-1):
-    #print '>>>>>>>>>>>>> REQUEST.FORM {}'.format(request.form)
-    #print '>>>>>>>>>>>>> REQUEST.VALUES {}'.format(request.values)
-    #print '>>>>>>>>>>>>> ID {}'.format(id)
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.

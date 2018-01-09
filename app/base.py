@@ -122,18 +122,16 @@ def build_filter(table, template, since=False, value=False, location=False, cate
             s = value.split('/')
             il = il.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
 
+    #search, if required
     #from template, take order_by and put in a list.  This is user later on, to get the columns in which can be searched
     column_list = [a['order_by'] for a in template]
-
-    #search, if required
     search_value = check_string_in_form('search[value]', request.values)
     if search_value:
         a = search_value.split('-')[::-1]
         a[0] += '%'
         search_date = '%' + '-'.join(a) + '%'
         search_value = '%' + search_value + '%'
-    search_constraints = []
-    if search_value:
+        search_constraints = []
         if Asset.name in column_list:
             search_constraints.append(Asset.name.like(search_value))
         if Device.category in column_list:
@@ -156,8 +154,8 @@ def build_filter(table, template, since=False, value=False, location=False, cate
         if Asset.serial in column_list:
             search_constraints.append(Asset.serial.like(search_value))
 
-    if search_constraints:
-        il = il.filter(or_(*search_constraints))
+        if search_constraints:
+            il = il.filter(or_(*search_constraints))
 
     __filtered_count = il.count()
 
@@ -171,11 +169,12 @@ def build_filter(table, template, since=False, value=False, location=False, cate
         else:
             il = il.order_by(template[int(column_number)]['order_by'])
 
-        #paginate, if required
-        start = int(check_value_in_form('start', request.values))
+    #paginate, if required
+    start = check_value_in_form('start', request.values)
+    if start:
         length = int(check_value_in_form('length', request.values))
+        start = int(start)
         il = il.slice(start, start+length)
-
 
     il = il.all()
     return il, __total_count, __filtered_count, filter

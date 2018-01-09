@@ -10,7 +10,7 @@
         <h1>{{title}}</h1>
         <br/>
         {% if role == "add" %}
-            <form action="{{ url_for('asset.add')}}" method="post" class="form" role="form">
+            <form action="{{ url_for(subject + '.add')}}" method="post" class="form" role="form">
         {% else %}
             <form action="" method="post" class="form" role="form">
         {% endif %}
@@ -20,15 +20,14 @@
                 {% endblock %}
 
                 {% if role == "view" %}
-                {% if current_user.is_authenticated %}
-                <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Edit</a>
+                    {% if current_user.is_authenticated %}
+                        <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Edit</a>
+                    {% else %}
+                        <a class="btn btn-default"
+                       href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Edit</a>
+                    {% endif %}
                 {% else %}
-                <a class="btn btn-default"
-                   href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Edit</a>
-                {% endif %}
-
-                {% else %}
-                <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
                 {% endif %}
                 <a class="btn btn-default" href="javascript:history.go(-1)">Cancel</a>
             </form>
