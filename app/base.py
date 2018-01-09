@@ -2,7 +2,7 @@
 from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
-from flask import render_template, render_template_string, flash, redirect, url_for, request, get_flashed_messages, session
+from flask import render_template, render_template_string, flash, redirect, url_for, request, get_flashed_messages, session, jsonify
 from sqlalchemy import or_
 import time
 
@@ -64,67 +64,67 @@ def check_string_in_form(value_key, form):
             flash(_(u'Wrong string format'))
     return ''
 
-def build_filter(table, template, since=False, value=False, location=False, category=False, status=False, supplier=False, device=False):
+def build_filter(table):
     #depending on the table, multiple joins are required to get the necessary data
-    il = table.query
-    if (since or value) and table is not Purchase:
-        il = il.join(Purchase)
-    if (category or device) and table is not Device:
-        il = il.join(Device)
-    if supplier and table is not Supplier :
-        il = il.join(Supplier)
+    __model = table['model']
+    __filters_enabled = table['filter']
+    __template = table['template']
+    __filtered_list = __model.query
+    if ('since' in  __filters_enabled or 'value' in __filters_enabled) and __model is not Purchase:
+        __filtered_list = __filtered_list.join(Purchase)
+    if ('category' in __filters_enabled or 'device' in __filters_enabled) and __model is not Device:
+        __filtered_list = __filtered_list.join(Device)
+    if 'supplier' in __filters_enabled and __model is not Supplier :
+        __filtered_list = __filtered_list.join(Supplier)
 
-    __total_count = il.count()
+    __total_count = __filtered_list.count()
 
-    filter = {}
+    __filter_forms = {}
 
     #Create the sql-request with the appriorate filters
-    if since:
-        filter['since'] = 'True'
+    if 'since' in __filters_enabled:
         date = check_date_in_form('date_after', request.values)
         if date:
-            il = il.filter(Purchase.since >= Purchase.reverse_date(date))
+            __filtered_list = __filtered_list.filter(Purchase.since >= Purchase.reverse_date(date))
         date = check_date_in_form('date_before', request.values)
         if date:
-            il = il.filter(Purchase.since <= Purchase.reverse_date(date))
-    if value:
-        filter['value'] = 'True'
+            __filtered_list = __filtered_list.filter(Purchase.since <= Purchase.reverse_date(date))
+    if 'value' in __filters_enabled:
         value = check_value_in_form('value_from', request.values)
         if value:
-            il = il.filter(Purchase.value >= value)
+            __filtered_list = __filtered_list.filter(Purchase.value >= value)
         value = check_value_in_form('value_till', request.values)
         if value:
-            il = il.filter(Purchase.value <= value)
-    if location:
-        filter['location'] = 'True'
+            __filtered_list = __filtered_list.filter(Purchase.value <= value)
+    if 'location' in __filters_enabled:
         value = check_string_in_form('room', request.values)
         if value:
-            il = il.filter(table.location.contains(value))
-    if category:
-        filter['category'] = CategoryFilter()
+            __filtered_list = __filtered_list.filter(Asset.location.contains(value))
+    if 'category' in __filters_enabled:
+        __filter_forms['category'] = CategoryFilter()
         value = check_string_in_form('category', request.values)
         if value:
-            il = il.filter(Device.category == value)
-    if status:
-        filter['status'] = StatusFilter()
+            __filtered_list = __filtered_list.filter(Device.category == value)
+    if 'status' in __filters_enabled:
+        __filter_forms['status'] = StatusFilter()
         value = check_string_in_form('status', request.values)
         if value:
-            il = il.filter(table.status == value)
-    if supplier:
-        filter['supplier'] = SupplierFilter()
+            __filtered_list = __filtered_list.filter(Asset.status == value)
+    if 'supplier' in __filters_enabled:
+        __filter_forms['supplier'] = SupplierFilter()
         value = check_string_in_form('supplier', request.values)
         if value:
-            il = il.filter(Supplier.name == value)
-    if device:
-        filter['device'] = DeviceFilter()
+            __filtered_list = __filtered_list.filter(Supplier.name == value)
+    if 'device' in __filters_enabled:
+        __filter_forms['device'] = DeviceFilter()
         value = check_string_in_form('device', request.values)
         if value:
             s = value.split('/')
-            il = il.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
+            __filtered_list = __filtered_list.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
 
     #search, if required
     #from template, take order_by and put in a list.  This is user later on, to get the columns in which can be searched
-    column_list = [a['order_by'] for a in template]
+    column_list = [a['order_by'] for a in __template]
     search_value = check_string_in_form('search[value]', request.values)
     if search_value:
         a = search_value.split('-')[::-1]
@@ -155,9 +155,9 @@ def build_filter(table, template, since=False, value=False, location=False, cate
             search_constraints.append(Asset.serial.like(search_value))
 
         if search_constraints:
-            il = il.filter(or_(*search_constraints))
+            __filtered_list = __filtered_list.filter(or_(*search_constraints))
 
-    __filtered_count = il.count()
+    __filtered_count = __filtered_list.count()
 
     #order, if required
     column_number = check_value_in_form('order[0][column]', request.values)
@@ -165,22 +165,58 @@ def build_filter(table, template, since=False, value=False, location=False, cate
         column_name = check_string_in_form('columns[' + str(column_number) + '][data]', request.values)
         direction = check_string_in_form('order[0][dir]', request.values)
         if direction == 'desc':
-            il = il.order_by(template[int(column_number)]['order_by'].desc())
+            __filtered_list = __filtered_list.order_by(__template[int(column_number)]['order_by'].desc())
         else:
-            il = il.order_by(template[int(column_number)]['order_by'])
+            __filtered_list = __filtered_list.order_by(__template[int(column_number)]['order_by'])
 
     #paginate, if required
     start = check_value_in_form('start', request.values)
     if start:
         length = int(check_value_in_form('length', request.values))
         start = int(start)
-        il = il.slice(start, start+length)
+        __filtered_list = __filtered_list.slice(start, start+length)
 
-    il = il.all()
-    return il, __total_count, __filtered_count, filter
+    __filtered_list = __filtered_list.all()
+    return __filters_enabled,  __filter_forms, __filtered_list, __total_count, __filtered_count,
+
+
+def get_ajax_table(table):
+    ___filters_enabled,  __filter_forms, __filtered_list, __total_count, __filtered_count = build_filter(table)
+    __filtered_dict = [i.ret_dict() for i in __filtered_list]
+    for i in __filtered_dict:
+        i['name'] = "<a href=\"{}\">{}</a>".format(url_for(table['view_route'], id=i['id']), i['name'])
+        i['DT_RowId'] = i['id']
+    output = {}
+    output['draw'] = str(int(request.values['draw']))
+    output['recordsTotal'] = str(__total_count)
+    output['recordsFiltered'] = str(__filtered_count)
+    output['data'] = __filtered_dict
+    # add the (non-standard) flash-tag to display flash-messages via ajax
+    fml = get_flashed_messages()
+    if not not fml:
+        output['flash'] = fml
+    return jsonify(output)
 
 
 
+tables_configuration = {
+    'asset' : {
+        'model' : Asset,
+        'template' : [{'name': 'Name', 'data':'name', 'order_by': Asset.name},
+                      {'name': 'Category', 'data':'purchase.device.category', 'order_by': Device.category},
+                      {'name': 'Location', 'data':'location', 'order_by': Asset.location},
+                      {'name': 'Since', 'data':'purchase.since', 'order_by': Purchase.since},
+                      {'name': 'Value', 'data':'purchase.value', 'order_by': Purchase.value},
+                      {'name': 'QR', 'data':'qr_code', 'order_by': Asset.qr_code},
+                      {'name': 'Status', 'data':'status', 'order_by': Asset.status},
+                      {'name': 'Supplier', 'data':'purchase.supplier.name', 'order_by': Supplier.name},
+                      {'name': 'Device', 'data':'purchase.device.brandtype', 'order_by': Device.brand},
+                      {'name': 'Serial', 'data': 'serial', 'order_by': Asset.serial}],
+        'filter' :  ['since', 'value', 'location', 'category', 'status', 'supplier', 'device'],
+        'view_route': 'asset.view'
+
+    }
+}
 
 asset_template = [{'name': 'Name', 'data':'name', 'order_by': Asset.name},
       {'name': 'Category', 'data':'purchase.device.category', 'order_by': Device.category},

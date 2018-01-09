@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, flash, redirect, url_for, request, jsonify, get_flashed_messages, session
+from flask import render_template, redirect, url_for, request
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
@@ -9,38 +9,23 @@ from .. import db, _
 from . import asset
 from ..models import Asset
 
-from ..base import build_filter, asset_template
+from ..base import build_filter, get_ajax_table
+from ..tables_config import  tables_configuration
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
-    assets, tc, fc, filter = build_filter(Asset, asset_template,
-                                  since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
-    assets_dict = [a.ret_dict() for a in assets]
-    for a in assets_dict:
-        a['name'] = "<a href=\"{}\">{}</a>".format(url_for('asset.view', id=a['id']), a['name'])
-        a['DT_RowId'] = a['id']
-    output = {}
-    output['draw'] = str(int(request.values['draw']))
-    output['recordsTotal'] = str(tc)
-    output['recordsFiltered'] = str(fc)
-    output['data'] = assets_dict
-    #add the (non-standard) flash-tag to display flash-messages via ajax
-    fml = get_flashed_messages()
-    if not not fml:
-        output['flash'] = fml
-    return jsonify(output)
+    return get_ajax_table(tables_configuration['asset'])
 
 #add a new asset
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():
     #The following line is required only to build the filter-fields on the page.
-    assets, tc, fc, filter = build_filter(Asset, asset_template,
-                                  since=True, value=True, location=True, category=True, status=True, supplier=True, device=True)
+    __filter, __filter_form, a,b, c = build_filter(tables_configuration['asset'])
     return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset',
-                           header_list=asset_template, filter=filter)
+                           header_list=tables_configuration['asset']['template'], filter=__filter, filter_form=__filter_form)
 
 #add a new asset
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
@@ -52,8 +37,6 @@ def add(id=-1):
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
     if id > -1:
         asset = Asset.query.get_or_404(int(id))
-    # if 'copy_from' in request.form:
-    #     asset = Asset.query.get_or_404(int(request.form['copy_from']))
         form = AddForm(obj=asset)
         form.qr_code.data=''
         form.serial.data=''
@@ -72,7 +55,6 @@ def add(id=-1):
                         serial=form.serial.data)
         db.session.add(asset)
         db.session.commit()
-        #print '>>>>>>>>>> ASSET SAVED'
         #flash(_(u'You have added asset {}').format(asset.name))
 
         return redirect(url_for('asset.assets'))

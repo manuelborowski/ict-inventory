@@ -19,56 +19,56 @@
       <form method="post" action="{{ url_for(route) }}">
       <table class="table-condensed ">
           <tr>
-{% if filter.since %}
+{% if 'since' in filter %}
               <th>Since</th>
 {% endif %}
-{% if filter.value %}
+{% if 'value' in filter %}
               <th>Value</th>
 {% endif %}
-{% if filter.location %}
+{% if 'location' in filter %}
               <th>Location</th>
 {% endif %}
-{% if filter.category %}
+{% if 'category' in filter %}
               <th>Category </th>
 {% endif %}
-{% if filter.status %}
+{% if 'status' in filter %}
               <th>Status</th>
 {% endif %}
-{% if filter.supplier %}
+{% if 'supplier' in filter %}
               <th>Supplier</th>
 {% endif %}
-{% if filter.device %}
+{% if 'device' in filter %}
               <th>Device</th>
 {% endif %}
           </tr>
           <tr>
-{% if filter.since %}
+{% if 'since' in filter %}
               <td><input id="date_after" class="filter" name="date_after" type="text" size="12"></td>
 {% endif %}
-{% if filter.value %}
+{% if 'value' in filter %}
               <td><input id="value_from" class="filter" name="value_from" type="text" size="12"></td>
 {% endif %}
-{% if filter.location %}
+{% if 'location' in filter %}
               <td><input id="room" class="filter" name="room" type="text" size="12"></td>
 {% endif %}
-{% if filter.category %}
-              <td rowspan="2"  >{{ wtf.form_field(filter.category.category) }}</td>
+{% if 'category' in filter %}
+              <td rowspan="2"  >{{ wtf.form_field(filter_form.category.category) }}</td>
 {% endif %}
-{% if filter.status %}
-              <td rowspan="2">{{ wtf.form_field(filter.status.status) }}</td>
+{% if 'status' in filter %}
+              <td rowspan="2">{{ wtf.form_field(filter_form.status.status) }}</td>
 {% endif %}
-{% if filter.supplier %}
-              <td rowspan="2">{{ wtf.form_field(filter.supplier.supplier) }}</td>
+{% if 'supplier' in filter %}
+              <td rowspan="2">{{ wtf.form_field(filter_form.supplier.supplier) }}</td>
 {% endif %}
-{% if filter.device %}
-              <td rowspan="2">{{ wtf.form_field(filter.device.device) }}</td>
+{% if 'device' in filter %}
+              <td rowspan="2">{{ wtf.form_field(filter_form.device.device) }}</td>
 {% endif %}
           </tr>
           <tr>
-{% if filter.since %}
+{% if 'since' in filter %}
               <td><input id="date_before" class="filter" name="date_before" type="text" size="12"></td>
 {% endif %}
-{% if filter.value %}
+{% if 'value' in filter %}
               <td><input id="value_till" class="filter" name="value_till" type="text" size="12"></td>
 {% endif %}
           </tr>
@@ -136,7 +136,6 @@ $(document).ready(function() {
         $('#supplier').val(filter_settings['supplier']);
         $('#room').val(filter_settings['room']);
     } catch (err) {
-        //$('#category').val("")edge
     }
 
     //The filter button of the filter is pushed
