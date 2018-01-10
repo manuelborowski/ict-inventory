@@ -18,7 +18,7 @@ from ..tables_config import  tables_configuration
 def source_data():
     return get_ajax_table(tables_configuration['asset'])
 
-#add a new asset
+#show a list of assets
 @asset.route('/asset', methods=['GET', 'POST'])
 @login_required
 def assets():

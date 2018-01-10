@@ -13,54 +13,39 @@ from . import purchase
 from ..models import Purchase
 from ..views import NoEscapeCol
 
-from ..base import build_filter
-
-class PurchaseTable(Table):
-
-    value = LinkCol(_(u'Value'), 'purchase.edit', attr='value', url_kwargs=dict(id='id'))      # value in euro
-    since = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
-    supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
-    device = LinkCol(_(u'Device'), 'device.edit', attr='device', url_kwargs=dict(id='device_id'))
-    delete = NoEscapeCol('')
-    #edit = NoEscapeCol('')
-    view = NoEscapeCol('')
-    #id = Col('Id')
-    copy_from = NoEscapeCol('C')
-    classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'purchasetable', 'cellspacing': '0', 'width': '100%'}
+from ..base import build_filter, get_ajax_table
+from ..tables_config import  tables_configuration
 
 
-def check_date_in_form(date_key, form):
-    if date_key in form and form[date_key] != '':
-        try:
-            time.strptime(form[date_key], '%d-%M-%Y')
-            return form[date_key]
-        except:
-            flash(_(u'Wrong date format, must be of form d-m-y'))
-    return None
+# class PurchaseTable(Table):
+#
+#     value = LinkCol(_(u'Value'), 'purchase.edit', attr='value', url_kwargs=dict(id='id'))      # value in euro
+#     since = DateCol(_(u'Since'), date_format='dd-MM-YYYY')
+#     supplier = LinkCol(_(u'Supplier'), 'supplier.edit', attr='supplier', url_kwargs=dict(id='supplier_id'))
+#     device = LinkCol(_(u'Device'), 'device.edit', attr='device', url_kwargs=dict(id='device_id'))
+#     delete = NoEscapeCol('')
+#     #edit = NoEscapeCol('')
+#     view = NoEscapeCol('')
+#     #id = Col('Id')
+#     copy_from = NoEscapeCol('C')
+#     classes = ['table ' 'table-striped ' 'table-bordered ']
+#     html_attrs = {'id': 'purchasetable', 'cellspacing': '0', 'width': '100%'}
 
-def check_value_in_form(value_key, form):
-    if value_key in form and form[value_key] != '':
-        try:
-            float(form[value_key])
-            return form[value_key]
-        except:
-            flash(_(u'Wrong value format'))
-    return None
 
+#This route is called by an ajax call on the assets-page to populate the table.
+@purchase.route('/purchase/data', methods=['GET', 'POST'])
+@login_required
+def source_data():
+    return get_ajax_table(tables_configuration['purchase'])
+
+#ashow a list of purchases
 @purchase.route('/purchase', methods=['GET', 'POST'])
 @login_required
 def purchases():
-    purchases, filter = build_filter(Purchase, since=True, value=True)
-    for p in purchases:
-        p.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(p.id) + "'>")
-        p.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(p.id) + "><i class='fa fa-trash'></i></a>")
-        p.edit = render_template_string("<a href=\"{{ url_for('purchase.edit', id=" + str(p.id) + ") }}\"><i class='fa fa-pencil'></i>")
-        p.view = render_template_string("<a href=\"{{ url_for('purchase.view', id=" + str(p.id) + ") }}\"><i class='fa fa-eye'></i>")
-    purchase_table = PurchaseTable(purchases)
-
-    return render_template('base_multiple_items.html', title='purchases', route='purchase.purchases', subject='purchase', table=purchase_table, filter=filter)
-
+    #The following line is required only to build the filter-fields on the page.
+    __filter, __filter_form, a,b, c = build_filter(tables_configuration['purchase'])
+    return render_template('base_multiple_items.html', title='purchases', route='purchase.purchases', subject='purchase',
+                           header_list=tables_configuration['purchase']['template'], filter=__filter, filter_form=__filter_form)
 
 #add a new purchase
 @purchase.route('/purchase/add', methods=['GET', 'POST'])
