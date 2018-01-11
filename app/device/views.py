@@ -1,65 +1,40 @@
 # -*- coding: utf-8 -*-
 # app/device/views.py
 
-from flask import render_template, render_template_string, flash, redirect, url_for, request
-from flask_login import login_required, current_user, login_user
-from flask_table import Table, Col, DateCol, LinkCol
+from flask import render_template, redirect, url_for, request
+from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import device
 from ..models import Device
-from ..views import NoEscapeCol
 
-from ..base import build_filter
+from ..base import build_filter, get_ajax_table
+from ..tables_config import  tables_configuration
 
-class DeviceTable(Table):
+#This route is called by an ajax call on the assets-page to populate the table.
+@device.route('/device/data', methods=['GET', 'POST'])
+@login_required
+def source_data():
+    return get_ajax_table(tables_configuration['device'])
 
-    category = Col(_(u'Category'))    # one of: PC, BEAMER, PRINTER, ANDERE
-    brand = Col(_(u'Brand'))
-    type = Col(_(u'Type'))
-    power = Col(_(u'Power'))
-    ce = Col(_(u'CE'))
-    delete = NoEscapeCol('')
-    edit = NoEscapeCol('')
-    view = NoEscapeCol('')
-    id = Col('Id')
-    copy_from = NoEscapeCol('C')
-    classes = ['table ' 'table-striped ' 'table-bordered ']
-    html_attrs = {'id': 'devicetable', 'cellspacing': '0', 'width': '100%'}
-
-def check_value_in_form(value_key, form):
-    if value_key in form and form[value_key] != '':
-        try:
-            float(form[value_key])
-            return form[value_key]
-        except:
-            flash(_(u'Wrong value format'))
-    return None
-
-
-
+#ashow a list of purchases
 @device.route('/device', methods=['GET', 'POST'])
 @login_required
 def devices():
-    #devices = Device.query.all()
-    devices, filter = build_filter(Device, category=True, device=True)
-    for d in devices:
-        d.copy_from = render_template_string("<input type='radio' name='copy_from' value='" + str(d.id) + "'>")
-        d.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(d.id) + "><i class='fa fa-trash'></i></a>")
-        d.edit = render_template_string("<a href=\"{{ url_for('device.edit', id=" + str(d.id) + ") }}\"><i class='fa fa-pencil'></i>")
-        d.view = render_template_string("<a href=\"{{ url_for('device.view', id=" + str(d.id) + ") }}\"><i class='fa fa-eye'></i>")
-    device_table = DeviceTable(devices)
-
-    return render_template('base_multiple_items.html', title='devices', route='device.devices', subject='device', table = device_table, filter=filter)
-
+    #The following line is required only to build the filter-fields on the page.
+    __filter, __filter_form, a,b, c = build_filter(tables_configuration['device'])
+    return render_template('base_multiple_items.html', title='devices', route='device.devices', subject='device',
+                           header_list=tables_configuration['device']['template'], filter=__filter, filter_form=__filter_form,
+                           delete_message="Are you sure you want to delete this device AND all associated purchases AND assets?")
 
 #add a new device
+@device.route('/device/add/<int:id>', methods=['GET', 'POST'])
 @device.route('/device/add', methods=['GET', 'POST'])
 @login_required
-def add():
-    if 'copy_from' in request.form:
-        device = Device.query.get_or_404(int(request.form['copy_from']))
+def add(id=-1):
+    if id > -1:
+        device = Device.query.get_or_404(int(id))
         form = AddForm(obj=device)
         #The instruction above is not perfect : it stops copying attributes a soon as it encounters an attribute in the device
         #which does not have a counterpart in the form.
@@ -77,7 +52,7 @@ def add():
                         ce=form.ce.data)
         db.session.add(device)
         db.session.commit()
-        flash(_(u'You have added device {}/{}').format(device.brand, device.type))
+        #flash(_(u'You have added device {}/{}').format(device.brand, device.type))
 
         return redirect(url_for('device.devices'))
 
@@ -95,7 +70,7 @@ def edit(id):
         if request.form['button'] == _(u'Save'):
             form.populate_obj(device)
             db.session.commit()
-            flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
+            #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
         return redirect(url_for('device.devices'))
 
@@ -118,7 +93,7 @@ def delete(id):
     device = Device.query.get_or_404(id)
     db.session.delete(device)
     db.session.commit()
-    flash(_('You have successfully deleted the device.'))
+    #flash(_('You have successfully deleted the device.'))
 
     return redirect(url_for('device.devices'))
 

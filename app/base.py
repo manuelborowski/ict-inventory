@@ -185,7 +185,6 @@ def get_ajax_table(table):
     _filtered_dict = [i.ret_dict() for i in _filtered_list]
     for i in _filtered_dict:
         for h in table['href']:
-            print "i" + h['attribute'] + "= \"<a href=\\\"{}\\\">{}</a>\".format(url_for(" + h['route'] + ", id=i" + h['id'] + "), i" + h['attribute'] + ')'
             exec("i" + h['attribute'] + "= \"<a href=\\\"{}\\\">{}</a>\".format(url_for(" + h['route'] + ", id=i" + h['id'] + "), i" + h['attribute'] + ')')
         i['DT_RowId'] = i['id']
     output = {}
@@ -197,7 +196,6 @@ def get_ajax_table(table):
     fml = get_flashed_messages()
     if not not fml:
         output['flash'] = fml
-    #print '>>>>>>>>> OUTPUT {}'.format(output)
     l = jsonify(output)
     print l.data
     return jsonify(output)

@@ -16,11 +16,8 @@ tables_configuration = {
                       {'name': 'Device', 'data':'purchase.device.brandtype', 'order_by': Device.brand},
                       {'name': 'Serial', 'data': 'serial', 'order_by': Asset.serial}],
         'filter' :  ['since', 'value', 'location', 'category', 'status', 'supplier', 'device'],
-        'view_route': 'asset.view',
-        # 'href' : [{'attribute':'name', 'route':'asset.view', 'id':'id'},
-        #           {'attribute':'purchase][supplier][name', 'route':'supplier.view', 'id':'id'}
-        #           ]
         'href': [{'attribute': '["name"]', 'route': '"asset.view"', 'id': '["id"]'},
+                 {'attribute': '["purchase"]["since"]', 'route': '"purchase.view"', 'id': '["purchase"]["id"]'},
                  {'attribute': '["purchase"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["purchase"]["supplier"]["id"]'},
                  {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
                  ]
@@ -33,7 +30,21 @@ tables_configuration = {
             {'name': 'Supplier', 'data': 'supplier.name', 'order_by': Supplier.name},
             {'name': 'Device', 'data': 'device.brandtype', 'order_by':Device.brand}],
         'filter' :  ['since', 'value', 'supplier', 'device'],
-        'view_route' : 'purchase.view',
-        'href': [{'attribute': 'value', 'route': 'purchase.view', 'id': 'id'}]
-}
+        'href': [{'attribute': '["value"]', 'route': '"purchase.view"', 'id': '["id"]'},
+                 {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
+                 {'attribute': '["device"]["brandtype"]', 'route': '"device.view"', 'id': '["device"]["id"]'}
+                ]
+    },
+    'device': {
+        'model': Device,
+        'template': [
+            {'name': 'Brand', 'data': 'brand', 'order_by': Device.brand},
+            {'name': 'Type', 'data': 'type', 'order_by': Device.type},
+            {'name': 'Category', 'data': 'category', 'order_by': Device.category},
+            {'name': 'CE', 'data': 'ce', 'order_by': Device.ce},
+            {'name': 'Power', 'data': 'power', 'order_by': Device.power}],
+        'filter': ['category', 'device'],
+        'href': [{'attribute': '["brand"]', 'route': '"device.view"', 'id': '["id"]'},
+                 ]
+    }
 }
