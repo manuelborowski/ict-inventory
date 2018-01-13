@@ -24,10 +24,12 @@ def source_data():
 @login_required
 def users   ():
     #The following line is required only to build the filter-fields on the page.
-    __filter, __filter_form, a,b, c = build_filter(tables_configuration['user'])
-    return render_template('base_multiple_items.html', title='users', route='user.users', subject='user',
-                           header_list=tables_configuration['user']['template'], filter=__filter, filter_form=__filter_form,
-                           delete_message="")
+    _filter, _filter_form, a,b, c = build_filter(tables_configuration['user'])
+    return render_template('base_multiple_items.html',
+                           title='users',
+                           filter=_filter, filter_form=_filter_form,
+                           config=tables_configuration['user'])
+
 
 #add a new user
 @user.route('/user/add/<int:id>', methods=['GET', 'POST'])

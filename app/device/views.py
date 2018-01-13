@@ -23,10 +23,11 @@ def source_data():
 @login_required
 def devices():
     #The following line is required only to build the filter-fields on the page.
-    __filter, __filter_form, a,b, c = build_filter(tables_configuration['device'])
-    return render_template('base_multiple_items.html', title='devices', route='device.devices', subject='device',
-                           header_list=tables_configuration['device']['template'], filter=__filter, filter_form=__filter_form,
-                           delete_message="Are you sure you want to delete this device AND all associated purchases AND assets?")
+    _filter, _filter_form, a,b, c = build_filter(tables_configuration['device'])
+    return render_template('base_multiple_items.html',
+                           title='devices',
+                           filter=_filter, filter_form=_filter_form,
+                           config = tables_configuration['device'])
 
 #add a new device
 @device.route('/device/add/<int:id>', methods=['GET', 'POST'])

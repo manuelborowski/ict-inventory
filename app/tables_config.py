@@ -43,6 +43,10 @@ tables_configuration = {
     },
     'purchase' : {
         'model' : Purchase,
+        'title' : 'purchase',
+        'route' : 'purchase.purchases',
+        'subject' :'purchase',
+        'delete_message' : 'Are you sure you want to delete this purchase AND all associated assets?',
         'template' : [
             {'name': 'Value', 'data': 'value', 'order_by': Purchase.value},
             {'name': 'Since', 'data': 'since', 'order_by': Purchase.since},
@@ -62,6 +66,10 @@ tables_configuration = {
     },
     'device': {
         'model': Device,
+        'title' : 'device',
+        'route' : 'device.devices',
+        'subject' :'device',
+        'delete_message' : 'Are you sure you want to delete this device AND all associated purchases AND assets?',
         'template': [
             {'name': 'Brand', 'data': 'brand', 'order_by': Device.brand},
             {'name': 'Type', 'data': 'type', 'order_by': Device.type},
@@ -80,6 +88,10 @@ tables_configuration = {
     },
     'supplier': {
         'model': Supplier,
+        'title' : 'supplier',
+        'route' : 'supplier.suppliers',
+        'subject' :'supplier',
+        'delete_message' : 'Are you sure you want to delete this supplier AND all associated purchases AND assets?',
         'template': [
             {'name': 'Name', 'data': 'name', 'order_by': Supplier.name},
             {'name': 'Description', 'data' : 'description', 'order_by': Supplier.description}],
@@ -95,6 +107,10 @@ tables_configuration = {
     },
     'user': {
         'model': User,
+        'title' : 'user',
+        'route' : 'user.users',
+        'subject' :'user',
+        'delete_message' : '',
         'template': [
             {'name': 'Username', 'data': 'username', 'order_by': User.username},
             {'name': 'First name', 'data': 'first_name', 'order_by': User.first_name},

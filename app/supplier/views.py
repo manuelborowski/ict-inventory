@@ -1,46 +1,16 @@
 # -*- coding: utf-8 -*-
 # app/user/views.py
 
-from flask import render_template, render_template_string, flash, redirect, url_for, request
+from flask import render_template, redirect, url_for, request
 from flask_login import login_required
-from flask_table import Table, Col
 
-from .forms import AddForm, EditForm, ViewForm, CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
+from .forms import AddForm, EditForm, ViewForm
 from .. import db
 from . import supplier
-from ..models import Supplier, Asset, Purchase, Device
-from ..views import NoEscapeCol
+from ..models import Supplier
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
-
-#    class SupplierTable(Table):
-#     id = Col('Id')
-#     name = Col('Name')
-#     description = Col('Description')
-#     edit = NoEscapeCol('')
-#     view = NoEscapeCol('')
-#     delete = NoEscapeCol('')
-#     classes = ['table ' 'table-striped ' 'table-bordered ']
-#     html_attrs = {'id': 'suppliertable', 'cellspacing': '0', 'width': '100%'}
-#
-#
-#
-# #show a list of suppliers
-# @supplier.route('/supplier', methods=['GET', 'POST'])
-# @login_required
-# def suppliers():
-#     suppliers, filter = build_filter(Supplier, supplier=True)
-#
-#     for s in suppliers:
-#         s.delete = render_template_string("<a class='confirmBeforeDelete' u_id=" + str(s.id) + "><i class='fa fa-trash'></i></a>")
-#         s.view = render_template_string("<a href=\"{{ url_for('supplier.view', id=" + str(s.id) + ") }}\"><i class='fa fa-eye'></i>")
-#         s.edit = render_template_string("<a href=\"{{ url_for('supplier.edit', id=" + str(s.id) + ") }}\"><i class='fa fa-pencil'></i>")
-#     suppliers_table = SupplierTable(suppliers)
-#
-#     return render_template('base_multiple_items.html', title='suppliers', route='supplier.suppliers', subject='supplier', table=suppliers_table, filter=filter)
-#
-
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @supplier.route('/supplier/data', methods=['GET', 'POST'])
@@ -53,10 +23,11 @@ def source_data():
 @login_required
 def suppliers():
     #The following line is required only to build the filter-fields on the page.
-    __filter, __filter_form, a,b, c = build_filter(tables_configuration['supplier'])
-    return render_template('base_multiple_items.html', title='suppliers', route='supplier.suppliers', subject='supplier',
-                           header_list=tables_configuration['supplier']['template'], filter=__filter, filter_form=__filter_form,
-                           delete_message="Are you sure you want to delete this supplier AND all associated purchases AND assets?")
+    _filter, _filter_form, a,b, c = build_filter(tables_configuration['supplier'])
+    return render_template('base_multiple_items.html',
+                           title='suppliers',
+                           filter=_filter, filter_form=_filter_form,
+                           config = tables_configuration['supplier'])
 
 
 #add a new supplier
