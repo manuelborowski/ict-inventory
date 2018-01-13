@@ -6,7 +6,7 @@ from flask import render_template, render_template_string, flash, redirect, url_
 from sqlalchemy import or_
 import time
 
-from models import Asset, Purchase, Device, Supplier
+from models import Asset, Purchase, Device, Supplier, User
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 
 
@@ -153,6 +153,14 @@ def build_filter(table):
             search_constraints.append(Device.type.like(search_value))
         if Asset.serial in column_list:
             search_constraints.append(Asset.serial.like(search_value))
+        if User.username in column_list:
+            search_constraints.append(User.username.like(search_value))
+        if User.first_name in column_list:
+            search_constraints.append(User.first_name.like(search_value))
+        if User.last_name in column_list:
+            search_constraints.append(User.last_name.like(search_value))
+        if User.email in column_list:
+            search_constraints.append(User.email.like(search_value))
 
         if search_constraints:
             _filtered_list = _filtered_list.filter(or_(*search_constraints))
