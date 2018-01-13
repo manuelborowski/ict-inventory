@@ -2,7 +2,7 @@
 #app/asset/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, TextAreaField, SelectField, DecimalField, FileField, IntegerField
+from wtforms import StringField, DateField, SelectField, DecimalField,  IntegerField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms.widgets import HiddenInput

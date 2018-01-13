@@ -196,8 +196,6 @@ def get_ajax_table(table):
     fml = get_flashed_messages()
     if not not fml:
         output['flash'] = fml
-    l = jsonify(output)
-    print l.data
     return jsonify(output)
 
 

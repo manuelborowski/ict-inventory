@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, jsonify
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
@@ -23,10 +23,11 @@ def source_data():
 @login_required
 def assets():
     #The following line is required only to build the filter-fields on the page.
-    __filter, __filter_form, a,b, c = build_filter(tables_configuration['asset'])
-    return render_template('base_multiple_items.html', title='assets', route='asset.assets', subject='asset',
-                           header_list=tables_configuration['asset']['template'], filter=__filter, filter_form=__filter_form,
-                           delete_message="")
+    _filter, _filter_form, a,b, c = build_filter(tables_configuration['asset'])
+    return render_template('base_multiple_items.html',
+                           title='assets',
+                           filter=_filter, filter_form=_filter_form,
+                           config = tables_configuration['asset'])
 
 #add a new asset
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])

@@ -43,6 +43,9 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User: {}>'.format(self.username)
 
+    def ret_dict(self):
+        return {'id':self.id, 'email':self.email, 'username':self.username, 'first_name':self.first_name, 'last_name':self.last_name,
+                'is_admin': self.is_admin}
 
 # Set up user_loader
 @login_manager.user_loader

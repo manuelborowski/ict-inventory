@@ -23,10 +23,11 @@ def source_data():
 @login_required
 def purchases():
     #The following line is required only to build the filter-fields on the page.
-    __filter, __filter_form, a,b, c = build_filter(tables_configuration['purchase'])
+    _filter, _filter_form, a,b, c = build_filter(tables_configuration['purchase'])
     return render_template('base_multiple_items.html', title='purchases', route='purchase.purchases', subject='purchase',
-                           header_list=tables_configuration['purchase']['template'], filter=__filter, filter_form=__filter_form,
-                           delete_message="Are you sure you want to delete this purchase AND all associated assets?")
+                           header_list=tables_configuration['purchase']['template'], filter=_filter, filter_form=_filter_form,
+                           delete_message="Are you sure you want to delete this purchase AND all associated assets?",
+                           floating_menu=tables_configuration['asset']['floating_menu'])
 
 #add a new purchase
 @purchase.route('/purchase/add/<int:id>', methods=['GET', 'POST'])
@@ -49,7 +50,8 @@ def add(id=-1):
         #flash(_(u'You have added purchase {}').format(purchase.since))
         return redirect(url_for('purchase.purchases'))
 
-    return render_template('purchase/purchase.html', form=form, title=_(u'Add a purchase'), role='add', route='purchase.purchases', subject='purchase')
+    return render_template('purchase/purchase.html', form=form, title=_(u'Add a purchase'), role='add', route='purchase.purchases',
+                           subject='purchase')
 
 
 #edit a purchase
