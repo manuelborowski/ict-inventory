@@ -2,16 +2,16 @@
 # app/user/views.py
 
 from flask import render_template, redirect, url_for, request
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db
 from . import user
 from ..models import User
 
-
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
+from ..floating_menu import user_menu_config, admin_menu_config
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @user.route('/user/data', methods=['GET', 'POST'])
@@ -22,13 +22,20 @@ def source_data():
 #ashow a list of purchases
 @user.route('/user', methods=['GET', 'POST'])
 @login_required
-def users   ():
+def users():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['user'])
+    config = tables_configuration['user']
+    #floating menu depends if current user is admin or not
+    if current_user.is_admin:
+        config['floating_menu'] = admin_menu_config
+    else:
+        config['floating_menu'] = user_menu_config
+
     return render_template('base_multiple_items.html',
                            title='users',
                            filter=_filter, filter_form=_filter_form,
-                           config=tables_configuration['user'])
+                           config=config)
 
 
 #add a new user
@@ -96,3 +103,8 @@ def delete(id):
 
     return redirect(url_for('user.users'))
 
+def filter(query_in):
+    #If the logged in user is NOT administrator, display the data of the current user only
+    if not current_user.is_admin:
+        return query_in.filter(User.id==current_user.id)
+    return query_in

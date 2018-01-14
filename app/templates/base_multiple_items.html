@@ -230,7 +230,7 @@ $(document).ready(function() {
         e.preventDefault();
         row_id = $(e.target).closest('tr').prop('id');
     }, false);
-    document.getElementById("datatable").addEventListener('click', function(e) {
+    document.addEventListener('click', function(e) {
         i.opacity = "0";
         setTimeout(function() {i.visibility = "hidden";}, 1);
     }, false);

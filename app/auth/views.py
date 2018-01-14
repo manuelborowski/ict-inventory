@@ -2,13 +2,12 @@
 # app/auth/views.py
 
 from flask import flash, redirect, render_template, url_for, request
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 from . import auth
 from forms import LoginForm
 from .. import db
 from ..models import User
-from login import handle_login
 
 @auth.route('/', methods=['GET', 'POST'])
 def login():
@@ -25,6 +24,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # log user in
             login_user(user)
+            print '>>>>>>>>>> CURRENT USER {}'.format(current_user.is_admin )
 
             # redirect to the appropriate page
             if 'redirect_url' in request.args:
@@ -36,14 +36,6 @@ def login():
 
      # load login template
     return render_template('auth/login.html', form=form, title='Login')
-
-    ret = handle_login()
-    if ret: return ret
-    #in case the another url is to be used instead of the default one...
-    if 'redirect_url' in request.args:
-        return redirect(request.args['redirect_url'])
-    return redirect(url_for('asset.assets'))
-
 
 @auth.route('/logout')
 @login_required

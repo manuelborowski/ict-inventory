@@ -1,15 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from models import Asset, Purchase, Device, Supplier, User
-
-floating_menu_config = {
-    "edit" : {"menu_id" : "edit_menu_item", "menu_text": "Edit", "route" : "edit", "flags" : ["id_required"]},
-    "delete" : {"menu_id" : "delete_menu_item", "menu_text": "Delete", "route": "delete", "flags": ["id_required", "confirm_before_delete"]},
-    "copy": {"menu_id": "copy_menu_item", "menu_text": "Copy from", "route": "add", "flags": ["id_required"]},
-    "add": {"menu_id": "add_menu_item", "menu_text": "Add", "route": "add", "flags": []},
-    "view": {"menu_id": "view_menu_item", "menu_text": "View", "route": "view", "flags": ["id_required"]},
-}
-
+import user.extra_filtering
+from floating_menu import default_menu_config
 
 tables_configuration = {
     'asset' : {
@@ -34,12 +27,7 @@ tables_configuration = {
                  {'attribute': '["purchase"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["purchase"]["supplier"]["id"]'},
                  {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
                  ],
-        'floating_menu' : [ floating_menu_config['edit'],
-                            floating_menu_config['copy'],
-                            floating_menu_config['add'],
-                            floating_menu_config['view'],
-                            floating_menu_config['delete'],
-                          ]
+        'floating_menu' : default_menu_config,
     },
     'purchase' : {
         'model' : Purchase,
@@ -57,12 +45,7 @@ tables_configuration = {
                  {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
                  {'attribute': '["device"]["brandtype"]', 'route': '"device.view"', 'id': '["device"]["id"]'}
                 ],
-        'floating_menu': [floating_menu_config['edit'],
-                          floating_menu_config['copy'],
-                          floating_menu_config['add'],
-                          floating_menu_config['view'],
-                          floating_menu_config['delete'],
-                          ]
+        'floating_menu' : default_menu_config,
     },
     'device': {
         'model': Device,
@@ -79,12 +62,7 @@ tables_configuration = {
         'filter': ['category', 'device'],
         'href': [{'attribute': '["brand"]', 'route': '"device.view"', 'id': '["id"]'},
                  ],
-        'floating_menu': [floating_menu_config['edit'],
-                          floating_menu_config['copy'],
-                          floating_menu_config['add'],
-                          floating_menu_config['view'],
-                          floating_menu_config['delete'],
-                          ]
+        'floating_menu' : default_menu_config,
     },
     'supplier': {
         'model': Supplier,
@@ -98,12 +76,7 @@ tables_configuration = {
         'filter': ['supplier'],
         'href': [{'attribute': '["name"]', 'route': '"supplier.view"', 'id': '["id"]'},
                  ],
-        'floating_menu': [floating_menu_config['edit'],
-                          floating_menu_config['copy'],
-                          floating_menu_config['add'],
-                          floating_menu_config['view'],
-                          floating_menu_config['delete'],
-                          ]
+        'floating_menu' : default_menu_config,
     },
     'user': {
         'model': User,
@@ -120,12 +93,8 @@ tables_configuration = {
         'filter': [],
         'href': [{'attribute': '["username"]', 'route': '"user.view"', 'id': '["id"]'},
                  ],
-        'floating_menu': [floating_menu_config['edit'],
-                          floating_menu_config['copy'],
-                          floating_menu_config['add'],
-                          floating_menu_config['view'],
-                          floating_menu_config['delete'],
-                          ]
+        'floating_menu' : default_menu_config,
+        'query_filter' : user.extra_filtering.filter,
     }
 }
 

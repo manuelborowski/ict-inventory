@@ -18,17 +18,15 @@ class EditForm(FlaskForm):
     last_name = StringField('Last name', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    is_admin = BooleanField('Is admin', validators=[DataRequired()])
+    is_admin = BooleanField('Is admin')
     id = IntegerField(widget=HiddenInput())
-    password = PasswordField('Password', validators=[EqualTo('confirm_password')])
-    confirm_password = PasswordField('Confirm Password')
-
 
 class AddForm(EditForm):
     """
     Add a user
     """
     password = PasswordField('Password', validators=[DataRequired(), EqualTo('confirm_password')])
+    confirm_password = PasswordField('Confirm Password')
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Username is already in use')

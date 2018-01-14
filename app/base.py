@@ -2,7 +2,8 @@
 from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
-from flask import render_template, render_template_string, flash, redirect, url_for, request, get_flashed_messages, session, jsonify
+from flask import flash,  request, get_flashed_messages, jsonify, url_for
+from flask_login import current_user
 from sqlalchemy import or_
 import time
 
@@ -76,6 +77,9 @@ def build_filter(table):
         _filtered_list = _filtered_list.join(Device)
     if 'supplier' in _filters_enabled and _model is not Supplier :
         _filtered_list = _filtered_list.join(Supplier)
+
+    if 'query_filter' in table:
+        _filtered_list = table['query_filter'](_filtered_list)
 
     _total_count = _filtered_list.count()
 
