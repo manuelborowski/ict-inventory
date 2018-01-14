@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # app/user/views.py
 
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
-from .forms import AddForm, EditForm, ViewForm
+from .forms import AddForm, EditForm, ViewForm, ChangePasswordForm
 from .. import db
 from . import user
 from ..models import User
@@ -60,9 +60,7 @@ def add(id=-1):
         db.session.add(user)
         db.session.commit()
         #flash('You have added user {}'.format(user.username))
-
         return redirect(url_for('user.users'))
-
     return render_template('user/user.html', form=form, title='Add a user', role='add', route='user.users', subject='user')
 
 
@@ -79,7 +77,6 @@ def edit(id):
             #flash('You have edited user {}'.format(user.username))
 
         return redirect(url_for('user.users'))
-
     return render_template('user/user.html', form=form, title='Edit a user', role='edit', route='user.users', subject='user')
 
 #no login required
@@ -89,7 +86,6 @@ def view(id):
     form = ViewForm(obj=user)
     if form.validate_on_submit():
         return redirect(url_for('user.users'))
-
     return render_template('user/user.html', form=form, title='View a user', role='view', route='user.users', subject='user')
 
 #delete a user
@@ -100,11 +96,18 @@ def delete(id):
     db.session.delete(user)
     db.session.commit()
     #flash('You have successfully deleted the user.')
-
     return redirect(url_for('user.users'))
 
-def filter(query_in):
-    #If the logged in user is NOT administrator, display the data of the current user only
-    if not current_user.is_admin:
-        return query_in.filter(User.id==current_user.id)
-    return query_in
+@user.route('/user/change-password/<int:id>', methods=['GET', 'POST'])
+@login_required
+def change_pwd(id):
+    user = User.query.get_or_404(id)
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if user.verify_password(form.old_password.data):
+            user.password = form.new_password.data
+            db.session.commit()
+            flash('Your password was successfully changed.')
+            return redirect(url_for('user.users'))
+        flash('Invalid username or password.')
+    return render_template('user/user.html', form=form, title='Change password', role='change_password', route='user.users', subject='user')

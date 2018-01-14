@@ -2,10 +2,12 @@
 <!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
 
 {% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
 {% extends "base.html" %}
 
 {% block content2 %}
 <div class="content-section">
+  {{ utils.flashed_messages() }}
     <div class="center">
         <h1>{{title}}</h1>
         <br/>

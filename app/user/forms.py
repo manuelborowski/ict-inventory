@@ -45,3 +45,7 @@ class ViewForm(FlaskForm):
     is_admin = BooleanField('Is admin', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())
 
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Old password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm_new_password')])
+    confirm_new_password = PasswordField('Confirm new password')

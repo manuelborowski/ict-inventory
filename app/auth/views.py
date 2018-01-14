@@ -24,8 +24,6 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # log user in
             login_user(user)
-            print '>>>>>>>>>> CURRENT USER {}'.format(current_user.is_admin )
-
             # redirect to the appropriate page
             if 'redirect_url' in request.args:
                 return redirect(request.args['redirect_url'])
