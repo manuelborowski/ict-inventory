@@ -235,6 +235,13 @@ $(document).ready(function() {
         setTimeout(function() {i.visibility = "hidden";}, 1);
     }, false);
 
+    // Get column index when right clicking on a cell
+    //$('#datatable tbody').on( 'contextmenu', 'td', function () {
+    //    column_id = table.cell( this ).index().column;
+    //    console.log( 'Clicked on cell in visible column: '+column_id );
+    //});
+
+
     function menu(x, y) {
       i.top = y + "px";
       i.left = x + "px";
