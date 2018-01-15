@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, send_file, send_from_directory, config
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
-from . import purchase
+from . import purchase, cms_docs, cms_docs_path
 from ..models import Purchase
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
+import os
+from flask_uploads import UploadSet, configure_uploads, DOCUMENTS
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @purchase.route('/purchase/data', methods=['GET', 'POST'])
@@ -59,11 +61,15 @@ def add(id=-1):
 @purchase.route('/purchase/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
+    print '>>>> REQUEST.VALUES {}'.format(request.values)
     purchase = Purchase.query.get_or_404(id)
     form = EditForm(obj=purchase)
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
+            if request.files['filename']:
+                filename = cms_docs.save(request.files['filename'])
+                print '>>> FILENAME'.format(filename)
             db.session.commit()
             #flash(_(u'You have edited purchase {}').format(purchase))
 
@@ -71,6 +77,7 @@ def edit(id):
 
     return render_template('purchase/purchase.html', form=form, title=_(u'Edit a purchase'), role='edit', route='purchase.purchases',
                            subject='purchase')
+
 
 #no login required
 @purchase.route('/purchase/view/<int:id>', methods=['GET', 'POST'])
@@ -93,3 +100,24 @@ def delete(id):
 
     return redirect(url_for('purchase.purchases'))
 
+#download a commissioning file
+@purchase.route('/purchase/download/<string:file>', methods=['GET', 'POST'])
+@login_required
+def download(file=""):
+    print '>>>> REQUEST.VALUES {}'.format(request.values)
+    print '>>> FILE {}'.format(file)
+    try:
+        #return send_file(cms_docs.path(file), as_attachment=True)
+        APP_ROOT = os.path.dirname(os.path.abspath(__file__))  # refers to application_top
+        APP_ROOT = "/home/aboro/school/ict-inventory"
+        dir_path = os.path.join(APP_ROOT, cms_docs_path)
+        print dir_path
+        return send_from_directory(dir_path, file, as_attachment=True)
+    except Exception as e:
+        return str(e)
+    #purchase = Purchase.query.get_or_404(id)
+    #db.session.delete(purchase)
+    #db.session.commit()
+     #flash(_('You have successfully deleted the purchase.'))
+
+    return redirect(url_for('purchase.purchases'))

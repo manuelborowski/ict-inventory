@@ -13,6 +13,7 @@ import config
 
 import gettext
 
+
 # Set up message catalog access
 t = gettext.translation('messages', 'app/translations', fallback=True, languages=['nl'])
 t.install()
@@ -78,8 +79,10 @@ def create_app(config_name):
         from .device import device as device_blueprint
         app.register_blueprint(device_blueprint)
 
-        from .purchase import purchase as purchase_blueprint
-        app.register_blueprint(purchase_blueprint)
+        from . import purchase
+        app.register_blueprint(purchase.purchase)
+        purchase.init_documents(app)
+
 
         @app.errorhandler(403)
         def forbidden(error):

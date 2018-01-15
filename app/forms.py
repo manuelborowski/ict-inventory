@@ -21,3 +21,7 @@ class DeviceFilter(FlaskForm):
     dl = Device.query.all()
     dl.insert(0, '')
     device = SelectField('', choices=zip(dl, dl))
+
+class NonValidatingSelectFields(SelectField):
+    def pre_validate(self, form):
+        pass

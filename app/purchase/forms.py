@@ -6,7 +6,10 @@ from wtforms import StringField, DateField, TextAreaField, SelectField, DecimalF
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms.widgets import HiddenInput
-import datetime
+import datetime, os
+
+from ..forms import NonValidatingSelectFields
+from . import cms_docs_path
 
 from ..models import Purchase, Supplier, Device
 
@@ -16,11 +19,22 @@ def get_suppliers():
 def get_devices():
     return Device.query.all()
 
+def get_cms_docs():
+    cms_file_list = os.listdir(cms_docs_path)
+    print '>>>> COMMISSIONING FILES {}'.format(cms_file_list)
+    return cms_file_list
+
 class EditForm(FlaskForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EditForm, self).__init__(*args, **kwargs)
+        self.commissioning.choices = zip(get_cms_docs(), get_cms_docs())
+
     since = DateField('Date', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     value = DecimalField('Value (&euro;)', default=0.0)
     supplier = QuerySelectField('Supplier', query_factory=get_suppliers)
     device = QuerySelectField('Device', query_factory=get_devices)
+    commissioning = NonValidatingSelectFields('Commissioning')
     id = IntegerField(widget=HiddenInput())
 
 
@@ -34,5 +48,8 @@ class ViewForm(FlaskForm):
     value = DecimalField('Value (&euro;)', render_kw={'readonly':''})
     supplier = StringField('Supplier', render_kw={'readonly':''})
     device = StringField('Device', render_kw={'readonly':''})
+    commissioning = StringField('Commissioning', render_kw={'readonly':''})
+
+
     picture = StringField('Picture', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())
