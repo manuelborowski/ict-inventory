@@ -104,12 +104,8 @@ def delete(id):
 @purchase.route('/purchase/download/<string:file>', methods=['GET', 'POST'])
 @login_required
 def download(file=""):
-    print '>>>> REQUEST.VALUES {}'.format(request.values)
-    print '>>> FILE {}'.format(file)
-    print '>>>>>> CONFIG '.format(app.root_path)
     try:
-        if (file in get_cms_docs()):
-            flash('File "{}" already exists').format(file)
+        print '>>>>>>> CONFIG {}'.format(config)
         #return send_file(cms_docs.path(file), as_attachment=True)
         APP_ROOT = os.path.dirname(os.path.abspath(__file__))  # refers to application_top
         APP_ROOT = "/home/aboro/school/ict-inventory"

@@ -13,6 +13,7 @@ import config
 
 import gettext
 
+static_path = "app/static"
 
 # Set up message catalog access
 t = gettext.translation('messages', 'app/translations', fallback=True, languages=['nl'])
@@ -27,6 +28,7 @@ from config import app_config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+
 
 
 def create_admin(db):

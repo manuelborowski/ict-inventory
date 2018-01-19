@@ -8,6 +8,7 @@ import os
 
 #the name of the uploadset is reused in UPLOADED_..._DEST
 cms_docs = UploadSet('commissioning', DOCUMENTS)
+cms_path = 'commissioning'
 cms_docs_path = 'app/static/commissioning'
 
 def init_documents(app):
