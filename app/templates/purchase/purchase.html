@@ -31,9 +31,18 @@
         function openDialog() { fd.click(); }
 
         //Called when the filedialog closes
-        fd.addEventListener('change' ,function(e){
-            console.log(fd.files[0].name);
+        fd.addEventListener('change',   function(e) {
+            //console.log(fd.files[0].name);
             var commissioning = document.getElementById('commissioning');
+             for(var i=0; i < commissioning.options.length; i++) {
+                console.log(commissioning.options[i].value);
+                if (commissioning.options[i].value == fd.files[0].name) {
+                    console.log('File "' + fd.files[0].name + '" already exists, select another one');
+                    toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
+                    fd.value="";
+                    return;
+                }
+            }
             var option = document.createElement("option");
             option.text = fd.files[0].name;
             commissioning.add(option, 0);

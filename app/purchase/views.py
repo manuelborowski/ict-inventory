@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, send_file, send_from_directory, config
+from flask import render_template, redirect, url_for, request, send_file, send_from_directory, config, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _
-from . import purchase, cms_docs, cms_docs_path
+from .. import db, _, app
+from . import purchase, cms_docs, cms_docs_path, get_cms_docs
 from ..models import Purchase
 
 from ..base import build_filter, get_ajax_table
@@ -106,13 +106,18 @@ def delete(id):
 def download(file=""):
     print '>>>> REQUEST.VALUES {}'.format(request.values)
     print '>>> FILE {}'.format(file)
+    print '>>>>>> CONFIG '.format(app.root_path)
     try:
+        if (file in get_cms_docs()):
+            flash('File "{}" already exists').format(file)
         #return send_file(cms_docs.path(file), as_attachment=True)
         APP_ROOT = os.path.dirname(os.path.abspath(__file__))  # refers to application_top
         APP_ROOT = "/home/aboro/school/ict-inventory"
         dir_path = os.path.join(APP_ROOT, cms_docs_path)
         print dir_path
-        return send_from_directory(dir_path, file, as_attachment=True)
+        #return send_from_directory(dir_path, file, as_attachment=True)
+        return app.send_static_file('commissioning/' + file)
+        #return send_file(cms_docs.path(file), as_attachment=True)
     except Exception as e:
         return str(e)
     #purchase = Purchase.query.get_or_404(id)

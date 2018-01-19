@@ -19,6 +19,8 @@ t = gettext.translation('messages', 'app/translations', fallback=True, languages
 t.install()
 _ = t.ugettext
 
+app = Flask(__name__, instance_relative_config=True)
+
 # local imports
 from config import app_config
 
@@ -35,7 +37,7 @@ def create_admin(db):
 
 
 def create_app(config_name):
-    app = Flask(__name__, instance_relative_config=True)
+    global app
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 #    app.create_jinja_environment()
@@ -99,6 +101,8 @@ def create_app(config_name):
         @app.route('/500')
         def error_500():
             abort(500)
+
+    print '>>>>>>>> APP CONFIG {}'.format(app.config)
 
     return app
 

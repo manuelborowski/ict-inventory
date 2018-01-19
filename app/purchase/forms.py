@@ -9,7 +9,7 @@ from wtforms.widgets import HiddenInput
 import datetime, os
 
 from ..forms import NonValidatingSelectFields
-from . import cms_docs_path
+from . import get_cms_docs
 
 from ..models import Purchase, Supplier, Device
 
@@ -19,10 +19,6 @@ def get_suppliers():
 def get_devices():
     return Device.query.all()
 
-def get_cms_docs():
-    cms_file_list = os.listdir(cms_docs_path)
-    print '>>>> COMMISSIONING FILES {}'.format(cms_file_list)
-    return cms_file_list
 
 class EditForm(FlaskForm):
 
