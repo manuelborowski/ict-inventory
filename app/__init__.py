@@ -13,8 +13,6 @@ import config
 
 import gettext
 
-static_path = "app/static"
-
 # Set up message catalog access
 t = gettext.translation('messages', 'app/translations', fallback=True, languages=['nl'])
 t.install()
@@ -104,7 +102,7 @@ def create_app(config_name):
         def error_500():
             abort(500)
 
-    print '>>>>>>>> APP CONFIG {}'.format(app.config)
+    #print '>>>>>>>> APP CONFIG {}'.format(app.config)
 
     return app
 

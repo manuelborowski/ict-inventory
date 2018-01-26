@@ -7,7 +7,7 @@ class Config(object):
     """
     Common configurations
     """
-
+    STATIC_PATH = "app/static"
 
 class DevelopmentConfig(Config):
     """

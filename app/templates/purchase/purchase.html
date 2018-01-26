@@ -13,19 +13,25 @@
         {{ wtf.form_field(form.commissioning) }}
             <div class="input-group-btn">
                 <input class="btn btn-default" id="download" name="button" type="button" value="Download">
-                <input class="btn btn-default" id="upload" name="button" type="button" value="Upload">
+                {% if role == "edit" %}
+                    <input class="btn btn-default" id="upload" name="button" type="button" value="Upload">
+                {% endif %}
             </div>
     </div>
     <input id='fileid' type='file' name='filename' style="visibility : hidden" hidden/>
     <script>
-        document.getElementById('upload').addEventListener('click', openDialog);
+        {% if role == "edit" %}
+            document.getElementById('upload').addEventListener('click', openDialog);
+        {% endif %}
         document.getElementById('download').addEventListener('click', download);
 
+        //To download the file, jump to the download url with the filename as parameter
         function download() {
             var commissioning_file = document.getElementById('commissioning').value;
             window.location.href = Flask.url_for("purchase.download", {'file' : commissioning_file});
         }
-
+        //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
+        //Pushing the bootstrap-upload button generates a click-event on the filedialog element
         var fd = document.getElementById('fileid');
         //Open the filedialog
         function openDialog() { fd.click(); }

@@ -6,7 +6,7 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _, app
-from . import purchase, cms_docs, cms_docs_path, get_cms_docs
+from . import purchase, cms_path
 from ..models import Purchase
 
 from ..base import build_filter, get_ajax_table
@@ -105,20 +105,9 @@ def delete(id):
 @login_required
 def download(file=""):
     try:
-        print '>>>>>>> CONFIG {}'.format(config)
-        #return send_file(cms_docs.path(file), as_attachment=True)
-        APP_ROOT = os.path.dirname(os.path.abspath(__file__))  # refers to application_top
-        APP_ROOT = "/home/aboro/school/ict-inventory"
-        dir_path = os.path.join(APP_ROOT, cms_docs_path)
-        print dir_path
-        #return send_from_directory(dir_path, file, as_attachment=True)
-        return app.send_static_file('commissioning/' + file)
-        #return send_file(cms_docs.path(file), as_attachment=True)
+        return app.send_static_file(os.path.join(cms_path, file))
     except Exception as e:
-        return str(e)
-    #purchase = Purchase.query.get_or_404(id)
-    #db.session.delete(purchase)
-    #db.session.commit()
-     #flash(_('You have successfully deleted the purchase.'))
+        flash(_('Could not download file {}'.format(file)))
+        flash(_('Does it still exist?'))
 
     return redirect(url_for('purchase.purchases'))
