@@ -6,7 +6,7 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _, app
-from . import purchase, cms_path
+from . import purchase, cms_path, cms_docs
 from ..models import Purchase
 
 from ..base import build_filter, get_ajax_table
@@ -61,7 +61,6 @@ def add(id=-1):
 @purchase.route('/purchase/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
-    print '>>>> REQUEST.VALUES {}'.format(request.values)
     purchase = Purchase.query.get_or_404(id)
     form = EditForm(obj=purchase)
     if form.validate_on_submit():
@@ -74,7 +73,6 @@ def edit(id):
             #flash(_(u'You have edited purchase {}').format(purchase))
 
         return redirect(url_for('purchase.purchases'))
-
     return render_template('purchase/purchase.html', form=form, title=_(u'Edit a purchase'), role='edit', route='purchase.purchases',
                            subject='purchase')
 

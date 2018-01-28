@@ -101,8 +101,5 @@ def create_app(config_name):
         @app.route('/500')
         def error_500():
             abort(500)
-
-    #print '>>>>>>>> APP CONFIG {}'.format(app.config)
-
     return app
 

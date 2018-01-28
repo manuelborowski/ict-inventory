@@ -11,17 +11,21 @@
     {{ wtf.form_field(form.device) }}
     <div class="input-group">
         {{ wtf.form_field(form.commissioning) }}
-            <div class="input-group-btn">
-                <input class="btn btn-default" id="download" name="button" type="button" value="Download">
-                {% if role == "edit" %}
-                    <input class="btn btn-default" id="upload" name="button" type="button" value="Upload">
-                {% endif %}
-            </div>
+        <div class="input-group-btn">
+            <input class="btn btn-default" id="download" name="button" type="button" value="Download">
+            {% if role == "edit" %}
+                <input class="btn btn-default" id="upload" name="button" type="button" value="Upload">
+            {% endif %}
+        </div>
     </div>
+
     <input id='fileid' type='file' name='filename' style="visibility : hidden" hidden/>
     <script>
+        var fd = document.getElementById('fileid');
         {% if role == "edit" %}
-            document.getElementById('upload').addEventListener('click', openDialog);
+            //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
+            //Pushing the bootstrap-upload button generates a click-event on the filedialog element
+            document.getElementById('upload').addEventListener('click', function(){fd.click();});
         {% endif %}
         document.getElementById('download').addEventListener('click', download);
 
@@ -30,12 +34,6 @@
             var commissioning_file = document.getElementById('commissioning').value;
             window.location.href = Flask.url_for("purchase.download", {'file' : commissioning_file});
         }
-        //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
-        //Pushing the bootstrap-upload button generates a click-event on the filedialog element
-        var fd = document.getElementById('fileid');
-        //Open the filedialog
-        function openDialog() { fd.click(); }
-
         //Called when the filedialog closes
         fd.addEventListener('change',   function(e) {
             //console.log(fd.files[0].name);
@@ -43,7 +41,6 @@
              for(var i=0; i < commissioning.options.length; i++) {
                 console.log(commissioning.options[i].value);
                 if (commissioning.options[i].value == fd.files[0].name) {
-                    console.log('File "' + fd.files[0].name + '" already exists, select another one');
                     toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
                     fd.value="";
                     return;
