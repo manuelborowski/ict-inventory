@@ -78,8 +78,12 @@ def create_app(config_name):
         from .supplier import supplier as supplier_blueprint
         app.register_blueprint(supplier_blueprint)
 
-        from .device import device as device_blueprint
-        app.register_blueprint(device_blueprint)
+        # from .device import device as device_blueprint
+        # app.register_blueprint(device_blueprint)
+
+        from . import device
+        app.register_blueprint(device.device)
+        device.init_documents(app)
 
         from . import purchase
         app.register_blueprint(purchase.purchase)

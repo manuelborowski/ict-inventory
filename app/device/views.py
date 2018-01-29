@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 # app/device/views.py
 
-from flask import render_template, redirect, url_for, request
+import os
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _
-from . import device
+from .. import db, app, _
+from . import device, ra_path, ra_docs
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -70,6 +71,8 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(device)
+            if request.files['ra_filename']:
+                filename = ra_docs.save(request.files['ra_filename'])
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
@@ -98,3 +101,16 @@ def delete(id):
 
     return redirect(url_for('device.devices'))
 
+#download a ... file
+@device.route('/device/download/<string:type>/<string:file>', methods=['GET', 'POST'])
+@login_required
+def download(type="", file=""):
+    print '>>>> type/file {} {}'.format(type, file)
+    try:
+        if 'risk_analysis' in type:
+            return app.send_static_file(os.path.join(ra_path, file))
+    except Exception as e:
+        flash(_('Could not download file {}'.format(file)))
+        flash(_('Does it still exist?'))
+
+    return redirect(url_for('device.devices'))
