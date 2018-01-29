@@ -21,37 +21,42 @@
 
     <input id='fileid' type='file' name='filename' style="visibility : hidden" hidden/>
     <script>
-        var fd = document.getElementById('fileid');
-        {% if role == "edit" %}
-            //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
-            //Pushing the bootstrap-upload button generates a click-event on the filedialog element
-            document.getElementById('upload').addEventListener('click', function(){fd.click();});
-        {% endif %}
-        document.getElementById('download').addEventListener('click', download);
+        init_up_download('fileid', 'upload', 'download', 'commissioning');
 
-        //To download the file, jump to the download url with the filename as parameter
-        function download() {
-            var commissioning_file = document.getElementById('commissioning').value;
-            window.location.href = Flask.url_for("purchase.download", {'file' : commissioning_file});
-        }
-        //Called when the filedialog closes
-        fd.addEventListener('change',   function(e) {
-            //console.log(fd.files[0].name);
-            var commissioning = document.getElementById('commissioning');
-             for(var i=0; i < commissioning.options.length; i++) {
-                console.log(commissioning.options[i].value);
-                if (commissioning.options[i].value == fd.files[0].name) {
-                    toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
-                    fd.value="";
-                    return;
+        function init_up_download(file_el, upload_el, download_el, file_type) {
+            fd = document.getElementById(file_el);
+
+            {% if role == "edit" %}
+                //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
+                //Pushing the bootstrap-upload button generates a click-event on the filedialog element
+                document.getElementById(upload_el).addEventListener('click', function(){fd.click();});
+            {% endif %}
+            document.getElementById(download_el).addEventListener('click', download);
+
+            //Called when the filedialog closes
+            fd.addEventListener('change',   function(e) {
+                //console.log(fd.files[0].name);
+                var _select = document.getElementById(file_type);
+                 for(var i=0; i < _select.options.length; i++) {
+                    console.log(_select.options[i].value);
+                    if (_select.options[i].value == fd.files[0].name) {
+                        toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
+                        fd.value="";
+                        return;
+                    }
                 }
-            }
-            var option = document.createElement("option");
-            option.text = fd.files[0].name;
-            commissioning.add(option, 0);
-            commissioning.selectedIndex = "0";
-         });
+                var option = document.createElement("option");
+                option.text = fd.files[0].name;
+                _select.add(option, 0);
+                _select.selectedIndex = "0";
+             });
 
+            //To download the file, jump to the download url with the filename as parameter
+            function download() {
+                var _file = document.getElementById(file_type).value;
+                window.location.href = Flask.url_for("purchase.download", {'file' : _file});
+            }
+        }
     </script>
 {% endblock %}
 
