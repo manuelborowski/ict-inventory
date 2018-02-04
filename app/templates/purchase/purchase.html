@@ -12,51 +12,18 @@
     <div class="input-group">
         {{ wtf.form_field(form.commissioning) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="download" name="button" type="button" value="Download">
+            <input class="btn btn-default" id="commissioning_download" name="button" type="button" value="Download">
             {% if role == "edit" %}
-                <input class="btn btn-default" id="upload" name="button" type="button" value="Upload">
+                <input class="btn btn-default" id="commissioning_upload" name="button" type="button" value="Upload">
             {% endif %}
         </div>
     </div>
 
-    <input id='fileid' type='file' name='filename' style="visibility : hidden" hidden/>
-    <script>
-        init_up_download('fileid', 'upload', 'download', 'commissioning');
-
-        function init_up_download(file_el, upload_el, download_el, file_type) {
-            fd = document.getElementById(file_el);
-
-            {% if role == "edit" %}
-                //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
-                //Pushing the bootstrap-upload button generates a click-event on the filedialog element
-                document.getElementById(upload_el).addEventListener('click', function(){fd.click();});
-            {% endif %}
-            document.getElementById(download_el).addEventListener('click', download);
-
-            //Called when the filedialog closes
-            fd.addEventListener('change',   function(e) {
-                //console.log(fd.files[0].name);
-                var _select = document.getElementById(file_type);
-                 for(var i=0; i < _select.options.length; i++) {
-                    console.log(_select.options[i].value);
-                    if (_select.options[i].value == fd.files[0].name) {
-                        toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
-                        fd.value="";
-                        return;
-                    }
-                }
-                var option = document.createElement("option");
-                option.text = fd.files[0].name;
-                _select.add(option, 0);
-                _select.selectedIndex = "0";
-             });
-
-            //To download the file, jump to the download url with the filename as parameter
-            function download() {
-                var _file = document.getElementById(file_type).value;
-                window.location.href = Flask.url_for("purchase.download", {'file' : _file});
-            }
-        }
-    </script>
+    <input id='commissioning_fileid' type='file' name='commissioning_filename' style="visibility : hidden" hidden/>
 {% endblock %}
 
+{% block script3 %}
+    $(document).ready(function() {
+        init_up_download('commissioning', 'purchase');
+    });
+{% endblock %}

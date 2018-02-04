@@ -70,8 +70,6 @@ def edit(id):
 
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
-            print '>>>> REQUEST.FILES {}'.format(request.files  )
-            print '>>>> REQUEST.FORM {}'.format(request.form  )
             form.populate_obj(device)
             if request.files['risk_analysis_filename']:
                 filename = ra_docs.save(request.files['risk_analysis_filename'])

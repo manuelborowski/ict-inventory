@@ -66,11 +66,8 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
-            print '>>>> REQUEST.FILES {}'.format(request.files  )
-            print '>>>> REQUEST.FORM {}'.format(request.form  )
-            if request.files['filename']:
-                filename = cms_docs.save(request.files['filename'])
-                print '>>> FILENAME'.format(filename)
+            if request.files['commissioning_filename']:
+                filename = cms_docs.save(request.files['commissioning_filename'])
             db.session.commit()
             #flash(_(u'You have edited purchase {}').format(purchase))
 
