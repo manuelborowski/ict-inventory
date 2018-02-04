@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/home/__init__.py
 
-from flask_uploads import UploadSet, configure_uploads, DOCUMENTS
+from flask_uploads import UploadSet, configure_uploads, DOCUMENTS, IMAGES
 import os
 
 #the name of the uploadset is reused in UPLOADED_..._DEST
@@ -10,7 +10,7 @@ ra_docs = UploadSet(ra_path, DOCUMENTS)
 ra_full_path = ''
 
 photo_path = 'photo'
-photo_docs = UploadSet(photo_path, DOCUMENTS)
+photo_docs = UploadSet(photo_path, IMAGES)
 photo_full_path = ''
 
 manual_path = 'manual'

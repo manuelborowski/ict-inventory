@@ -66,8 +66,11 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
-            if request.files['commissioning_filename']:
-                filename = cms_docs.save(request.files['commissioning_filename'])
+            try:
+                if request.files['commissioning_filename']:
+                    filename = cms_docs.save(request.files['commissioning_filename'])
+            except Exception as e:
+                flash('Cannot upload file, maybe wrong type', 'error')
             db.session.commit()
             #flash(_(u'You have edited purchase {}').format(purchase))
 

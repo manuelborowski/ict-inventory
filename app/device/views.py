@@ -71,14 +71,17 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(device)
-            if request.files['risk_analysis_filename']:
-                filename = ra_docs.save(request.files['risk_analysis_filename'])
-            if request.files['photo_filename']:
-                filename = photo_docs.save(request.files['photo_filename'])
-            if request.files['manual_filename']:
-                filename = manual_docs.save(request.files['manual_filename'])
-            if request.files['safety_information_filename']:
-                filename = safety_information_docs.save(request.files['safety_information_filename'])
+            try:
+                if request.files['risk_analysis_filename']:
+                    filename = ra_docs.save(request.files['risk_analysis_filename'])
+                if request.files['photo_filename']:
+                    filename = photo_docs.save(request.files['photo_filename'])
+                if request.files['manual_filename']:
+                    filename = manual_docs.save(request.files['manual_filename'])
+                if request.files['safety_information_filename']:
+                    filename = safety_information_docs.save(request.files['safety_information_filename'])
+            except Exception as e:
+                flash('Cannot upload file, maybe wrong type', 'error')
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
@@ -111,7 +114,6 @@ def delete(id):
 @device.route('/device/download/<string:type>/<string:file>', methods=['GET', 'POST'])
 @login_required
 def download(type="", file=""):
-    print '>>>> type/file {} {}'.format(type, file)
     try:
         if 'risk_analysis' in type:
             return app.send_static_file(os.path.join(ra_path, file))
