@@ -10,7 +10,6 @@
     {{ wtf.form_field(form.type) }}
     {{ wtf.form_field(form.power) }}
     {{ wtf.form_field(form.ce) }}
-
     <div class="input-group">
         {{ wtf.form_field(form.risk_analysis) }}
         <div class="input-group-btn">
@@ -21,48 +20,46 @@
         </div>
     </div>
 
-    <input id='risk_analysis_fileid' type='file' name='ra_filename' style="visibility : hidden" hidden/>
-
-    <script>
-        init_up_download('risk_analysis');
-
-
-        function init_up_download(file_type) {
-            file_el = file_type + '_fileid';
-            upload_el = file_type + '_upload';
-            download_el = file_type + '_download';
-            fd = document.getElementById(file_el);
-
+    <div class="input-group">
+        {{ wtf.form_field(form.photo) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" id="photo_download" type="button" value="Download">
             {% if role == "edit" %}
-                //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
-                //Pushing the bootstrap-upload button generates a click-event on the filedialog element
-                document.getElementById(upload_el).addEventListener('click', function(){fd.click();});
+                <input class="btn btn-default" id="photo_upload" type="button" value="Upload">
             {% endif %}
-            document.getElementById(download_el).addEventListener('click', download);
+        </div>
+    </div>
+    <div class="input-group">
+        {{ wtf.form_field(form.manual) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" id="manual_download" type="button" value="Download">
+            {% if role == "edit" %}
+                <input class="btn btn-default" id="manual_upload" type="button" value="Upload">
+            {% endif %}
+        </div>
+    </div>
+    <div class="input-group">
+        {{ wtf.form_field(form.safety_information) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" id="safety_information_download" type="button" value="Download">
+            {% if role == "edit" %}
+                <input class="btn btn-default" id="safety_information_upload" type="button" value="Upload">
+            {% endif %}
+        </div>
+    </div>
 
-            //Called when the filedialog closes
-            fd.addEventListener('change',   function(e) {
-                //console.log(fd.files[0].name);
-                var _select = document.getElementById(file_type);
-                 for(var i=0; i < _select.options.length; i++) {
-                    console.log(_select.options[i].value);
-                    if (_select.options[i].value == fd.files[0].name) {
-                        toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
-                        fd.value="";
-                        return;
-                    }
-                }
-                var option = document.createElement("option");
-                option.text = fd.files[0].name;
-                _select.add(option, 0);
-                _select.selectedIndex = "0";
-             });
 
-            //To download the file, jump to the download url with the filename as parameter
-            function download() {
-                var _file = document.getElementById(file_type).value;
-                window.location.href = Flask.url_for("device.download", {'type' : this.id,'file' : _file});
-            }
-        }
-    </script>
+
+    <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="visibility : hidden" hidden/>
+    <input id='photo_fileid' type='file' name='photo_filename' style="visibility : hidden" hidden/>
+    <input id='manual_fileid' type='file' name='manual_filename' style="visibility : hidden" hidden/>
+    <input id='safety_information_fileid' type='file' name='safety_information_filename' style="visibility : hidden" hidden/>
+{% endblock %}
+{% block script3 %}
+    $(document).ready(function() {
+        init_up_download('risk_analysis', 'device');
+        init_up_download('manual', 'device');
+        init_up_download('photo', 'device');
+        init_up_download('safety_information', 'device');
+    });
 {% endblock %}

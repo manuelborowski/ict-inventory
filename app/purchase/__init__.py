@@ -3,12 +3,12 @@
 
 from flask import Blueprint
 
-from flask_uploads import UploadSet, configure_uploads, DOCUMENTS
+from flask_uploads import UploadSet, configure_uploads, ALL
 import os
 
 #the name of the uploadset is reused in UPLOADED_..._DEST
 cms_path = 'commissioning'
-cms_docs = UploadSet(cms_path, DOCUMENTS)
+cms_docs = UploadSet(cms_path, ALL)
 cms_full_path = ''
 
 def init_documents(app):

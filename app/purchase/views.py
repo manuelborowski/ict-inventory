@@ -66,6 +66,8 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
+            print '>>>> REQUEST.FILES {}'.format(request.files  )
+            print '>>>> REQUEST.FORM {}'.format(request.form  )
             if request.files['filename']:
                 filename = cms_docs.save(request.files['filename'])
                 print '>>> FILENAME'.format(filename)

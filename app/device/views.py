@@ -7,7 +7,7 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, app, _
-from . import device, ra_path, ra_docs
+from . import device, ra_path, ra_docs, photo_path, photo_docs, manual_path, manual_docs, safety_information_path, safety_information_docs
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -70,9 +70,17 @@ def edit(id):
 
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
+            print '>>>> REQUEST.FILES {}'.format(request.files  )
+            print '>>>> REQUEST.FORM {}'.format(request.form  )
             form.populate_obj(device)
-            if request.files['ra_filename']:
-                filename = ra_docs.save(request.files['ra_filename'])
+            if request.files['risk_analysis_filename']:
+                filename = ra_docs.save(request.files['risk_analysis_filename'])
+            if request.files['photo_filename']:
+                filename = photo_docs.save(request.files['photo_filename'])
+            if request.files['manual_filename']:
+                filename = manual_docs.save(request.files['manual_filename'])
+            if request.files['safety_information_filename']:
+                filename = safety_information_docs.save(request.files['safety_information_filename'])
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
@@ -109,6 +117,12 @@ def download(type="", file=""):
     try:
         if 'risk_analysis' in type:
             return app.send_static_file(os.path.join(ra_path, file))
+        if 'photo' in type:
+            return app.send_static_file(os.path.join(photo_path, file))
+        if 'manual' in type:
+            return app.send_static_file(os.path.join(manual_path, file))
+        if 'safety_information' in type:
+            return app.send_static_file(os.path.join(safety_information_path, file))
     except Exception as e:
         flash(_('Could not download file {}'.format(file)))
         flash(_('Does it still exist?'))
