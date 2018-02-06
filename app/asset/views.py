@@ -44,7 +44,18 @@ def export():
     csv_file = cStringIO.StringIO()
     headers = [
         'name',
-        'category'
+        'category',
+        'location',
+        'since',
+        'value',
+        'qr',
+        'status',
+        'supplier',
+        'brand',
+        'type',
+        'serial',
+        'power',
+        'ce',
     ]
 
     rows = []
@@ -52,7 +63,18 @@ def export():
         rows.append(
             {
                 'name' : a.name,
-                'category' : a.purchase.device.category
+                'category' : a.purchase.device.category,
+                'location' : a.location,
+                'since' : a.purchase.since,
+                'value' : a.purchase.value,
+                'qr' : a.qr_code,
+                'status' : a.status,
+                'supplier' : a.purchase.supplier.name,
+                'brand' : a.purchase.device.brand,
+                'type' : a.purchase.device.type,
+                'serial' : a.serial,
+                'power' : a.purchase.device.power,
+                'ce' : a.purchase.device.ce
             }
         )
 
