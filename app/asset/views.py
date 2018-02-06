@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, redirect, url_for, request, flash, send_file
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
@@ -12,10 +12,13 @@ from ..models import Asset
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
 
+import cStringIO, csv
+
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
+    print '>>>>>>>>> form {}'.format(request.form)
     return get_ajax_table(tables_configuration['asset'])
 
 #show a list of assets
@@ -24,10 +27,46 @@ def source_data():
 def assets():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['asset'])
+    print '>>>>>>>>> form {}'.format(request.form)
     return render_template('base_multiple_items.html',
                            title='assets',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['asset'])
+
+#export a list of assets
+@asset.route('/asset/export', methods=['GET', 'POST'])
+@login_required
+def export():
+    #The following line is required only to build the filter-fields on the page.
+    __filters_enabled,  _filter_forms, _filtered_list, _total_count, _filtered_count = build_filter(tables_configuration['asset'])
+    print '>>>>>>>>> form {}'.format(request.form)
+
+    csv_file = cStringIO.StringIO()
+    headers = [
+        'name',
+        'category'
+    ]
+
+    rows = []
+    for a in _filtered_list:
+        rows.append(
+            {
+                'name' : a.name,
+                'category' : a.purchase.device.category
+            }
+        )
+
+    writer = csv.DictWriter(csv_file, headers, delimiter=';')
+    writer.writeheader()
+    for r in rows:
+        #print (dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems()))
+        writer.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems()))
+        #writer.writerow((v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems())
+    csv_file.seek(0)
+
+    #flash('Exporting table to ...')
+    #return redirect(url_for('asset.assets'))
+    return send_file(csv_file, attachment_filename='assets.csv', as_attachment=True)
 
 #add a new asset
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])

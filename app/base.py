@@ -65,7 +65,7 @@ def check_string_in_form(value_key, form):
             flash(_(u'Wrong string format'))
     return ''
 
-def build_filter(table):
+def build_filter(table, paginate=True):
     #depending on the table, multiple joins are required to get the necessary data
     _model = table['model']
     _filters_enabled = table['filter']
@@ -181,12 +181,13 @@ def build_filter(table):
         else:
             _filtered_list = _filtered_list.order_by(_template[int(column_number)]['order_by'])
 
-    #paginate, if required
-    start = check_value_in_form('start', request.values)
-    if start:
-        length = int(check_value_in_form('length', request.values))
-        start = int(start)
-        _filtered_list = _filtered_list.slice(start, start+length)
+    if paginate:
+        #paginate, if required
+        start = check_value_in_form('start', request.values)
+        if start:
+            length = int(check_value_in_form('length', request.values))
+            start = int(start)
+            _filtered_list = _filtered_list.slice(start, start+length)
 
     _filtered_list = _filtered_list.all()
     return _filters_enabled,  _filter_forms, _filtered_list, _total_count, _filtered_count,

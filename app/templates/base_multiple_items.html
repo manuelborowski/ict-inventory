@@ -16,7 +16,7 @@
 <!-- end message block -->
   <div class="center">
 {% if filter %}
-      <form method="post" action="{{ url_for(config.route) }}">
+      <form method="post">
       <table class="table-condensed ">
           <tr>
 {% if 'since' in filter %}
@@ -77,7 +77,11 @@
       <div class="btn-group" role="group" aria-label="...">
           <a class="btn btn-default" id="filter">Filter</a>
           <a class="btn btn-default" id="clear">Clear</a>
+          {% if 'export' in config %}
+            <input class="btn btn-default" id="export2" type="submit" value="Export"  formaction="{{ url_for(config.export) }}">
+          {% endif %}
       </div>
+
 {% endif %}
       </form>
       <hr />
