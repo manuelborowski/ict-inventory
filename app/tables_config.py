@@ -28,7 +28,8 @@ tables_configuration = {
                  {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
                  ],
         'floating_menu' : default_menu_config,
-        'export' : 'asset.export',
+        'export' : 'asset.exportcsv',
+        'import' : 'asset.importcsv',
     },
     'purchase' : {
         'model' : Purchase,

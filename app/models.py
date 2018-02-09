@@ -57,11 +57,11 @@ class Asset(db.Model):
     __tablename__ = 'assets'
 
     class Status:
-        E_IN_SERVICE = 'IN SERVICE'
-        E_IN_REPAIR = 'IN REPAIR'
-        E_BROKEN = 'BROKEN'
-        E_TO_BE_REPLACED = 'TO BE REPLACED'
-        E_OTHER = 'OTHER'
+        E_IN_SERVICE = 'IN BEDRIJF'
+        E_IN_REPAIR = 'IN REPARATIE'
+        E_BROKEN = 'STUK'
+        E_TO_BE_REPLACED = 'TE VERVANGEN'
+        E_OTHER = 'ANDERS'
         DEFAULT = E_IN_SERVICE
 
         @staticmethod
@@ -122,22 +122,13 @@ class Purchase(db.Model):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value), 'commissioning':self.commissioning,
                 'supplier': self.supplier.ret_dict(), 'device':self.device.ret_dict()}
 
-
 class Device(db.Model):
     __tablename__ = 'devices'
 
     class Category:
-        E_PC = 'PC'
-        E_BEAMER = 'BEAMER'
-        E_PRINTER = 'PRINTER'
-        E_OTHER = 'OTHER'
-        DEFAULT = E_PC
-
         @staticmethod
         def get_list():
-            l = [getattr(Device.Category, a) for a in dir(Device.Category) if a.startswith('E_')]
-            l.remove(Device.Category.DEFAULT)
-            l.insert(0, Device.Category.DEFAULT)
+            l = [i.category for i in db.session.query(Device.category).distinct(Device.category).order_by(Device.category).all()]
             return l
 
         @staticmethod

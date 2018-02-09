@@ -7,7 +7,7 @@ from flask_login import login_required
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import asset
-from ..models import Asset
+from ..models import Asset, Device, Purchase, Supplier
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
@@ -36,7 +36,7 @@ def assets():
 #export a list of assets
 @asset.route('/asset/export', methods=['GET', 'POST'])
 @login_required
-def export():
+def exportcsv():
     #The following line is required only to build the filter-fields on the page.
     __filters_enabled,  _filter_forms, _filtered_list, _total_count, _filtered_count = build_filter(tables_configuration['asset'])
     print '>>>>>>>>> form {}'.format(request.form)
@@ -81,13 +81,8 @@ def export():
     writer = csv.DictWriter(csv_file, headers, delimiter=';')
     writer.writeheader()
     for r in rows:
-        #print (dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems()))
         writer.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems()))
-        #writer.writerow((v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems())
     csv_file.seek(0)
-
-    #flash('Exporting table to ...')
-    #return redirect(url_for('asset.assets'))
     return send_file(csv_file, attachment_filename='assets.csv', as_attachment=True)
 
 #add a new asset
@@ -177,3 +172,59 @@ def delete(id):
 
     return redirect(url_for('asset.assets'))
 
+#import a csv file
+@asset.route('/asset/importcsv', methods=['GET', 'POST'])
+@login_required
+def importcsv():
+    print '>>>>>>>> REQUEST.FILES {}'.format(request.files)
+    print '>>>>>>>> REQUEST.FORM {}'.format(request.form)
+    #format csv file :
+    #0:name, 1:category, 2:status, 3:brand, 4:type, 5:serial, 6:power, 7:location, 8:photo, 9:manual, 10:ce
+    try:
+        if request.files['import_filename']:
+            print '>>>>>>>>>>> IMPORT CSV {}'.format(request.files['import_filename'])
+            assets_file = csv.reader(request.files['import_filename'],  delimiter=';')
+            #skip first line
+            next(assets_file)
+            for a in assets_file:
+                #check if supplier already exists
+                supplier = Supplier.query.filter(Supplier.name=='school').first()
+                if not supplier:
+                    #add a new supplier
+                    supplier = Supplier(name='school')
+                    db.session.add(supplier)
+                    print supplier
+                #check if device already exists
+                device = Device.query.filter(Device.brand==a[3], Device.type==a[4]).first()
+                if device:
+                    purchase = Purchase.query.filter(Purchase.device==device).first()
+                else:
+                    #add a new device
+                    try:
+                        power = int(a[6])
+                    except:
+                        power = 0
+                    device = Device(brand=a[3], category=a[1], type=a[4], power=power, ce=True if a[10]=='ok' else False)
+                    print(device)
+                    db.session.add(device)
+                    #Create a new purchase
+                    purchase = Purchase.query.filter(Purchase.since=='1999/1/1').order_by('-id').first()
+                    if purchase:
+                        #create a new purchase with a value +1
+                        purchase = Purchase(since = purchase.since, value = int(purchase.value)+1, device=device, supplier=supplier)
+                    else:
+                        #add a new purchase
+                        purchase = Purchase(since='1999/1/1', value='0', device=device, supplier=supplier)
+                    db.session.add(purchase)
+                print purchase
+                # #add the asset
+                asset = Asset(name=a[0], status=a[2], serial=a[5], location=a[7], purchase=purchase)
+                db.session.add(asset)
+                print asset
+
+            db.session.commit()
+
+    except Exception as e:
+        print str(e)
+        flash('Could not import file')
+    return redirect(url_for('asset.assets'))

@@ -21,8 +21,9 @@ class EditForm(FlaskForm):
         self.photo.choices = zip(get_photo_docs(), get_photo_docs())
         self.manual.choices = zip(get_manual_docs(), get_manual_docs())
         self.safety_information.choices = zip(get_safety_information_docs(), get_safety_information_docs())
+        self.category.choices = zip(Device.Category.get_list(), Device.Category.get_list())
 
-    category = SelectField(_(u'Category'), validators=[DataRequired()], choices=zip(Device.Category.get_list(), Device.Category.get_list()))
+    category = SelectField(_(u'Category'), validators=[DataRequired()])
     brand = StringField(_(u'Brand'), validators=[DataRequired()])
     type = StringField(_(u'Type'), validators=[DataRequired()])
     power = DecimalField(_(u'Power'), default=0.0)

@@ -7,20 +7,36 @@ from models import Supplier, Device, Asset
 
 
 class CategoryFilter(FlaskForm):
-    category = SelectField('', choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
+    def __init__(self, *args, **kwargs):
+        super(CategoryFilter, self).__init__(*args, **kwargs)
+        self.category.choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty())
+
+    category = SelectField('')
 
 class StatusFilter(FlaskForm):
-    status = SelectField('', choices=zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty()))
+    def __init__(self, *args, **kwargs):
+        super(StatusFilter, self).__init__(*args, **kwargs)
+        self.status.choices=zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty())
+
+    status = SelectField('')
 
 class SupplierFilter(FlaskForm):
-    sl = Supplier.query.all()
-    sl.insert(0, '')
-    supplier = SelectField('', choices=zip(sl, sl))
+    def __init__(self, *args, **kwargs):
+        super(SupplierFilter, self).__init__(*args, **kwargs)
+        sl = Supplier.query.order_by(Supplier.name).all()
+        sl.insert(0, '')
+        self.supplier.choices=zip(sl, sl)
+
+    supplier = SelectField('')
 
 class DeviceFilter(FlaskForm):
-    dl = Device.query.all()
-    dl.insert(0, '')
-    device = SelectField('', choices=zip(dl, dl))
+    def __init__(self, *args, **kwargs):
+        super(DeviceFilter, self).__init__(*args, **kwargs)
+        dl = Device.query.order_by(Device.brand).all()
+        dl.insert(0, '')
+        self.device.choices=zip(dl, dl)
+
+    device = SelectField('')
 
 class NonValidatingSelectFields(SelectField):
     def pre_validate(self, form):
