@@ -66,6 +66,9 @@ def create_app(config_name):
         #uncheck when migrating database
         #return app
 
+        from .admin import admin as admin_blueprint
+        app.register_blueprint(admin_blueprint)
+
         from .auth import auth as auth_blueprint
         app.register_blueprint(auth_blueprint)
 
@@ -78,17 +81,18 @@ def create_app(config_name):
         from .supplier import supplier as supplier_blueprint
         app.register_blueprint(supplier_blueprint)
 
-        # from .device import device as device_blueprint
-        # app.register_blueprint(device_blueprint)
+        from .device import device as device_blueprint
+        app.register_blueprint(device_blueprint)
 
-        from . import device
-        app.register_blueprint(device.device)
-        device.init_documents(app)
+        from .purchase import purchase as purchase_blueprint
+        app.register_blueprint(purchase_blueprint)
 
-        from . import purchase
-        app.register_blueprint(purchase.purchase)
-        purchase.init_documents(app)
-
+        from .upload import init_commissioning_documents, init_manual_documents, init_photo_documents,init_risk_analysis_documents, init_safety_information_documents
+        init_commissioning_documents(app)
+        init_risk_analysis_documents(app)
+        init_safety_information_documents(app)
+        init_photo_documents(app)
+        init_manual_documents(app)
 
         @app.errorhandler(403)
         def forbidden(error):

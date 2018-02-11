@@ -1,0 +1,91 @@
+<!-- app/templates/auth/user.html -->
+<!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+
+{% block content2 %}
+<div class="content-section">
+  {{ utils.flashed_messages() }}
+    <div class="center">
+        <h1>{{title}}</h1>
+        <br/>
+        <form method="post" enctype=multipart/form-data action="{{ url_for('admin.importcsv') }}">
+            <input class="btn btn-default" type="button" id="import" value="Import"  onclick="$('#import_fileid').click();">
+            <input id='import_fileid' type='file' name='import_filename' style="display:none" accept=".csv" onchange="$('#import_trigger').click();">
+            <input id="import_trigger" type="submit" value="Import" style="display:none">
+            <table class="table-condensed table-bordered">
+                <tr>
+                    <th>Commissioing</th>
+                    <th>Risk analysis</th>
+                    <th>Photo</th>
+                    <th>Manual</th>
+                    <th>Safety information</th>
+                </tr>
+                <tr>
+                    <td><input class="btn btn-default" type="button" id="commissioning_upload" value="Upload" onclick="$('#commissioning_fileid').click()"></td>
+                    <input id='commissioning_fileid' type='file' name='commissioning_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+
+                    <td><input class="btn btn-default" type="button" id="risk_analysis_upload" value="Upload" onclick="$('#risk_analysis_fileid').click()"></td>
+                    <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+
+                    <td><input class="btn btn-default" type="button" id="photo_upload" value="Upload" onclick="$('#photo_fileid').click()"></td>
+                    <input id='photo_fileid' type='file' name='photo_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+
+                    <td><input class="btn btn-default" type="button" id="manuel_upload" value="Upload" onclick="$('#manual_fileid').click()"></td>
+                    <input id='manual_fileid' type='file' name='manual_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+
+                    <td><input class="btn btn-default" type="button" id="safety_information_upload" value="Upload" onclick="$('#safety_information_fileid').click()"></td>
+                    <input id='safety_information_fileid' type='file' name='safety_information_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                </tr>
+                <tr>
+                    <td><input class="btn btn-default" type="button" id="commissioning_download" value="Download"></td>
+                    <td><input class="btn btn-default" type="button" id="risk_analysis_download" value="Download"></td>
+                    <td><input class="btn btn-default" type="button" id="photo_download" value="Download"></td>
+                    <td><input class="btn btn-default" type="button" id="manuel_download" value="Download"></td>
+                    <td><input class="btn btn-default" type="button" id="safety_information_download" value="Download"></td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="commissioning_select" size="20" multiple>
+                            {% for i in commissioning_list %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="risk_analysis_select" size="20" multiple>
+                            {% for i in risk_analysis_list %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="photo_select" size="20" multiple>
+                            {% for i in photo_list %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="manual_select" size="20" multiple>
+                            {% for i in manual_list %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="safety_information_select" size="20" multiple>
+                            {% for i in safety_information_list %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

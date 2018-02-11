@@ -6,7 +6,8 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _, app
-from . import purchase, cms_path, cms_docs
+from ..upload import commissioning_path, commissioning_docs
+from . import purchase
 from ..models import Purchase
 
 from ..base import build_filter, get_ajax_table
@@ -68,7 +69,7 @@ def edit(id):
             form.populate_obj(purchase)
             try:
                 if request.files['commissioning_filename']:
-                    filename = cms_docs.save(request.files['commissioning_filename'])
+                    filename = commissioning_docs.save(request.files['commissioning_filename'])
             except Exception as e:
                 flash('Cannot upload file, maybe wrong type', 'error')
             db.session.commit()
@@ -105,7 +106,7 @@ def delete(id):
 @login_required
 def download(file=""):
     try:
-        return app.send_static_file(os.path.join(cms_path, file))
+        return app.send_static_file(os.path.join(commissioning_path, file))
     except Exception as e:
         flash(_('Could not download file {}'.format(file)))
         flash(_('Does it still exist?'))

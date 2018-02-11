@@ -14,6 +14,8 @@ from ..tables_config import  tables_configuration
 
 import cStringIO, csv
 
+from werkzeug.datastructures import FileStorage
+
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
 @login_required
@@ -178,6 +180,10 @@ def delete(id):
 def importcsv():
     print '>>>>>>>> REQUEST.FILES {}'.format(request.files)
     print '>>>>>>>> REQUEST.FORM {}'.format(request.form)
+
+    f = FileStorage(filename="D:\OneDrive\OneDrive - Campus Sint-Ursula Lier\ict\Doorlichting\Foto's toestellen\1.01.JPG")
+
+
     #format csv file :
     #0:name, 1:category, 2:status, 3:brand, 4:type, 5:serial, 6:power, 7:location, 8:photo, 9:manual, 10:ce
     try:

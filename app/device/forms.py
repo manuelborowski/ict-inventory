@@ -11,13 +11,13 @@ import datetime
 from ..models import Device
 from .. import _
 from ..forms import NonValidatingSelectFields
-from . import get_ra_docs, get_photo_docs, get_manual_docs, get_safety_information_docs
+from ..upload import get_risk_analysis_docs, get_photo_docs, get_manual_docs, get_safety_information_docs
 
 
 class EditForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
-        self.risk_analysis.choices = zip(get_ra_docs(), get_ra_docs())
+        self.risk_analysis.choices = zip(get_risk_analysis_docs(), get_risk_analysis_docs())
         self.photo.choices = zip(get_photo_docs(), get_photo_docs())
         self.manual.choices = zip(get_manual_docs(), get_manual_docs())
         self.safety_information.choices = zip(get_safety_information_docs(), get_safety_information_docs())

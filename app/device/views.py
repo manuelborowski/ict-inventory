@@ -7,7 +7,8 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, app, _
-from . import device, ra_path, ra_docs, photo_path, photo_docs, manual_path, manual_docs, safety_information_path, safety_information_docs
+from . import device
+from ..upload import risk_analysis_path, risk_analysis_docs, photo_path, photo_docs, manual_path, manual_docs, safety_information_path, safety_information_docs
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -73,7 +74,7 @@ def edit(id):
             form.populate_obj(device)
             try:
                 if request.files['risk_analysis_filename']:
-                    filename = ra_docs.save(request.files['risk_analysis_filename'])
+                    filename = risk_analysis_docs.save(request.files['risk_analysis_filename'])
                 if request.files['photo_filename']:
                     filename = photo_docs.save(request.files['photo_filename'])
                 if request.files['manual_filename']:
@@ -116,7 +117,7 @@ def delete(id):
 def download(type="", file=""):
     try:
         if 'risk_analysis' in type:
-            return app.send_static_file(os.path.join(ra_path, file))
+            return app.send_static_file(os.path.join(risk_analysis_path, file))
         if 'photo' in type:
             return app.send_static_file(os.path.join(photo_path, file))
         if 'manual' in type:
