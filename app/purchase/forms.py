@@ -2,16 +2,16 @@
 #app/asset/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, TextAreaField, SelectField, DecimalField, FileField, IntegerField
+from wtforms import StringField, DateField, DecimalField, IntegerField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
-import datetime, os
+import datetime
 
 from ..forms import NonValidatingSelectFields
-from ..upload import get_commissioning_docs
+from ..documents import get_doc_list
 
-from ..models import Purchase, Supplier, Device
+from ..models import Supplier, Device
 
 def get_suppliers():
     return Supplier.query.all()
@@ -24,7 +24,7 @@ class EditForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
-        self.commissioning.choices = zip(get_commissioning_docs(), get_commissioning_docs())
+        self.commissioning.choices = zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))
 
     since = DateField('Date', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     value = DecimalField('Value (&euro;)', default=0.0)

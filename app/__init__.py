@@ -87,12 +87,12 @@ def create_app(config_name):
         from .purchase import purchase as purchase_blueprint
         app.register_blueprint(purchase_blueprint)
 
-        from .upload import init_commissioning_documents, init_manual_documents, init_photo_documents,init_risk_analysis_documents, init_safety_information_documents
-        init_commissioning_documents(app)
-        init_risk_analysis_documents(app)
-        init_safety_information_documents(app)
-        init_photo_documents(app)
-        init_manual_documents(app)
+        from .documents import init_documents
+        init_documents(app, 'commissioning')
+        init_documents(app, 'risk_analysis')
+        init_documents(app, 'photo')
+        init_documents(app, 'manual')
+        init_documents(app, 'safety_information')
 
         @app.errorhandler(403)
         def forbidden(error):

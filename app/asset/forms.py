@@ -2,13 +2,13 @@
 #app/asset/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, SelectField, DecimalField,  IntegerField
+from wtforms import StringField, DateField, SelectField, DecimalField,  IntegerField, BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms.widgets import HiddenInput
-import datetime
+from .. import _
 
-from ..models import Asset, Supplier, Purchase, Device
+from ..models import Asset, Supplier, Purchase
 
 def get_suppliers():
     return Supplier.query.all()
@@ -59,7 +59,7 @@ class QRisValid():
 class EditForm(FlaskForm):
     name = StringField('Name')
     location = StringField('Location')
-    qr_code = StringField('QR', validators=[DataRequired(), QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
+    qr_code = StringField('QR', validators=[QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
     purchase = QuerySelectField('Purchase', query_factory=get_purchases)
     serial = StringField('Serial')
@@ -80,4 +80,15 @@ class ViewForm(FlaskForm):
     supplier = StringField('Supplier', render_kw={'readonly':''})
     category = StringField('Category', render_kw={'readonly':''})
     serial = StringField('Serial', render_kw={'readonly':''})
+
+    brand = StringField(_(u'Brand'), render_kw={'readonly':''})
+    type = StringField(_(u'Type'), render_kw={'readonly':''})
+    power = DecimalField(_(u'Power'), render_kw={'readonly':''})
+    ce = BooleanField(_(u'CE'), render_kw={'readonly':''})
+    risk_analysis = StringField('Risk Analyis', render_kw={'readonly':''})
+    manual = StringField('Manual', render_kw={'readonly':''})
+    safety_information = StringField('Safety Information', render_kw={'readonly':''})
+    photo = StringField('Photo', render_kw={'readonly':''})
+
+
     id = IntegerField(widget=HiddenInput())

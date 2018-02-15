@@ -25,26 +25,27 @@
                 </tr>
                 <tr>
                     <td><input class="btn btn-default" type="button" id="commissioning_upload" value="Upload" onclick="$('#commissioning_fileid').click()"></td>
-                    <input id='commissioning_fileid' type='file' name='commissioning_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                    <input id='commissioning_fileid' type='file' name='commissioning_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
 
                     <td><input class="btn btn-default" type="button" id="risk_analysis_upload" value="Upload" onclick="$('#risk_analysis_fileid').click()"></td>
-                    <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                    <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
 
                     <td><input class="btn btn-default" type="button" id="photo_upload" value="Upload" onclick="$('#photo_fileid').click()"></td>
-                    <input id='photo_fileid' type='file' name='photo_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                    <input id='photo_fileid' type='file' name='photo_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
 
                     <td><input class="btn btn-default" type="button" id="manuel_upload" value="Upload" onclick="$('#manual_fileid').click()"></td>
-                    <input id='manual_fileid' type='file' name='manual_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                    <input id='manual_fileid' type='file' name='manual_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
 
                     <td><input class="btn btn-default" type="button" id="safety_information_upload" value="Upload" onclick="$('#safety_information_fileid').click()"></td>
-                    <input id='safety_information_fileid' type='file' name='safety_information_filename' style="display:none"  onchange="$('#import_trigger').click();" multiple/>
+                    <input id='safety_information_fileid' type='file' name='safety_information_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
                 </tr>
+                <input id="upload_trigger" type="submit" formaction="{{ url_for('admin.upload') }}"style="display:none">
                 <tr>
-                    <td><input class="btn btn-default" type="button" id="commissioning_download" value="Download"></td>
-                    <td><input class="btn btn-default" type="button" id="risk_analysis_download" value="Download"></td>
-                    <td><input class="btn btn-default" type="button" id="photo_download" value="Download"></td>
-                    <td><input class="btn btn-default" type="button" id="manuel_download" value="Download"></td>
-                    <td><input class="btn btn-default" type="button" id="safety_information_download" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="commissioning_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="risk_analysis_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="photo_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="manual_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="safety_information_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
                 </tr>
                 <tr>
                     <td>
@@ -83,9 +84,38 @@
                         </select>
                     </td>
                 </tr>
+                <tr>
+                    <td><input class="btn btn-default" id="commissioning_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                    <td><input class="btn btn-default" id="risk_analysis_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                    <td><input class="btn btn-default" id="photo_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                    <td><input class="btn btn-default" id="manual_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                    <td><input class="btn btn-default" id="safety_information_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                </tr>
             </table>
+                <input id='delete_doc' type="submit" name='delete_doc' style="display:none"  formaction="{{ url_for('admin.delete') }}"/>
 
         </form>
     </div>
 </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+//Before removing an entry, a confirm-box is shown.
+function confirm_before_delete(e) {
+    e.preventDefault();
+    var message = "Are you sure want to delete this/these entry/entries?";
+    bootbox.confirm(message, function(result) {
+        if (result) {
+            $('#delete_doc').val(e.srcElement.id);
+            console.log(e.srcElement.id);
+            $('#delete_doc').click();
+        }
+    });
+}
+</script>
+
 {% endblock %}

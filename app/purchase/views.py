@@ -6,7 +6,8 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _, app
-from ..upload import commissioning_path, commissioning_docs
+from ..documents import get_doc_reference, get_doc_path, get_doc_list
+from ..documents import document_type_list, get_doc_filename, get_doc_select, get_doc_download, get_doc_delete
 from . import purchase
 from ..models import Purchase
 
@@ -68,10 +69,19 @@ def edit(id):
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
             try:
-                if request.files['commissioning_filename']:
-                    filename = commissioning_docs.save(request.files['commissioning_filename'])
+                for d in document_type_list:
+                    if get_doc_filename(d) in request.files:
+                        if request.files[get_doc_filename(d)]:
+                            for f in request.files.getlist(get_doc_filename(d)):
+                                filename = get_doc_reference(d).save(f)
             except Exception as e:
-                flash('Cannot upload file, maybe wrong type', 'error')
+                flash('Could not import file')
+
+            # try:
+            #     if request.files['commissioning_filename']:
+            #         filename = commissioning_docs.save(request.files['commissioning_filename'])
+            # except Exception as e:
+            #     flash('Cannot upload file, maybe wrong type', 'error')
             db.session.commit()
             #flash(_(u'You have edited purchase {}').format(purchase))
 
@@ -106,7 +116,8 @@ def delete(id):
 @login_required
 def download(file=""):
     try:
-        return app.send_static_file(os.path.join(commissioning_path, file))
+        return send_file(os.path.join(app.root_path, '..', get_doc_path('commissioning'), file), as_attachment=True)
+        #return app.send_static_file(os.path.join(commissioning_path, file))
     except Exception as e:
         flash(_('Could not download file {}'.format(file)))
         flash(_('Does it still exist?'))

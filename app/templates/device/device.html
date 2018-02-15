@@ -21,18 +21,6 @@
     </div>
 
     <div class="input-group">
-        {{ wtf.form_field(form.photo) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" id="photo_download" type="button" value="Download">
-            {% if role == "edit" %}
-                <input class="btn btn-default" id="photo_upload" type="button" value="Upload">
-            {% endif %}
-        </div>
-    </div>
-
-    <img src="../../static/photo/{{ form.photo.data }}" height="377">
-
-    <div class="input-group">
         {{ wtf.form_field(form.manual) }}
         <div class="input-group-btn">
             <input class="btn btn-default" id="manual_download" type="button" value="Download">
@@ -51,7 +39,19 @@
         </div>
     </div>
 
+    <div class="input-group">
+        {{ wtf.form_field(form.photo) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" id="photo_download" type="button" value="Download">
+            {% if role == "edit" %}
+                <input class="btn btn-default" id="photo_upload" type="button" value="Upload">
+            {% endif %}
+        </div>
+    </div>
 
+    <img src="../../static/photo/{{ form.photo.data }}" height="377">
+    </br>
+    </br>
 
     <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="display:none" hidden/>
     <input id='photo_fileid' type='file' name='photo_filename' style="display:none" hidden/>

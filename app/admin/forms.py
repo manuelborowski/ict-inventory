@@ -6,7 +6,6 @@ from wtforms import StringField, DateField, SelectField, DecimalField,  IntegerF
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired, ValidationError
 from wtforms.widgets import HiddenInput
-import datetime
 
 from ..models import Asset, Supplier, Purchase, Device
 

@@ -3,9 +3,9 @@ from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
 from flask import flash,  request, get_flashed_messages, jsonify, url_for
-from flask_login import current_user
 from sqlalchemy import or_
 import time
+from . import _
 
 from models import Asset, Purchase, Device, Supplier, User
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter

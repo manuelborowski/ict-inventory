@@ -80,11 +80,6 @@
           {% if 'export' in config %}
             <input class="btn btn-default" id="export" type="submit" value="Export"  formaction="{{ url_for(config.export) }}">
           {% endif %}
-          {% if 'import' in config %}
-            <input class="btn btn-default" type="button" id="import" value="Import"  onclick="$('#import_fileid').click();">
-            <input id='import_fileid' type='file' name='import_filename' style="display:none" accept=".csv">
-            <input id="import_trigger" type="submit" value="Import" formaction="{{ url_for(config.import) }}" style="display:none">
-          {% endif %}
       </div>
 
 {% endif %}
@@ -257,22 +252,6 @@ $(document).ready(function() {
       i.visibility = "visible";
       i.opacity = "1";
     }
-
-    {% if 'import' in config %}
-         //Called when the filedialog closes
-        document.getElementById('import_fileid').addEventListener('change', function() {
-            console.log(this.files[0].name);
-            $('#import_trigger').click();
-            //window.location.href = '/asset/importcsv';
-            //window.location.href = Flask.url_for('{{ config.import }}');
-
-         });
-
-    {% endif %}
-
-
-
-
 });
 </script>
 {% endblock %}

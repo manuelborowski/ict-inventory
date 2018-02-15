@@ -29,7 +29,6 @@ tables_configuration = {
                  ],
         'floating_menu' : default_menu_config,
         'export' : 'asset.exportcsv',
-        'import' : 'asset.importcsv',
     },
     'purchase' : {
         'model' : Purchase,

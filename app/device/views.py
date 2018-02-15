@@ -2,13 +2,14 @@
 # app/device/views.py
 
 import os
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, send_file
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, app, _
 from . import device
-from ..upload import risk_analysis_path, risk_analysis_docs, photo_path, photo_docs, manual_path, manual_docs, safety_information_path, safety_information_docs
+from ..documents import get_doc_reference, get_doc_path
+from ..documents import document_type_list, get_doc_filename
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -72,17 +73,15 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == _(u'Save'):
             form.populate_obj(device)
+            #check if a document needs to be uploaded
             try:
-                if request.files['risk_analysis_filename']:
-                    filename = risk_analysis_docs.save(request.files['risk_analysis_filename'])
-                if request.files['photo_filename']:
-                    filename = photo_docs.save(request.files['photo_filename'])
-                if request.files['manual_filename']:
-                    filename = manual_docs.save(request.files['manual_filename'])
-                if request.files['safety_information_filename']:
-                    filename = safety_information_docs.save(request.files['safety_information_filename'])
+                for d in document_type_list:
+                    if get_doc_filename(d) in request.files:
+                        if request.files[get_doc_filename(d)]:
+                            for f in request.files.getlist(get_doc_filename(d)):
+                                filename = get_doc_reference(d).save(f)
             except Exception as e:
-                flash('Cannot upload file, maybe wrong type', 'error')
+                flash('Could not upload file')
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
@@ -115,17 +114,12 @@ def delete(id):
 @device.route('/device/download/<string:type>/<string:file>', methods=['GET', 'POST'])
 @login_required
 def download(type="", file=""):
+
     try:
-        if 'risk_analysis' in type:
-            return app.send_static_file(os.path.join(risk_analysis_path, file))
-        if 'photo' in type:
-            return app.send_static_file(os.path.join(photo_path, file))
-        if 'manual' in type:
-            return app.send_static_file(os.path.join(manual_path, file))
-        if 'safety_information' in type:
-            return app.send_static_file(os.path.join(safety_information_path, file))
+        for d in document_type_list:
+            if d in type:
+                return send_file(os.path.join(app.root_path, '..', get_doc_path(d), file), as_attachment=True)
     except Exception as e:
         flash(_('Could not download file {}'.format(file)))
-        flash(_('Does it still exist?'))
 
     return redirect(url_for('device.devices'))
