@@ -90,6 +90,7 @@ def upload():
 #Foto           photo
 #Handleiding    manual
 #CE             ce
+#Indienststelling   commissioning
 
 @admin.route('/admin/importcsv', methods=['GET', 'POST'])
 @login_required
@@ -98,10 +99,10 @@ def importcsv():
     try:
         if request.files['import_filename']:
             # format csv file :
-            # 0:name, 1:category, 2:status, 3:brand, 4:type, 5:serial, 6:power, 7:location, 8:photo, 9:manual, 10:ce
             assets_file = csv.DictReader(request.files['import_filename'],  delimiter=';', encoding='utf-8-sig')
-            #skip first line
-            #next(assets_file)
+            commissioning_key_present = True if 'Indienststelling' in assets_file.fieldnames else False
+            photo_key_present = True if 'Foto' in assets_file.fieldnames else False
+            manual_key_present = True if 'Handleiding' in assets_file.fieldnames else False
             for a in assets_file:
                 #check if supplier already exists
                 supplier = Supplier.query.filter(Supplier.name=='ONBEKEND').first()
@@ -119,17 +120,21 @@ def importcsv():
                         power = int(a['Vermogen'])
                     except:
                         power = 0
-                    device = Device(brand=a['Merk'], category=a['Categorie'], type=a['Typenummer'], photo=a['Foto'], manual=a['Handleiding'],
+
+                    photo_file = a['Foto'].split('\\')[-1] if photo_key_present else ''
+                    manual_file = a['Handleiding'].split('\\')[-1] if manual_key_present else ''
+                    device = Device(brand=a['Merk'], category=a['Categorie'], type=a['Typenummer'], photo=photo_file, manual=manual_file,
                                     power=power, ce=True if a['CE']=='ok' else False)
                     db.session.add(device)
                     #Create a new purchase
                     purchase = Purchase.query.filter(Purchase.since=='1999/1/1').order_by('-id').first()
+                    commissioning_file = a['Indienststelling'].split('\\')[-1] if commissioning_key_present else ''
                     if purchase:
                         #create a new purchase with a value +1
-                        purchase = Purchase(since = purchase.since, value = int(purchase.value)+1, device=device, supplier=supplier)
+                        purchase = Purchase(since = purchase.since, value = int(purchase.value)+1, device=device, supplier=supplier, commissioning=commissioning_file)
                     else:
                         #add a new purchase
-                        purchase = Purchase(since='1999/1/1', value='0', device=device, supplier=supplier)
+                        purchase = Purchase(since='1999/1/1', value='0', device=device, supplier=supplier, commissioning=commissioning_file)
                     db.session.add(purchase)
                 # #add the asset
                 asset = Asset(name=a['Toestel'], status=a['Status'], serial=a['Serienummer'], location=a['Lokaal'], purchase=purchase)
