@@ -8,8 +8,7 @@ from flask_login import login_required
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, app, _
 from . import device
-from ..documents import get_doc_reference, get_doc_path
-from ..documents import document_type_list, get_doc_filename
+from ..documents import get_doc_path, upload_doc, document_type_list
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -75,11 +74,7 @@ def edit(id):
             form.populate_obj(device)
             #check if a document needs to be uploaded
             try:
-                for d in document_type_list:
-                    if get_doc_filename(d) in request.files:
-                        if request.files[get_doc_filename(d)]:
-                            for f in request.files.getlist(get_doc_filename(d)):
-                                filename = get_doc_reference(d).save(f)
+                upload_doc(request)
             except Exception as e:
                 flash('Could not upload file')
             db.session.commit()

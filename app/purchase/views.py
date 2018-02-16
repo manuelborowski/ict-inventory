@@ -6,8 +6,7 @@ from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _, app
-from ..documents import get_doc_reference, get_doc_path, get_doc_list
-from ..documents import document_type_list, get_doc_filename, get_doc_select, get_doc_download, get_doc_delete
+from ..documents import get_doc_path, upload_doc
 from . import purchase
 from ..models import Purchase
 
@@ -69,19 +68,9 @@ def edit(id):
         if request.form['button'] == _(u'Save'):
             form.populate_obj(purchase)
             try:
-                for d in document_type_list:
-                    if get_doc_filename(d) in request.files:
-                        if request.files[get_doc_filename(d)]:
-                            for f in request.files.getlist(get_doc_filename(d)):
-                                filename = get_doc_reference(d).save(f)
+                upload_doc(request)
             except Exception as e:
                 flash('Could not import file')
-
-            # try:
-            #     if request.files['commissioning_filename']:
-            #         filename = commissioning_docs.save(request.files['commissioning_filename'])
-            # except Exception as e:
-            #     flash('Cannot upload file, maybe wrong type', 'error')
             db.session.commit()
             #flash(_(u'You have edited purchase {}').format(purchase))
 

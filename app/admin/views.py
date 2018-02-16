@@ -7,8 +7,7 @@ from flask_login import login_required, current_user
 from . import admin
 from .. import db, app
 
-from ..documents import get_doc_reference, get_doc_path, get_doc_list
-from ..documents import document_type_list, get_doc_filename, get_doc_select, get_doc_download, get_doc_delete
+from ..documents import  get_doc_path, get_doc_list, upload_doc, document_type_list, get_doc_select, get_doc_download
 
 import os, csv
 from ..models import Asset, Device, Supplier, Purchase
@@ -73,10 +72,7 @@ def download():
 def upload():
     check_admin()
     try:
-        for d in document_type_list:
-            if request.files[get_doc_filename(d)]:
-                for f in request.files.getlist(get_doc_filename(d)):
-                    filename = get_doc_reference(d).save(f)
+        upload_doc(request)
     except Exception as e:
         flash('Could not upload')
     return redirect(url_for('admin.show'))
