@@ -9,7 +9,8 @@ from .. import db, app
 
 from ..documents import  get_doc_path, get_doc_list, upload_doc, document_type_list, get_doc_select, get_doc_download
 
-import os, csv
+import os
+import unicodecsv  as  csv
 from ..models import Asset, Device, Supplier, Purchase
 
 import zipfile
@@ -56,11 +57,11 @@ def download():
                 sl = request.form.getlist(get_doc_select(d))
                 if len(sl) == 1:
                     return send_file(os.path.join(app.root_path, '..', get_doc_path(d), sl[0]), as_attachment=True)
-                else:
+                elif len(sl) > 1:
                     zf_name = d + '.zip'
                     zf = zipfile.ZipFile(zf_name, 'w', zipfile.ZIP_DEFLATED)
                     for i in sl:
-                        zf.write(os.path.join(app.root_path, '..', get_doc_path(d), i), arcname=i)
+                        zf.write(os.path.join(app.root_path, '..', get_doc_path(d), i), arcname=os.path.join(d,i))
                     zf.close()
                     return send_file(os.path.join(app.root_path, '..', zf_name), mimetype='zip', as_attachment=True)
     except Exception as e:
@@ -78,6 +79,18 @@ def upload():
     return redirect(url_for('admin.show'))
 
 
+#Toestel        name
+#Categorie      category
+#Status         status
+#Merk           brand
+#Typenummer     type
+#Serienummer    serial
+#Vermogen       power
+#Lokaal         location
+#Foto           photo
+#Handleiding    manual
+#CE             ce
+
 @admin.route('/admin/importcsv', methods=['GET', 'POST'])
 @login_required
 def importcsv():
@@ -86,9 +99,9 @@ def importcsv():
         if request.files['import_filename']:
             # format csv file :
             # 0:name, 1:category, 2:status, 3:brand, 4:type, 5:serial, 6:power, 7:location, 8:photo, 9:manual, 10:ce
-            assets_file = csv.reader(request.files['import_filename'],  delimiter=';')
+            assets_file = csv.DictReader(request.files['import_filename'],  delimiter=';', encoding='utf-8-sig')
             #skip first line
-            next(assets_file)
+            #next(assets_file)
             for a in assets_file:
                 #check if supplier already exists
                 supplier = Supplier.query.filter(Supplier.name=='ONBEKEND').first()
@@ -97,16 +110,17 @@ def importcsv():
                     supplier = Supplier(name='ONBEKEND')
                     db.session.add(supplier)
                 #check if device already exists
-                device = Device.query.filter(Device.brand==a[3], Device.type==a[4]).first()
+                device = Device.query.filter(Device.brand==a['Merk'], Device.type==a['Typenummer']).first()
                 if device:
                     purchase = Purchase.query.filter(Purchase.device==device).first()
                 else:
                     #add a new device
                     try:
-                        power = int(a[6])
+                        power = int(a['Vermogen'])
                     except:
                         power = 0
-                    device = Device(brand=a[3], category=a[1], type=a[4], photo=a[8], power=power, ce=True if a[10]=='ok' else False)
+                    device = Device(brand=a['Merk'], category=a['Categorie'], type=a['Typenummer'], photo=a['Foto'], manual=a['Handleiding'],
+                                    power=power, ce=True if a['CE']=='ok' else False)
                     db.session.add(device)
                     #Create a new purchase
                     purchase = Purchase.query.filter(Purchase.since=='1999/1/1').order_by('-id').first()
@@ -118,7 +132,7 @@ def importcsv():
                         purchase = Purchase(since='1999/1/1', value='0', device=device, supplier=supplier)
                     db.session.add(purchase)
                 # #add the asset
-                asset = Asset(name=a[0], status=a[2], serial=a[5], location=a[7], purchase=purchase)
+                asset = Asset(name=a['Toestel'], status=a['Status'], serial=a['Serienummer'], location=a['Lokaal'], purchase=purchase)
                 db.session.add(asset)
 
             db.session.commit()
