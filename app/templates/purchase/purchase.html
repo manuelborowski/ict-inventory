@@ -12,7 +12,7 @@
     <div class="input-group">
         {{ wtf.form_field(form.commissioning) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="commissioning_download" name="button" type="button" value="Download">
+            <input class="btn btn-default" type="submit" name="commissioning_download" formaction="{{ url_for('asset.download') }}" value="Download">
             {% if role == "edit" %}
                 <input class="btn btn-default" id="commissioning_upload" name="button" type="button" value="Upload">
             {% endif %}

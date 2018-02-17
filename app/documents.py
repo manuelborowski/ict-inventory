@@ -1,6 +1,8 @@
 #Collect all functionality with respect to uploading the different types of files
 
 from flask_uploads import UploadSet, configure_uploads, ALL
+from flask import send_file
+from . import app
 import os
 
 document_type_list = [
@@ -60,3 +62,10 @@ def upload_doc(request):
                 if not f.filename in fl:
                     filename = get_doc_reference(d).save(f, name=f.filename)
                     fl.append(f.filename)
+
+
+def download_single_doc(request):
+    for d in document_type_list:
+        if get_doc_download(d) in request.form and request.form[d]:
+            return send_file(os.path.join(app.root_path, '..', get_doc_path(d), request.form[d]), as_attachment=True)
+    return ('', 204)

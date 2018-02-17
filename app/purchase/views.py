@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, send_file, send_from_directory, config, flash
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _, app
-from ..documents import get_doc_path, upload_doc
+from .. import db, _
+from ..documents import upload_doc
 from . import purchase
 from ..models import Purchase
 
@@ -97,18 +97,5 @@ def delete(id):
     db.session.delete(purchase)
     db.session.commit()
      #flash(_('You have successfully deleted the purchase.'))
-
-    return redirect(url_for('purchase.purchases'))
-
-#download a commissioning file
-@purchase.route('/purchase/download/<string:file>', methods=['GET', 'POST'])
-@login_required
-def download(file=""):
-    try:
-        return send_file(os.path.join(app.root_path, '..', get_doc_path('commissioning'), file), as_attachment=True)
-        #return app.send_static_file(os.path.join(commissioning_path, file))
-    except Exception as e:
-        flash(_('Could not download file {}'.format(file)))
-        flash(_('Does it still exist?'))
 
     return redirect(url_for('purchase.purchases'))

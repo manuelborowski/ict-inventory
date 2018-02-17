@@ -13,7 +13,7 @@
     <div class="input-group">
         {{ wtf.form_field(form.risk_analysis) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="risk_analysis_download" type="button" value="Download">
+            <input class="btn btn-default" type="submit" name="risk_analysis_download" formaction="{{ url_for('asset.download') }}" value="Download">
             {% if role == "edit" %}
                 <input class="btn btn-default" id="risk_analysis_upload" type="button" value="Upload">
             {% endif %}
@@ -23,7 +23,7 @@
     <div class="input-group">
         {{ wtf.form_field(form.manual) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="manual_download" type="button" value="Download">
+            <input class="btn btn-default" type="submit" name="manual_download" formaction="{{ url_for('asset.download') }}" value="Download">
             {% if role == "edit" %}
                 <input class="btn btn-default" id="manual_upload" type="button" value="Upload">
             {% endif %}
@@ -32,7 +32,7 @@
     <div class="input-group">
         {{ wtf.form_field(form.safety_information) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="safety_information_download" type="button" value="Download">
+            <input class="btn btn-default" type="submit" name="safety_information_download" formaction="{{ url_for('asset.download') }}" value="Download">
             {% if role == "edit" %}
                 <input class="btn btn-default" id="safety_information_upload" type="button" value="Upload">
             {% endif %}
@@ -42,7 +42,7 @@
     <div class="input-group">
         {{ wtf.form_field(form.photo) }}
         <div class="input-group-btn">
-            <input class="btn btn-default" id="photo_download" type="button" value="Download">
+            <input class="btn btn-default" type="submit" name="photo_download" formaction="{{ url_for('asset.download') }}" value="Download">
             {% if role == "edit" %}
                 <input class="btn btn-default" id="photo_upload" type="button" value="Upload">
             {% endif %}

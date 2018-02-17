@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 # app/device/views.py
 
-import os
-from flask import render_template, redirect, url_for, request, flash, send_file
+from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, app, _
+from .. import db, _
 from . import device
-from ..documents import get_doc_path, upload_doc, document_type_list
+from ..documents import upload_doc
 from ..models import Device
 
 from ..base import build_filter, get_ajax_table
@@ -102,19 +101,5 @@ def delete(id):
     db.session.delete(device)
     db.session.commit()
     #flash(_('You have successfully deleted the device.'))
-
-    return redirect(url_for('device.devices'))
-
-#download a ... file
-@device.route('/device/download/<string:type>/<string:file>', methods=['GET', 'POST'])
-@login_required
-def download(type="", file=""):
-
-    try:
-        for d in document_type_list:
-            if d in type:
-                return send_file(os.path.join(app.root_path, '..', get_doc_path(d), file), as_attachment=True)
-    except Exception as e:
-        flash(_('Could not download file {}'.format(file)))
 
     return redirect(url_for('device.devices'))

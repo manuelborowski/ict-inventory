@@ -7,10 +7,11 @@ from flask_login import login_required
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, _
 from . import asset
-from ..models import Asset, Device, Purchase, Supplier
+from ..models import Asset
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
+from ..documents import get_doc_path, upload_doc, document_type_list, get_doc_download, download_single_doc
 
 import cStringIO, csv
 
@@ -189,3 +190,13 @@ def delete(id):
     #flash(_('You have successfully deleted the asset.'))
 
     return redirect(url_for('asset.assets'))
+
+#download a ... file
+@asset.route('/asset/download', methods=['GET', 'POST'])
+@login_required
+def download():
+    try:
+        return download_single_doc(request)
+    except Exception as e:
+        flash('Could not download')
+    return ('', 204)
