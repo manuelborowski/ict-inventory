@@ -23,10 +23,33 @@
     {{ wtf.form_field(form.type) }}
     {{ wtf.form_field(form.power) }}
     {{ wtf.form_field(form.ce) }}
-    {{ wtf.form_field(form.risk_analysis) }}
-    {{ wtf.form_field(form.manual) }}
-    {{ wtf.form_field(form.safety_information) }}
-    {{ wtf.form_field(form.photo) }}
+
+    <div class="input-group">
+        {{ wtf.form_field(form.risk_analysis) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="risk_analysis_download" formaction="{{ url_for('asset.download') }}" value="Download">
+        </div>
+    </div>
+
+    <div class="input-group">
+        {{ wtf.form_field(form.manual) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="manual_download" formaction="{{ url_for('asset.download') }}" value="Download">
+        </div>
+    </div>
+    <div class="input-group">
+        {{ wtf.form_field(form.safety_information) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="safety_information_download" formaction="{{ url_for('asset.download') }}" value="Download">
+        </div>
+    </div>
+
+    <div class="input-group">
+        {{ wtf.form_field(form.photo) }}
+        <div class="input-group-btn">
+            <input class="btn btn-default" type="submit" name="photo_download" formaction="{{ url_for('asset.download') }}" value="Download">
+        </div>
+    </div>
 
     <img src="../../static/photo/{{ form.photo.data }}" height="377">
     </br>
