@@ -8,7 +8,7 @@ class Config(object):
     Common configurations
     """
     STATIC_PATH = "app/static"
-
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 class DevelopmentConfig(Config):
     """
     Development configurations

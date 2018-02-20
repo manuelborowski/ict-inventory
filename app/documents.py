@@ -3,7 +3,7 @@
 from flask_uploads import UploadSet, configure_uploads, ALL
 from flask import send_file
 from . import app
-import os
+import os, sys
 
 document_type_list = [
     'photo',
@@ -19,7 +19,7 @@ def init_documents(app, d):
     documents_config[d] = {}
     doc_dest = d.replace('_', '')
     upload_dest = 'UPLOADED_' + doc_dest.upper() + '_DEST'
-    documents_config[d]['full_path'] = os.path.join(app.config['STATIC_PATH'], doc_dest)
+    documents_config[d]['full_path'] = os.path.join(sys.path[0], app.config['STATIC_PATH'], doc_dest)
     app.config[upload_dest] = documents_config[d]['full_path']
     documents_config[d]['doc_reference'] = UploadSet(doc_dest, ALL)
     configure_uploads(app, documents_config[d]['doc_reference'])
