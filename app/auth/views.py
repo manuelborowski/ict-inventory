@@ -29,7 +29,7 @@ def login():
             return redirect(url_for('asset.assets'))
             # when login details are incorrect
         else:
-            flash('Invalid username or password.')
+            flash('Ongeldige gebruikersnaam of paswoord')
 
      # load login template
     return render_template('auth/login.html', form=form, title='Login')
@@ -42,7 +42,7 @@ def logout():
     Log a user out through the logout link
     """
     logout_user()
-    flash('You have successfully been logged out.')
+    flash('U bent uitgelogd')
 
     # redirect to the login page
     return redirect(url_for('auth.login'))

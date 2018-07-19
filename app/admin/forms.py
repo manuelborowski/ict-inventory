@@ -21,7 +21,7 @@ class UniqueQR:
         if message:
             self.message = message
         else:
-            self.message = 'An asset with this QR-code already exists'
+            self.message = 'Een activa met die QR-code bestaat al!'
 
     def __call__(self, form, field):
         asset_found = Asset.query.filter(Asset.qr_code == field.data).first()
@@ -38,7 +38,7 @@ class QRisValid():
         if message:
             self.message = message
         else:
-            self.message = 'A QR-code is a number or an URL ending with .../qr/123'
+            self.message = 'Een QR-code is een getal of een URL die eindigt met .../qr/123'
 
     def __call__(self, form, field):
         try:

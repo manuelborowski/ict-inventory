@@ -26,7 +26,7 @@ def devices():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['device'])
     return render_template('base_multiple_items.html',
-                           title='devices',
+                           title='toestellen',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['device'])
 
@@ -58,7 +58,7 @@ def add(id=-1):
 
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_('Add a device'), role='add', subject='device', route='device.devices')
+    return render_template('device/device.html', form=form, title='Voeg een toestel toe', role='add', subject='device', route='device.devices')
 
 
 #edit a device
@@ -69,19 +69,19 @@ def edit(id):
     form = EditForm(obj=device)
 
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == 'Bewaar':
             form.populate_obj(device)
             #check if a document needs to be uploaded
             try:
                 upload_doc(request)
             except Exception as e:
-                flash('Could not upload file')
+                flash('Kan niet uploaden')
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
 
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_('Edit a device'), role='edit', subject='device', route='device.devices')
+    return render_template('device/device.html', form=form, title='Pas een toestel aan', role='edit', subject='device', route='device.devices')
 
 #no login required
 @device.route('/device/view/<int:id>', methods=['GET', 'POST'])
@@ -91,7 +91,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('device.devices'))
 
-    return render_template('device/device.html', form=form, title=_('View a device'), role='view', subject='device', route='device.devices')
+    return render_template('device/device.html', form=form, title='Bekijk een toestel', role='view', subject='device', route='device.devices')
 
 #delete a device
 @device.route('/device/delete/<int:id>', methods=['GET', 'POST'])

@@ -20,15 +20,15 @@ class EditForm(FlaskForm):
         self.safety_information.choices = zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information'))
         self.category.choices = zip(Device.Category.get_list(), Device.Category.get_list())
 
-    category = SelectField('Category', validators=[DataRequired()])
-    brand = StringField('Brand', validators=[DataRequired()])
+    category = SelectField('Categorie', validators=[DataRequired()])
+    brand = StringField('Merk', validators=[DataRequired()])
     type = StringField('Type', validators=[DataRequired()])
-    power = DecimalField('Power', default=0.0)
+    power = DecimalField('Vermogen', default=0.0)
     ce = BooleanField('CE')
-    risk_analysis = NonValidatingSelectFields('Risk Analyis')
-    manual = NonValidatingSelectFields('Manual')
-    safety_information = NonValidatingSelectFields('Safety Information')
-    photo = NonValidatingSelectFields('Photo')
+    risk_analysis = NonValidatingSelectFields('Risicoanalyse')
+    manual = NonValidatingSelectFields('Handleiding')
+    safety_information = NonValidatingSelectFields('VIK')
+    photo = NonValidatingSelectFields('Foto')
     id = IntegerField(widget=HiddenInput())
 
 class AddForm(EditForm):
@@ -37,13 +37,13 @@ class AddForm(EditForm):
     """
 
 class ViewForm(FlaskForm):
-    category = StringField('Category', render_kw={'readonly':''})
-    brand = StringField('Brand', render_kw={'readonly':''})
+    category = StringField('Categorie', render_kw={'readonly':''})
+    brand = StringField('Merk', render_kw={'readonly':''})
     type = StringField('Type', render_kw={'readonly':''})
-    power = DecimalField('Power', render_kw={'readonly':''})
+    power = DecimalField('Vermogen', render_kw={'readonly':''})
     ce = BooleanField('CE', render_kw={'readonly':''})
-    risk_analysis = StringField('Risk Analyis', render_kw={'readonly':''})
-    manual = StringField('Manual', render_kw={'readonly':''})
-    safety_information = StringField('Safety Information', render_kw={'readonly':''})
-    photo = StringField('Photo', render_kw={'readonly':''})
+    risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
+    manual = StringField('Handleiding', render_kw={'readonly':''})
+    safety_information = StringField('VIK', render_kw={'readonly':''})
+    photo = StringField('Foto', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput(), render_kw={'readonly':''})

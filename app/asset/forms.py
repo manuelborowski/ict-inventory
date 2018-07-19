@@ -22,7 +22,7 @@ class UniqueQR:
         if message:
             self.message = message
         else:
-            self.message = 'An asset with this QR-code already exists'
+            self.message = 'Een activa met deze QR-code bestaat reeds'
 
     def __call__(self, form, field):
         asset_found = Asset.query.filter(Asset.qr_code == field.data).first()
@@ -39,7 +39,7 @@ class QRisValid():
         if message:
             self.message = message
         else:
-            self.message = 'A QR-code is a number or an URL ending with .../qr/123'
+            self.message = 'Een QR-code is een getal of een URL die eindigt op .../qr/123'
 
     def __call__(self, form, field):
         try:
@@ -57,12 +57,12 @@ class QRisValid():
 
 
 class EditForm(FlaskForm):
-    name = StringField('Name')
-    location = StringField('Location')
+    name = StringField('Naam')
+    location = StringField('Locatie')
     qr_code = StringField('QR', validators=[QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
     status = SelectField('Status', validators=[DataRequired()], choices=zip(Asset.Status.get_list(), Asset.Status.get_list()))
-    purchase = QuerySelectField('Purchase', query_factory=get_purchases)
-    serial = StringField('Serial')
+    purchase = QuerySelectField('Aankoop', query_factory=get_purchases)
+    serial = StringField('SerieNr')
     id = IntegerField(widget=HiddenInput())
 
 
@@ -70,25 +70,25 @@ class AddForm(EditForm):
     pass
 
 class ViewForm(FlaskForm):
-    name = StringField('Name', render_kw={'readonly':''})
-    location = StringField('Location', render_kw={'readonly':''})
+    name = StringField('Naam', render_kw={'readonly':''})
+    location = StringField('Locatie', render_kw={'readonly':''})
     qr_code = StringField('QR', render_kw={'readonly':''})
     status = StringField('Status', render_kw={'readonly':''})
-    purchase = StringField('Purchase', render_kw={'readonly':''})
-    since = DateField('Date', render_kw={'readonly':''}, format='%d-%m-%Y')
-    value = DecimalField('Value (&euro;)', render_kw={'readonly':''})
-    supplier = StringField('Supplier', render_kw={'readonly':''})
-    category = StringField('Category', render_kw={'readonly':''})
-    serial = StringField('Serial', render_kw={'readonly':''})
+    purchase = StringField('Aankoop', render_kw={'readonly':''})
+    since = DateField('Datum', render_kw={'readonly':''}, format='%d-%m-%Y')
+    value = DecimalField('Bedrag (&euro;)', render_kw={'readonly':''})
+    supplier = StringField('Leverancier', render_kw={'readonly':''})
+    category = StringField('Categorie', render_kw={'readonly':''})
+    serial = StringField('SerieNr', render_kw={'readonly':''})
 
-    brand = StringField('Brand', render_kw={'readonly':''})
+    brand = StringField('Merk', render_kw={'readonly':''})
     type = StringField('Type', render_kw={'readonly':''})
-    power = DecimalField('Power', render_kw={'readonly':''})
+    power = DecimalField('Vermogen', render_kw={'readonly':''})
     ce = BooleanField('CE', render_kw={'readonly':''})
-    risk_analysis = StringField('Risk Analyis', render_kw={'readonly':''})
-    manual = StringField('Manual', render_kw={'readonly':''})
-    safety_information = StringField('Safety Information', render_kw={'readonly':''})
-    photo = StringField('Photo', render_kw={'readonly':''})
+    risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
+    manual = StringField('Handleiding', render_kw={'readonly':''})
+    safety_information = StringField('VIK', render_kw={'readonly':''})
+    photo = StringField('Foto', render_kw={'readonly':''})
 
 
     id = IntegerField(widget=HiddenInput())

@@ -44,7 +44,7 @@ def delete():
                         for i in request.form.getlist(get_doc_select(d)):
                             os.remove(os.path.join(get_doc_path(d), i))
     except Exception as e:
-        flash('Could not delete...')
+        flash('Kan niet verwijderen...')
     return redirect(url_for('admin.show'))
 
 @admin.route('/admin/download', methods=['GET', 'POST'])
@@ -65,7 +65,7 @@ def download():
                     zf.close()
                     return send_file(os.path.join(app.root_path, '..', zf_name), mimetype='zip', as_attachment=True)
     except Exception as e:
-        flash('Could not download')
+        flash('Kan niet downloaden')
     return redirect(url_for('admin.show'))
 
 @admin.route('/admin/upload', methods=['GET', 'POST'])
@@ -75,7 +75,7 @@ def upload():
     try:
         upload_doc(request)
     except Exception as e:
-        flash('Could not upload')
+        flash('Kan niet uploaden')
     return redirect(url_for('admin.show'))
 
 
@@ -143,5 +143,5 @@ def importcsv():
             db.session.commit()
 
     except Exception as e:
-        flash('Could not import file')
+        flash('Kan bestand niet importeren')
     return redirect(url_for('admin.show'))

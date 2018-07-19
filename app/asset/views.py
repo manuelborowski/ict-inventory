@@ -30,7 +30,7 @@ def assets():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['asset'])
     return render_template('base_multiple_items.html',
-                           title='assets',
+                           title='activa',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['asset'])
 
@@ -116,7 +116,7 @@ def add(id=-1):
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='Add an asset', role='add', route='asset.assets', subject='asset')
+    return render_template('asset/asset.html', form=form, title='Voeg activa toe', role='add', route='asset.assets', subject='asset')
 
 #edit a asset
 @asset.route('/asset/edit/<int:id>', methods=['GET', 'POST'])
@@ -125,14 +125,14 @@ def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
             db.session.commit()
             #flash'You have edited asset {}').format(asset.name)
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='Edit an asset', role='edit', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='Pas een activa aan', role='edit', subject='asset', route='asset.assets')
 
 #no login required
 @asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
@@ -156,7 +156,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title='View an asset', role='view', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='Bekijk een activa', role='view', subject='asset', route='asset.assets')
 
 
 #no login required
@@ -178,7 +178,7 @@ def view_via_qr(qr):
     form.safety_information.data = asset.purchase.device.safety_information
     form.photo.data = asset.purchase.device.photo
 
-    return render_template('asset/asset.html', form=form, title='View an asset', role='view', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='Bekijk een activa', role='view', subject='asset', route='asset.assets')
 
 #delete an asset
 @asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])
@@ -198,5 +198,5 @@ def download():
     try:
         return download_single_doc(request)
     except Exception as e:
-        flash('Could not download')
+        flash('Kan niet downloaden  ')
     return ('', 204)

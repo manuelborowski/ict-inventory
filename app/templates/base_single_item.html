@@ -23,15 +23,15 @@
 
                 {% if role == "view" %}
                     {% if current_user.is_authenticated %}
-                        <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Edit</a>
+                        <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Pas aan</a>
                     {% else %}
                         <a class="btn btn-default"
-                       href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Edit</a>
+                       href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Pas aan</a>
                     {% endif %}
                 {% else %}
-                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Save">
+                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
                 {% endif %}
-                <a class="btn btn-default" href="javascript:history.back()">Cancel</a>
+                <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
             </form>
     </div>
 </div>
@@ -62,7 +62,7 @@
             var _select = document.getElementById(_file_type);
              for(var i=0; i < _select.options.length; i++) {
                 if (_select.options[i].value == fd.files[0].name) {
-                    toastr.error('File "' + fd.files[0].name + '" already exists, select another one');
+                    toastr.error('Bestand "' + fd.files[0].name + '" bestaat reeds, kies een ander');
                     fd.value="";
                     return;
                 }
