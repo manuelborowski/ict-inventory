@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
         """
         Prevent pasword from being accessed
         """
-        raise AttributeError('password is not a readable attribute.')
+        raise AttributeError('Paswoord kan je niet lezen.')
 
     @password.setter
     def password(self, password):

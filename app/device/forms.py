@@ -7,7 +7,6 @@ from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
 from ..models import Device
-from .. import _
 from ..forms import NonValidatingSelectFields
 from ..documents import get_doc_list
 
@@ -21,11 +20,11 @@ class EditForm(FlaskForm):
         self.safety_information.choices = zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information'))
         self.category.choices = zip(Device.Category.get_list(), Device.Category.get_list())
 
-    category = SelectField(_(u'Category'), validators=[DataRequired()])
-    brand = StringField(_(u'Brand'), validators=[DataRequired()])
-    type = StringField(_(u'Type'), validators=[DataRequired()])
-    power = DecimalField(_(u'Power'), default=0.0)
-    ce = BooleanField(_(u'CE'))
+    category = SelectField('Category', validators=[DataRequired()])
+    brand = StringField('Brand', validators=[DataRequired()])
+    type = StringField('Type', validators=[DataRequired()])
+    power = DecimalField('Power', default=0.0)
+    ce = BooleanField('CE')
     risk_analysis = NonValidatingSelectFields('Risk Analyis')
     manual = NonValidatingSelectFields('Manual')
     safety_information = NonValidatingSelectFields('Safety Information')
@@ -38,11 +37,11 @@ class AddForm(EditForm):
     """
 
 class ViewForm(FlaskForm):
-    category = StringField(_(u'Category'), render_kw={'readonly':''})
-    brand = StringField(_(u'Brand'), render_kw={'readonly':''})
-    type = StringField(_(u'Type'), render_kw={'readonly':''})
-    power = DecimalField(_(u'Power'), render_kw={'readonly':''})
-    ce = BooleanField(_(u'CE'), render_kw={'readonly':''})
+    category = StringField('Category', render_kw={'readonly':''})
+    brand = StringField('Brand', render_kw={'readonly':''})
+    type = StringField('Type', render_kw={'readonly':''})
+    power = DecimalField('Power', render_kw={'readonly':''})
+    ce = BooleanField('CE', render_kw={'readonly':''})
     risk_analysis = StringField('Risk Analyis', render_kw={'readonly':''})
     manual = StringField('Manual', render_kw={'readonly':''})
     safety_information = StringField('Safety Information', render_kw={'readonly':''})

@@ -11,13 +11,6 @@ from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 import config
 
-import gettext
-
-# Set up message catalog access
-t = gettext.translation('messages', 'app/translations', fallback=True, languages=['nl'])
-t.install()
-_ = t.ugettext
-
 app = Flask(__name__, instance_relative_config=True)
 
 # local imports
@@ -52,7 +45,7 @@ def create_app(config_name):
 
     if not config.DB_TOOLS:
         login_manager.init_app(app)
-        login_manager.login_message = 'You must be logged in to access this page'
+        login_manager.login_message = 'Je moet aangemeld zijn om deze pagina te zien!'
         login_manager.login_view = 'auth.login'
 
         migrate = Migrate(app, db)

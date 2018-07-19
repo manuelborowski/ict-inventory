@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash, send_file
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _
+from .. import db
 from . import asset
 from ..models import Asset
 
@@ -112,11 +112,11 @@ def add(id=-1):
                         serial=form.serial.data)
         db.session.add(asset)
         db.session.commit()
-        #flash(_(u'You have added asset {}').format(asset.name))
+        #flash(u'You have added asset {}').format(asset.name)
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Add an asset'), role='add', route='asset.assets', subject='asset')
+    return render_template('asset/asset.html', form=form, title='Add an asset', role='add', route='asset.assets', subject='asset')
 
 #edit a asset
 @asset.route('/asset/edit/<int:id>', methods=['GET', 'POST'])
@@ -125,14 +125,14 @@ def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
     if form.validate_on_submit():
-        if request.form['button'] == _(u'Save'):
+        if request.form['button'] == 'Save':
             form.populate_obj(asset)
             db.session.commit()
-            #flash(_(u'You have edited asset {}').format(asset.name))
+            #flash'You have edited asset {}').format(asset.name)
 
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'Edit an asset'), role='edit', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='Edit an asset', role='edit', subject='asset', route='asset.assets')
 
 #no login required
 @asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])
@@ -156,7 +156,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('asset.assets'))
 
-    return render_template('asset/asset.html', form=form, title=_(u'View an asset'), role='view', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='View an asset', role='view', subject='asset', route='asset.assets')
 
 
 #no login required
@@ -178,7 +178,7 @@ def view_via_qr(qr):
     form.safety_information.data = asset.purchase.device.safety_information
     form.photo.data = asset.purchase.device.photo
 
-    return render_template('asset/asset.html', form=form, title=_(u'View an asset'), role='view', subject='asset', route='asset.assets')
+    return render_template('asset/asset.html', form=form, title='View an asset', role='view', subject='asset', route='asset.assets')
 
 #delete an asset
 @asset.route('/asset/delete/<int:id>', methods=['GET', 'POST'])
@@ -187,7 +187,7 @@ def delete(id):
     asset = Asset.query.get_or_404(id)
     db.session.delete(asset)
     db.session.commit()
-    #flash(_('You have successfully deleted the asset.'))
+    #flash('You have successfully deleted the asset.')
 
     return redirect(url_for('asset.assets'))
 

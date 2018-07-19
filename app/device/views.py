@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _
+from .. import db
 from . import device
 from ..documents import upload_doc
 from ..models import Device
@@ -69,7 +69,7 @@ def edit(id):
     form = EditForm(obj=device)
 
     if form.validate_on_submit():
-        if request.form['button'] == _(u'Save'):
+        if request.form['button'] == 'Save':
             form.populate_obj(device)
             #check if a document needs to be uploaded
             try:

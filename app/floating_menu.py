@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-fmi_edit = {"menu_id": "edit_menu_item", "menu_text": "Edit", "route": "edit", "flags": ["id_required"]}
-fmi_delete = {"menu_id": "delete_menu_item", "menu_text": "Delete", "route": "delete","flags": ["id_required", "confirm_before_delete"]}
-fmi_copy = {"menu_id": "copy_menu_item", "menu_text": "Copy from", "route": "add", "flags": ["id_required"]}
-fmi_add = {"menu_id": "add_menu_item", "menu_text": "Add", "route": "add", "flags": []}
-fmi_view = {"menu_id": "view_menu_item", "menu_text": "View", "route": "view", "flags": ["id_required"]}
-fmi_change_pwd = {"menu_id": "change_pwd_menu_item", "menu_text": "Change password", "route": "change_pwd","flags": ["id_required"]}
+fmi_edit = {"menu_id": "edit_menu_item", "menu_text": "Pas aan", "route": "edit", "flags": ["id_required"]}
+fmi_delete = {"menu_id": "delete_menu_item", "menu_text": "Verwijder", "route": "delete","flags": ["id_required", "confirm_before_delete"]}
+fmi_copy = {"menu_id": "copy_menu_item", "menu_text": "Kopieer van", "route": "add", "flags": ["id_required"]}
+fmi_add = {"menu_id": "add_menu_item", "menu_text": "Voeg toe", "route": "add", "flags": []}
+fmi_view = {"menu_id": "view_menu_item", "menu_text": "Details", "route": "view", "flags": ["id_required"]}
+fmi_change_pwd = {"menu_id": "change_pwd_menu_item", "menu_text": "Verander paswoord", "route": "change_pwd","flags": ["id_required"]}
 
 default_menu_config = [
     fmi_edit,

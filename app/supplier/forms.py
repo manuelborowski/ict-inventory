@@ -44,7 +44,7 @@ class ViewForm(FlaskForm):
     """
     Edit an existing supplier
     """
-    name = StringField(_(u'Name'), render_kw={'readonly':''})
+    name = StringField('Name', render_kw={'readonly':''})
     description = TextAreaField('Description', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput(), render_kw={'readonly':''})
 

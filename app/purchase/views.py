@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, _
+from .. import db
 from ..documents import upload_doc
 from . import purchase
 from ..models import Purchase
@@ -65,7 +65,7 @@ def edit(id):
     purchase = Purchase.query.get_or_404(id)
     form = EditForm(obj=purchase)
     if form.validate_on_submit():
-        if request.form['button'] == _(u'Save'):
+        if request.form['button'] == 'Save':
             form.populate_obj(purchase)
             try:
                 upload_doc(request)

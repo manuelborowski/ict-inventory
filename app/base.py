@@ -5,7 +5,6 @@ from wtforms import BooleanField
 from flask import flash,  request, get_flashed_messages, jsonify, url_for
 from sqlalchemy import or_
 import time
-from . import _
 
 from models import Asset, Purchase, Device, Supplier, User
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
@@ -44,7 +43,7 @@ def check_date_in_form(date_key, form):
             time.strptime(form[date_key].strip(), '%d-%M-%Y')
             return form[date_key].strip()
         except:
-            flash(_(u'Wrong date format, must be of form d-m-y'))
+            flash('Verkeerd datumformaat, moet in de vorm zijn : d-m-y')
     return ''
 
 def check_value_in_form(value_key, form):
@@ -53,7 +52,7 @@ def check_value_in_form(value_key, form):
             float(form[value_key])
             return form[value_key]
         except:
-            flash(_(u'Wrong value format'))
+            flash('Verkeerde getal notatie')
     return ''
 
 def check_string_in_form(value_key, form):
@@ -62,7 +61,7 @@ def check_string_in_form(value_key, form):
             str(form[value_key])
             return form[value_key]
         except:
-            flash(_(u'Wrong string format'))
+            flash('Verkeerde tekst notatie')
     return ''
 
 def build_filter(table, paginate=True):
