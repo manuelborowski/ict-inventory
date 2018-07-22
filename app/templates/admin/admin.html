@@ -17,11 +17,11 @@
             <input id="import_trigger" type="submit" value="Import" style="display:none">
             <table class="table-condensed table-bordered">
                 <tr>
-                    <th>Commissioing</th>
-                    <th>Risk analysis</th>
-                    <th>Photo</th>
-                    <th>Manual</th>
-                    <th>Safety information</th>
+                    <th>Indienststelling</th>
+                    <th>Risicoanalyse</th>
+                    <th>Foto</th>
+                    <th>Handleiding</th>
+                    <th>VIK</th>
                 </tr>
                 <tr>
                     <td><input class="btn btn-default" type="button" id="commissioning_upload" value="Upload" onclick="$('#commissioning_fileid').click()"></td>
@@ -85,11 +85,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><input class="btn btn-default" id="commissioning_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
-                    <td><input class="btn btn-default" id="risk_analysis_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
-                    <td><input class="btn btn-default" id="photo_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
-                    <td><input class="btn btn-default" id="manual_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
-                    <td><input class="btn btn-default" id="safety_information_delete" type="submit" onclick="confirm_before_delete(event)" value="Delete"></td>
+                    <td><input class="btn btn-default" id="commissioning_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
+                    <td><input class="btn btn-default" id="risk_analysis_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
+                    <td><input class="btn btn-default" id="photo_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
+                    <td><input class="btn btn-default" id="manual_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
+                    <td><input class="btn btn-default" id="safety_information_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
                 </tr>
             </table>
                 <input id='delete_doc' type="submit" name='delete_doc' style="display:none"  formaction="{{ url_for('admin.delete') }}"/>
@@ -107,7 +107,7 @@
 //Before removing an entry, a confirm-box is shown.
 function confirm_before_delete(e) {
     e.preventDefault();
-    var message = "Are you sure want to delete this/these entry/entries?";
+    var message = "Bent u zeker dat u deze items wil verwijderen?";
     bootbox.confirm(message, function(result) {
         if (result) {
             $('#delete_doc').val(e.srcElement.id);
