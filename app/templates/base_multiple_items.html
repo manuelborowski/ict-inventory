@@ -208,7 +208,11 @@ $(document).ready(function() {
        {% for h in config.template %}
            {data: "{{h.data}}", name: "{{h.name}}"},
        {% endfor %}
-       ]
+       ],
+       "language" : {
+        /*"url" : "static/DataTables/nl_nl.lang"*/
+        "url" : "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Dutch.json"
+      }
     });
 
      //flash messages, if required
