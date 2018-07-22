@@ -67,7 +67,7 @@ tables_configuration = {
     },
     'supplier': {
         'model': Supplier,
-        'title' : 'Leverancier',
+        'title' : 'leverancier',
         'route' : 'supplier.suppliers',
         'subject' :'supplier',
         'delete_message' : 'Wil je deze leverancier EN alle verbonden aankopen EN activa verwijderen?',

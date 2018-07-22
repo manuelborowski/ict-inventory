@@ -25,7 +25,7 @@ def suppliers():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['supplier'])
     return render_template('base_multiple_items.html',
-                           title='suppliers',
+                           title='leveranciers',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['supplier'])
 
@@ -50,8 +50,8 @@ def add(id=-1):
 
         return redirect(url_for('supplier.suppliers'))
 
-    return render_template('supplier/supplier.html', form=form, title='Add')
-
+    return render_template('supplier/supplier.html', form=form, title='Voeg een leverancier toe', role='add', subject='supplier', route='supplier.suppliers')
+#return render_template('device/device.html', form=form, title='Voeg een toestel toe', role='add', subject='device', route='device.devices')
 
 #edit a supplier
 @supplier.route('/supplier/edit/<int:id>', methods=['GET', 'POST'])
@@ -60,14 +60,14 @@ def edit(id):
     supplier = Supplier.query.get_or_404(id)
     form = EditForm(obj=supplier)
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == 'Bewaar':
             form.populate_obj(supplier)
             db.session.commit()
             #flash('You have edited supplier {}'.format(supplier.name))
 
         return redirect(url_for('supplier.suppliers'))
 
-    return render_template('supplier/supplier.html', form=form, title=_('Edit a supplier'), role='edit', subject='supplier', route='supplier.suppliers')
+    return render_template('supplier/supplier.html', form=form, title='Pas een leverancier aan', role='edit', subject='supplier', route='supplier.suppliers')
 
 #no login required
 @supplier.route('/supplier/view/<int:id>', methods=['GET', 'POST'])
@@ -77,7 +77,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('supplier.suppliers'))
 
-    return render_template('supplier/supplier.html', form=form, title=_('View a supplier'), role='view', subject='supplier', route='supplier.suppliers')
+    return render_template('supplier/supplier.html', form=form, title='Bekijk een leverancier', role='view', subject='supplier', route='supplier.suppliers')
 
 
 #delete a supplier

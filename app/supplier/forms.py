@@ -12,7 +12,7 @@ class UniqueName:
         if message:
             self.message = message
         else:
-            self.message = 'A supplier with this name already exists'
+            self.message = 'Een leverancier met deze naam bestaat al'
 
     def __call__(self, form, field):
         supplier_found = Supplier.query.filter(Supplier.name == field.data).first()
@@ -30,8 +30,8 @@ class EditForm(FlaskForm):
     Edit an existing supplier
     """
 
-    name = StringField('Name', validators=[DataRequired(), UniqueName()])
-    description = TextAreaField('Description')
+    name = StringField('Naam', validators=[DataRequired(), UniqueName()])
+    description = TextAreaField('Beschrijving')
     id = IntegerField(widget=HiddenInput())
 
 
@@ -44,22 +44,7 @@ class ViewForm(FlaskForm):
     """
     Edit an existing supplier
     """
-    name = StringField('Name', render_kw={'readonly':''})
-    description = TextAreaField('Description', render_kw={'readonly':''})
+    name = StringField('Naam', render_kw={'readonly':''})
+    description = TextAreaField('Beschrijving', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput(), render_kw={'readonly':''})
 
-class CategoryFilter(FlaskForm):
-    category = SelectField('', choices=zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
-
-class StatusFilter(FlaskForm):
-    status = SelectField('', choices=zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty()))
-
-class SupplierFilter(FlaskForm):
-    sl = Supplier.query.all()
-    sl.insert(0, '')
-    supplier = SelectField('', choices=zip(sl, sl))
-
-class DeviceFilter(FlaskForm):
-    dl = Device.query.all()
-    dl.insert(0, '')
-    device = SelectField('', choices=zip(dl, dl))

@@ -26,11 +26,11 @@ class EditForm(FlaskForm):
         super(EditForm, self).__init__(*args, **kwargs)
         self.commissioning.choices = zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))
 
-    since = DateField('Date', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
-    value = DecimalField('Value (&euro;)', default=0.0)
-    supplier = QuerySelectField('Supplier', query_factory=get_suppliers)
-    device = QuerySelectField('Device', query_factory=get_devices)
-    commissioning = NonValidatingSelectFields('Commissioning')
+    since = DateField('Datum', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
+    value = DecimalField('Bedrag (&euro;)', default=0.0)
+    supplier = QuerySelectField('Leverancier', query_factory=get_suppliers)
+    device = QuerySelectField('Toestel', query_factory=get_devices)
+    commissioning = NonValidatingSelectFields('Indienststelling')
     id = IntegerField(widget=HiddenInput())
 
 
@@ -40,12 +40,12 @@ class AddForm(EditForm):
     """
 
 class ViewForm(FlaskForm):
-    since = DateField('Date', render_kw={'readonly':''}, format='%d-%m-%Y')
-    value = DecimalField('Value (&euro;)', render_kw={'readonly':''})
-    supplier = StringField('Supplier', render_kw={'readonly':''})
-    device = StringField('Device', render_kw={'readonly':''})
-    commissioning = StringField('Commissioning', render_kw={'readonly':''})
+    since = DateField('Datum', render_kw={'readonly':''}, format='%d-%m-%Y')
+    value = DecimalField('Bedrag (&euro;)', render_kw={'readonly':''})
+    supplier = StringField('Leverancier', render_kw={'readonly':''})
+    device = StringField('Toestel', render_kw={'readonly':''})
+    commissioning = StringField('Indienststelling', render_kw={'readonly':''})
 
 
-    picture = StringField('Picture', render_kw={'readonly':''})
+    picture = StringField('Foto', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())

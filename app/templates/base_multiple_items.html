@@ -20,25 +20,25 @@
       <table class="table-condensed ">
           <tr>
 {% if 'since' in filter %}
-              <th>Since</th>
+              <th>Datum</th>
 {% endif %}
 {% if 'value' in filter %}
-              <th>Value</th>
+              <th>Bedrag</th>
 {% endif %}
 {% if 'location' in filter %}
-              <th>Location</th>
+              <th>Locatie</th>
 {% endif %}
 {% if 'category' in filter %}
-              <th>Category </th>
+              <th>Categorie</th>
 {% endif %}
 {% if 'status' in filter %}
               <th>Status</th>
 {% endif %}
 {% if 'supplier' in filter %}
-              <th>Supplier</th>
+              <th>Leverancier</th>
 {% endif %}
 {% if 'device' in filter %}
-              <th>Device</th>
+              <th>Toestel</th>
 {% endif %}
           </tr>
           <tr>
@@ -87,7 +87,7 @@
       <hr />
       <form method="post" action="{{ url_for(config.subject + '.add') }}" novalidate>
       <div class="btn-group" role="group" aria-label="...">
-           <input class="btn btn-default" id="add" name="add" type="submit" value="Voeg {{config.subject}} toe">
+           <input class="btn btn-default" id="add" name="add" type="submit" value="Voeg {{config.title}} toe">
       </div>
       <hr />
       <table cellspacing="0" class="table table-striped table-bordered " id="datatable" width="100%">

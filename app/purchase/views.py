@@ -28,7 +28,7 @@ def purchases():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['purchase'])
     return render_template('base_multiple_items.html',
-                           title='purchases',
+                           title='aankopen',
                            filter=_filter, filter_form=_filter_form,
                            config=tables_configuration['purchase'])
 
@@ -54,7 +54,7 @@ def add(id=-1):
         #flash(_(u'You have added purchase {}').format(purchase.since))
         return redirect(url_for('purchase.purchases'))
 
-    return render_template('purchase/purchase.html', form=form, title=_(u'Add a purchase'), role='add', route='purchase.purchases',
+    return render_template('purchase/purchase.html', form=form, title='Voeg een aankoop toe', role='add', route='purchase.purchases',
                            subject='purchase')
 
 
@@ -65,7 +65,7 @@ def edit(id):
     purchase = Purchase.query.get_or_404(id)
     form = EditForm(obj=purchase)
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == 'Bewaar':
             form.populate_obj(purchase)
             try:
                 upload_doc(request)
@@ -75,7 +75,7 @@ def edit(id):
             #flash(_(u'You have edited purchase {}').format(purchase))
 
         return redirect(url_for('purchase.purchases'))
-    return render_template('purchase/purchase.html', form=form, title=_(u'Edit a purchase'), role='edit', route='purchase.purchases',
+    return render_template('purchase/purchase.html', form=form, title='Pas een aankoop aan', role='edit', route='purchase.purchases',
                            subject='purchase')
 
 
@@ -87,7 +87,7 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('purchase.purchases'))
 
-    return render_template('purchase/purchase.html', form=form, title=_(u'View a purchase'), role='view', route='purchase.purchases', subject='purchase')
+    return render_template('purchase/purchase.html', form=form, title='Bekijk een aankoop', role='view', route='purchase.purchases', subject='purchase')
 
 #delete a purchase
 @purchase.route('/purchase/delete/<int:id>', methods=['GET', 'POST'])
