@@ -128,7 +128,17 @@ class Device(db.Model):
     class Category:
         @staticmethod
         def get_list():
-            l = [i.category for i in db.session.query(Device.category).distinct(Device.category).order_by(Device.category).all()]
+            #l = [i.category for i in db.session.query(Device.category).distinct(Device.category).order_by(Device.category).all()]
+            l = [
+                'PRINTER',
+                'GEREEDSCHAP',
+                'KOPIEERAPPARAAT',
+                'TV',
+                'PC',
+                'HUISHOUD',
+                'BEAMER',
+                'ANDERE'
+            ]
             return l
 
         @staticmethod
