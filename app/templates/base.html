@@ -33,6 +33,7 @@
                   <li><a href="{{ url_for('device.devices') }}">Toestellen</a></li>
                   <li><a href="{{ url_for('supplier.suppliers') }}">Leveranciers</a></li>
                   <li><a href="{{ url_for('user.users') }}">Gebruikers</a></li>
+                  <li><a href="{{ url_for('settings.show') }}">Instellingen</a></li>
                     {% if current_user.is_admin %}
                         <li><a href="{{ url_for('admin.show') }}">Admin</a></li>
                     {% endif %}

@@ -5,7 +5,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
-
+from sqlalchemy import UniqueConstraint
 
 class User(UserMixin, db.Model):
     # Ensures table will be named in plural and not in singular
@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(256), index=True)
     password_hash = db.Column(db.String(256))
     is_admin = db.Column(db.Boolean, default=False)
+    settings = db.relationship('Settings', cascade='all, delete-orphan', backref='user', lazy='dynamic')
 
     @property
     def password(self):
@@ -181,3 +182,22 @@ class Supplier(db.Model):
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'description':self.description}
 
+class Settings(db.Model):
+    __tablename__ = 'settings'
+
+    class SETTING_TYPE:
+        E_INT = 'INT'
+        E_STRING = 'STRING'
+        E_FLOAT = 'FLOAT'
+        E_BOOL = 'BOOL'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    value = db.Column(db.String(256))
+    type = db.Column(db.String(256))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    UniqueConstraint('name', 'user_id')
+
+    def __repr__(self):
+        return '{}/{}/{}'.format(self.name, self.value, self.type)

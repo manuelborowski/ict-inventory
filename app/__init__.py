@@ -80,6 +80,9 @@ def create_app(config_name):
         from .purchase import purchase as purchase_blueprint
         app.register_blueprint(purchase_blueprint)
 
+        from .settings import settings as settings_blueprint
+        app.register_blueprint(settings_blueprint)
+
         from .documents import init_documents
         init_documents(app, 'commissioning')
         init_documents(app, 'risk_analysis')

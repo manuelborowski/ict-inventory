@@ -11,7 +11,7 @@ from ..models import Asset
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
-from ..documents import get_doc_path, upload_doc, document_type_list, get_doc_download, download_single_doc
+from ..documents import download_single_doc
 
 import cStringIO, csv
 

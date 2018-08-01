@@ -3,10 +3,11 @@ from wtforms.widgets.core import html_params
 from wtforms.widgets import HTMLString
 from wtforms import BooleanField
 from flask import flash,  request, get_flashed_messages, jsonify, url_for
+from flask_login import current_user
 from sqlalchemy import or_
 import time
 
-from models import Asset, Purchase, Device, Supplier, User
+from models import Asset, Purchase, Device, Supplier, User, Settings
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 
 
@@ -84,7 +85,7 @@ def build_filter(table, paginate=True):
 
     _filter_forms = {}
 
-    #Create the sql-request with the appriorate filters
+    #Create the sql-request with the apropriate filters
     if 'since' in _filters_enabled:
         date = check_date_in_form('date_after', request.values)
         if date:
@@ -210,5 +211,50 @@ def get_ajax_table(table):
         output['flash'] = fml
     return jsonify(output)
 
+######################################################################################################
+###                                       Handle settings
+######################################################################################################
 
+from . import db
 
+#return : found, value
+# found : if True, setting was found else not
+# value ; if setting was found, returns the value
+def get_setting(name):
+    try:
+        setting = Settings.query.filter_by(name=name, user_id=current_user.id).first()
+        if setting.type== Settings.SETTING_TYPE.E_INT:
+            value = int(setting.value)
+        elif setting.type == Settings.SETTING_TYPE.E_FLOAT:
+            value = float(setting.value)
+        elif setting.type == Settings.SETTING_TYPE.E_BOOL:
+            value = True if setting.value == 'True' else False
+        else:
+            value = setting.value
+    except:
+        return False, ''
+    return True, value
+
+def add_setting(name, value, type):
+    setting = Settings(name=name, value=value, type=type, user_id=current_user.id)
+    db.session.add(setting)
+    db.session.commit()
+    return True
+
+def set_setting(name, value):
+    try:
+        setting = Settings.query.filter_by(name=name, user_id=current_user.id).first()
+        setting.value = value
+        db.session.commit()
+    except:
+        return False
+    return True
+
+def get_setting_inc_index_asset_name():
+    found, value = get_setting('inc_index_asset_name')
+    if found: return value
+    add_setting('inc_index_asset_name', True, Settings.SETTING_TYPE.E_BOOL)
+    return True
+
+def set_setting_inc_index_asset_name(value):
+    return set_setting('inc_index_asset_name', str(value))
