@@ -9,11 +9,11 @@ from .. import db
 from . import asset
 from ..models import Asset
 
-from ..base import build_filter, get_ajax_table
+from ..base import build_filter, get_ajax_table, get_setting_inc_index_asset_name
 from ..tables_config import  tables_configuration
 from ..documents import download_single_doc
 
-import cStringIO, csv
+import cStringIO, csv, re
 
 from werkzeug.datastructures import FileStorage
 
@@ -94,6 +94,15 @@ def add(id=-1):
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
     if id > -1:
         asset = Asset.query.get_or_404(int(id))
+        if get_setting_inc_index_asset_name():
+            #the new name is the same as the old one, but the index is incremented
+            #if no index available, create default 001
+            nbr = re.search(r'\d+$', asset.name)
+            if nbr is None:
+                asset.name = asset.name + '1'
+            else:
+                idx = int(nbr.group()) + 1
+                asset.name = asset.name[:-len(nbr.group())] + str(idx)
         form = AddForm(obj=asset)
         form.qr_code.data=''
         form.serial.data=''
