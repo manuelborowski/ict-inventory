@@ -44,7 +44,8 @@ def add(id=-1):
     else:
         form = AddForm()
     del form.id # is not required here and makes validate_on_submit fail...
-    if not 'add' in request.form and form.validate_on_submit():
+    #Validate on the second pass only (when button 'Bewaar' is pushed)
+    if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         purchase = Purchase(since=form.since.data,
                             value=form.value.data,
                            supplier = form.supplier.data,

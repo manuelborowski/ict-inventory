@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, flash, send_file
-from flask_login import login_required
+from flask import render_template, redirect, url_for, request, flash, send_file, session
+from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db
@@ -85,10 +85,12 @@ def exportcsv():
     return send_file(csv_file, attachment_filename='assets.csv', as_attachment=True)
 
 #add a new asset
+@asset.route('/asset/add/<int:id>/<int:qr>', methods=['GET', 'POST'])
+@asset.route('/asset/add/<int:qr>', methods=['GET', 'POST'])
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
 @asset.route('/asset/add', methods=['GET', 'POST'])
 @login_required
-def add(id=-1):
+def add(id=-1, qr=-1):
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
@@ -104,7 +106,6 @@ def add(id=-1):
                 idx = int(nbr.group()) + 1
                 asset.name = asset.name[:-len(nbr.group())] + str(idx)
         form = AddForm(obj=asset)
-        form.qr_code.data=''
         form.serial.data=''
         #No idea why only these 2 fields need to be copied explicitly???
         form.name.data = asset.name
@@ -112,7 +113,8 @@ def add(id=-1):
     else:
         form = AddForm()
     del form.id # is not required here and makes validate_on_submit fail...
-    if not 'add' in request.form and form.validate_on_submit():
+    #Validate on the second pass only (when button 'Bewaar' is pushed)
+    if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         asset = Asset(name=form.name.data,
                         qr_code=form.qr_code.data,
                         status=form.status.data,
@@ -121,10 +123,12 @@ def add(id=-1):
                         serial=form.serial.data)
         db.session.add(asset)
         db.session.commit()
+        db.session.refresh(asset)
+        session['asset_last_added'] = asset.id
         #flash(u'You have added asset {}').format(asset.name)
-
         return redirect(url_for('asset.assets'))
 
+    form.qr_code.data=qr if qr > -1 else ''
     return render_template('asset/asset.html', form=form, title='Voeg activa toe', role='add', route='asset.assets', subject='asset')
 
 #edit a asset
@@ -171,21 +175,33 @@ def view(id):
 #no login required
 @asset.route('/asset/qr/<string:qr>', methods=['GET', 'POST'])
 def view_via_qr(qr):
-    asset = Asset.query.filter_by(qr_code=qr).first_or_404()
-    form = ViewForm(obj=asset)
-    form.since.data = asset.purchase.since
-    form.category.data = asset.purchase.device.category
-    form.value.data = asset.purchase.value
-    form.supplier.data = asset.purchase.supplier
+    try:
+        asset = Asset.query.filter_by(qr_code=qr).first()
+        form = ViewForm(obj=asset)
+        form.since.data = asset.purchase.since
+        form.category.data = asset.purchase.device.category
+        form.value.data = asset.purchase.value
+        form.supplier.data = asset.purchase.supplier
 
-    form.brand.data = asset.purchase.device.brand
-    form.type.data  = asset.purchase.device.type
-    form.power.data = asset.purchase.device.power
-    form.ce.data  = asset.purchase.device.ce
-    form.risk_analysis.data = asset.purchase.device.risk_analysis
-    form.manual.data  = asset.purchase.device.manual
-    form.safety_information.data = asset.purchase.device.safety_information
-    form.photo.data = asset.purchase.device.photo
+        form.brand.data = asset.purchase.device.brand
+        form.type.data  = asset.purchase.device.type
+        form.power.data = asset.purchase.device.power
+        form.ce.data  = asset.purchase.device.ce
+        form.risk_analysis.data = asset.purchase.device.risk_analysis
+        form.manual.data  = asset.purchase.device.manual
+        form.safety_information.data = asset.purchase.device.safety_information
+        form.photo.data = asset.purchase.device.photo
+    except:
+        #scanned a QR code which is not in the database yet, so it is assumed that a new asset is to be added
+        copy_from_asset_id = session['asset_last_added'] if 'asset_last_added' in session else -1
+        try:
+            if current_user.is_authenticated:
+                return redirect(url_for('asset.add', id=copy_from_asset_id, qr=int(qr)))
+            else:
+                return redirect(url_for('auth.login', redirect_url=url_for('asset.add', id=copy_from_asset_id, qr=int(qr))))
+        except:
+            flash('Ongeldige QR code')
+            return redirect(url_for('auth.login'))
 
     return render_template('asset/asset.html', form=form, title='Bekijk een activa', role='view', subject='asset', route='asset.assets')
 

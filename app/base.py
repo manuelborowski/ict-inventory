@@ -236,7 +236,7 @@ def get_setting(name):
     return True, value
 
 def add_setting(name, value, type):
-    setting = Settings(name=name, value=value, type=type, user_id=current_user.id)
+    setting = Settings(name=name, value=str(value), type=type, user_id=current_user.id)
     db.session.add(setting)
     db.session.commit()
     return True
@@ -258,3 +258,13 @@ def get_setting_inc_index_asset_name():
 
 def set_setting_inc_index_asset_name(value):
     return set_setting('inc_index_asset_name', str(value))
+
+def get_setting_copy_from_last_add():
+    found, value = get_setting('copy_from_last_add')
+    if found: return value
+    add_setting('copy_from_last_add', True, Settings.SETTING_TYPE.E_BOOL)
+    return True
+
+def set_setting_copy_from_last_add(value):
+    return set_setting('copy_from_last_add', str(value))
+

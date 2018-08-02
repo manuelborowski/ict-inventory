@@ -17,6 +17,11 @@
                 Bij het kopiëren van een activa zal de nieuwe activa dezelfde naam hebben, <br/>
                 maar zal de index in de naam met 1 zijn verhoogd.</label>
         </div>
+        <div class="checkbox">
+            <label><input type="checkbox" name="copy_from_last_add" value="1" {{'checked' if copy_from_last_add else ''}}>
+                Als een niet bestaande QR code wordt gescand, dan wordt er automatisch een kopie genomen van <br/>
+                de laatst toegevoegde activa.  Of, als die niet bestaat, een lege activa wordt aangemaakt.</label>
+        </div>
         <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
         </form>
     </div>
