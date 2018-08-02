@@ -15,15 +15,9 @@ from ..models import Asset, Device, Supplier, Purchase
 
 import zipfile
 
-def check_admin():
-    if not current_user.is_admin:
-        abort(403)
-
 @admin.route('/admin', methods=['GET', 'POST'])
 @login_required
 def show():
-    check_admin()
-
     return render_template('admin/admin.html', mode='admin',
                            commissioning_list = get_doc_list('commissioning'),
                            photo_list = get_doc_list('photo'),
@@ -35,7 +29,6 @@ def show():
 @admin.route('/admin/delete', methods=['GET', 'POST'])
 @login_required
 def delete():
-    check_admin()
     try:
         if 'delete_doc' in request.form:
             for d in document_type_list:
@@ -50,7 +43,6 @@ def delete():
 @admin.route('/admin/download', methods=['GET', 'POST'])
 @login_required
 def download():
-    check_admin()
     try:
         for d in document_type_list:
             if get_doc_download(d) in request.form:
@@ -71,7 +63,6 @@ def download():
 @admin.route('/admin/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
-    check_admin()
     try:
         upload_doc(request)
     except Exception as e:
@@ -95,7 +86,6 @@ def upload():
 @admin.route('/admin/importcsv', methods=['GET', 'POST'])
 @login_required
 def importcsv():
-    check_admin()
     try:
         if request.files['import_filename']:
             # format csv file :

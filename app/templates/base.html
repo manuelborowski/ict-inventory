@@ -25,21 +25,15 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
               {% if current_user.is_authenticated %}
-                {% if mode == 'admin' %}
-                  <li><a href="{{ url_for('asset.assets') }}">Gebruikers</a></li>
-                {% else %}
                   <li><a href="{{ url_for('asset.assets') }}">Activa</a></li>
                   <li><a href="{{ url_for('purchase.purchases') }}">Aankopen</a></li>
                   <li><a href="{{ url_for('device.devices') }}">Toestellen</a></li>
                   <li><a href="{{ url_for('supplier.suppliers') }}">Leveranciers</a></li>
                   <li><a href="{{ url_for('user.users') }}">Gebruikers</a></li>
                   <li><a href="{{ url_for('settings.show') }}">Instellingen</a></li>
-                    {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('admin.show') }}">Admin</a></li>
-                    {% endif %}
-                {% endif %}
-              <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
-              <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.username }}!</a></li>
+                   <li><a href="{{ url_for('admin.show') }}">Documenten</a></li>
+                  <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                  <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.username }}!</a></li>
               {% else %}
                   <li><a href="#">Login</a></li>
                   {% endif %}
