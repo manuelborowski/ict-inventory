@@ -62,6 +62,7 @@ class Asset(db.Model):
         E_IN_REPAIR = 'IN REPARATIE'
         E_BROKEN = 'STUK'
         E_TO_BE_REPLACED = 'TE VERVANGEN'
+        E_TOO_OLD = 'TE OUD'
         E_OTHER = 'ANDERS'
         DEFAULT = E_IN_SERVICE
 
@@ -131,13 +132,14 @@ class Device(db.Model):
         def get_list():
             #l = [i.category for i in db.session.query(Device.category).distinct(Device.category).order_by(Device.category).all()]
             l = [
+                'BEAMER',
+                'PC',
+                'MONITOR',
                 'PRINTER',
                 'GEREEDSCHAP',
                 'KOPIEERAPPARAAT',
                 'TV',
-                'PC',
                 'HUISHOUD',
-                'BEAMER',
                 'ANDERE'
             ]
             return l
