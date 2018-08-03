@@ -10,9 +10,14 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 from werkzeug.routing import IntegerConverter as OrigIntegerConvertor
-import config
+import config, logging, logging.handlers
 
 app = Flask(__name__, instance_relative_config=True)
+
+#enable logging
+LOG_FILENAME = 'log/iai-log.txt'
+LOG_HANDLE = 'IAI'
+log = logging.getLogger(LOG_HANDLE)
 
 # local imports
 from config import app_config
@@ -27,7 +32,6 @@ class IntegerConverter(OrigIntegerConvertor):
     num_convert = int
 
 
-
 def create_admin(db):
     from app.models import User
     admin = User(username='admin', password='admin', is_admin=True)
@@ -37,6 +41,19 @@ def create_admin(db):
 
 def create_app(config_name):
     global app
+    global log
+
+    log.setLevel(logging.DEBUG)
+
+    # Add the log message handler to the logger
+    log_handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=10 * 1024, backupCount=5)
+    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    log_handler.setFormatter(log_formatter)
+    log.addHandler(log_handler)
+
+    log.info('start IAI')
+    print('start IAI')
+
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 #    app.create_jinja_environment()

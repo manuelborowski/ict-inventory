@@ -2,8 +2,9 @@
 # app/auth/views.py
 
 from flask import flash, redirect, render_template, url_for, request, session
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
+from .. import log
 from . import auth
 from forms import LoginForm
 from ..models import User
@@ -23,7 +24,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # log user in
             login_user(user)
-
+            log.info('User logged in : {}'.format(current_user.username))
             #reset the asset last_added when logging in...
             if 'asset_last_added' in session: session['asset_last_added'] = -1
 
@@ -45,6 +46,7 @@ def logout():
     Handle requests to the /logout route
     Log a user out through the logout link
     """
+    log.info('User logged out : {}'.format(current_user.username))
     logout_user()
     flash('U bent uitgelogd')
 
