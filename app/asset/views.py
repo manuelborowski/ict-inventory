@@ -94,8 +94,8 @@ def add(id=-1, qr=-1):
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
-    if id > -1:
-        asset = Asset.query.get_or_404(int(id))
+    asset = Asset.query.filter_by(id=int(id)).first()
+    if asset:
         if get_setting_inc_index_asset_name():
             #the new name is the same as the old one, but the index is incremented
             #if no index available, create default 001

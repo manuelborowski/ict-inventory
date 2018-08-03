@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
+from werkzeug.routing import IntegerConverter as OrigIntegerConvertor
 import config
 
 app = Flask(__name__, instance_relative_config=True)
@@ -19,6 +20,11 @@ from config import app_config
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+
+#The original werkzeug-url-converter cannot handle negative integers (e.g. asset/add/-1/1)  
+class IntegerConverter(OrigIntegerConvertor):
+    regex = r'-?\d+'
+    num_convert = int
 
 
 
@@ -42,6 +48,8 @@ def create_app(config_name):
     jsglue = JSGlue(app)
     db.app=app  # hack :-(
     db.init_app(app)
+
+    app.url_map.converters['int'] = IntegerConverter
 
     if not config.DB_TOOLS:
         login_manager.init_app(app)

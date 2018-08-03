@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/auth/views.py
 
-from flask import flash, redirect, render_template, url_for, request
+from flask import flash, redirect, render_template, url_for, request, session
 from flask_login import login_required, login_user, logout_user
 
 from . import auth
@@ -23,6 +23,10 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # log user in
             login_user(user)
+
+            #reset the asset last_added when logging in...
+            if 'asset_last_added' in session: session['asset_last_added'] = -1
+
             # redirect to the appropriate page
             if 'redirect_url' in request.args:
                 return redirect(request.args['redirect_url'])
