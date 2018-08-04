@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash, send_file,
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db
+from .. import db, log
 from . import asset
 from ..models import Asset
 
@@ -125,6 +125,7 @@ def add(id=-1, qr=-1):
         db.session.commit()
         db.session.refresh(asset)
         session['asset_last_added'] = asset.id
+        log.info('add : {}'.format(asset.log()))
         #flash(u'You have added asset {}').format(asset.name)
         return redirect(url_for('asset.assets'))
 
@@ -141,6 +142,7 @@ def edit(id):
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
             db.session.commit()
+            log.info('edit : {}'.format(asset.log()))
             #flash'You have edited asset {}').format(asset.name)
 
         return redirect(url_for('asset.assets'))
@@ -210,6 +212,7 @@ def view_via_qr(qr):
 @login_required
 def delete(id):
     asset = Asset.query.get_or_404(id)
+    log.info('delete : {}'.format(asset.log()))
     db.session.delete(asset)
     db.session.commit()
     #flash('You have successfully deleted the asset.')

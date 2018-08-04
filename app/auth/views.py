@@ -24,7 +24,7 @@ def login():
         if user is not None and user.verify_password(form.password.data):
             # log user in
             login_user(user)
-            log.info('User logged in : {}'.format(current_user.username))
+            log.info('User logged in')
             #reset the asset last_added when logging in...
             if 'asset_last_added' in session: session['asset_last_added'] = -1
 
@@ -46,7 +46,7 @@ def logout():
     Handle requests to the /logout route
     Log a user out through the logout link
     """
-    log.info('User logged out : {}'.format(current_user.username))
+    log.info('User logged out')
     logout_user()
     flash('U bent uitgelogd')
 

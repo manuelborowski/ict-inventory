@@ -9,6 +9,8 @@ class Config(object):
     """
     STATIC_PATH = "app/static"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    LOG_LEVEL = "INFO"
+
 class DevelopmentConfig(Config):
     """
     Development configurations

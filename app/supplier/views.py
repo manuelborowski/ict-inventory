@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db
+from .. import db, log
 from . import supplier
 from ..models import Supplier
 
@@ -47,6 +47,7 @@ def add(id=-1):
                         description=form.description.data)
         db.session.add(supplier)
         db.session.commit()
+        log.info('add : {}'.format(supplier.log()))
         #flash('You have added supplier {}'.format(supplier.name))
 
         return redirect(url_for('supplier.suppliers'))

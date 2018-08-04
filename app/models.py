@@ -13,13 +13,13 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(256), index=True, unique=True)
+    email = db.Column(db.String(256), index=True)
     username = db.Column(db.String(256), index=True, unique=True)
     first_name = db.Column(db.String(256), index=True)
     last_name = db.Column(db.String(256), index=True)
     password_hash = db.Column(db.String(256))
     is_admin = db.Column(db.Boolean, default=False)
-    settings = db.relationship('Settings', cascade='all, delete-orphan', backref='user', lazy='dynamic')
+    settings = db.relationship('Settings', cascade='all, delete', backref='user', lazy='dynamic')
 
     @property
     def password(self):
@@ -43,6 +43,9 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User: {}>'.format(self.username)
+
+    def log(self):
+        return '<User: {}/{}>'.format(self.id, self.username)
 
     def ret_dict(self):
         return {'id':self.id, 'email':self.email, 'username':self.username, 'first_name':self.first_name, 'last_name':self.last_name,
@@ -91,10 +94,13 @@ class Asset(db.Model):
     db_status = db.Column(db.String(256))    # one of: NIEW, ACTIEF, ANDERE
     serial = db.Column(db.String(256))      # serial number
     description = db.Column(db.String(256))
-    purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'))
+    purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id', ondelete='CASCADE'))
 
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
+
+    def log(self):
+        return '<Asset: {}/{}/{}/{}/{}>'.format(self.id, self.name, self.qr_code, self.purchase.since, self.purchase.value)
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location,
@@ -112,13 +118,15 @@ class Purchase(db.Model):
     since = db.Column(db.Date)
     value = db.Column(db.Numeric(20,2))      # e.g. 12.12
     commissioning = db.Column(db.String(256))    # path to commissioning document on disk
-    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
-    device_id = db.Column(db.Integer, db.ForeignKey('devices.id'))
-    assets = db.relationship('Asset', cascade='all, delete-orphan', backref='purchase', lazy='dynamic')
-
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'))
+    device_id = db.Column(db.Integer, db.ForeignKey('devices.id', ondelete='CASCADE'))
+    assets = db.relationship('Asset', cascade='all, delete', backref='purchase', lazy='dynamic')
 
     def __repr__(self):
         return '{} / {}'.format(self.since, self.value)
+
+    def log(self):
+        return '<Purchase: {}/{}/{}/{}/{}/{}>'.format(self.id, self.since, self.value, self.device.brand, self.device.type, self.supplier.name)
 
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value), 'commissioning':self.commissioning,
@@ -160,10 +168,13 @@ class Device(db.Model):
     manual = db.Column(db.String(256))    # path to manual document on disk
     safety_information = db.Column(db.String(256))    # path to safety information document on disk
     ce = db.Column(db.Boolean, default=False)       # conform CE regulations
-    purchases = db.relationship('Purchase', cascade='all, delete-orphan', backref='device', lazy='dynamic')
+    purchases = db.relationship('Purchase', cascade='all, delete', backref='device', lazy='dynamic')
 
     def __repr__(self):
         return '{} / {}'.format(self.brand, self.type)
+
+    def log(self):
+        return '<Device: {}/{}/{}>'.format(self.id, self.brand, self.type)
 
     def ret_dict(self):
         return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category, 'power':float(self.power), 'photo':self.photo,
@@ -176,10 +187,13 @@ class Supplier(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
     description = db.Column(db.String(1024))
-    purchases = db.relationship('Purchase', cascade='all, delete-orphan', backref='supplier', lazy='dynamic')
+    purchases = db.relationship('Purchase', cascade='all, delete', backref='supplier', lazy='dynamic')
 
     def __repr__(self):
         return '{}'.format(self.name)
+
+    def log(self):
+        return '<Supplier: {}/{}>'.format(self.id, self.name)
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'description':self.description}
@@ -197,9 +211,9 @@ class Settings(db.Model):
     name = db.Column(db.String(256))
     value = db.Column(db.String(256))
     type = db.Column(db.String(256))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
     UniqueConstraint('name', 'user_id')
 
-    def __repr__(self):
-        return '{}/{}/{}'.format(self.name, self.value, self.type)
+    def log(self):
+        return '<Setting: {}/{}/{}/{}>'.format(self.id, self.name, self.value, self.type)

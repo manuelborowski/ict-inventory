@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db
+from .. import db, log
 from ..documents import upload_doc
 from . import purchase
 from ..models import Purchase
@@ -52,6 +52,7 @@ def add(id=-1):
                            device = form.device.data)
         db.session.add(purchase)
         db.session.commit()
+        log.info('add : {}'.format(purchase.log()))
         #flash(_(u'You have added purchase {}').format(purchase.since))
         return redirect(url_for('purchase.purchases'))
 
@@ -73,6 +74,7 @@ def edit(id):
             except Exception as e:
                 flash('Could not import file')
             db.session.commit()
+            log.info('edit : {}'.format(purchase.log()))
             #flash(_(u'You have edited purchase {}').format(purchase))
 
         return redirect(url_for('purchase.purchases'))
@@ -95,8 +97,9 @@ def view(id):
 @login_required
 def delete(id):
     purchase = Purchase.query.get_or_404(id)
+    log.info('delete : {}'.format(purchase.log()))
     db.session.delete(purchase)
     db.session.commit()
-     #flash(_('You have successfully deleted the purchase.'))
+    #flash(_('You have successfully deleted the purchase.'))
 
     return redirect(url_for('purchase.purchases'))

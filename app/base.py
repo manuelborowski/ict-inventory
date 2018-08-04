@@ -9,9 +9,7 @@ import time
 
 from models import Asset, Purchase, Device, Supplier, User, Settings
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
-
-
-
+from . import log
 
 class InlineButtonWidget(object):
     """
@@ -239,6 +237,7 @@ def add_setting(name, value, type):
     setting = Settings(name=name, value=str(value), type=type, user_id=current_user.id)
     db.session.add(setting)
     db.session.commit()
+    log.info('add : {}'.format(setting.log()))
     return True
 
 def set_setting(name, value):

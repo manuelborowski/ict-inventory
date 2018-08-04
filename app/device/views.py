@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db
+from .. import db, log
 from . import device
 from ..documents import upload_doc
 from ..models import Device
@@ -55,6 +55,7 @@ def add(id=-1):
                         ce=form.ce.data)
         db.session.add(device)
         db.session.commit()
+        log.info('add : {}'.format(device.log()))
         #flash(_(u'You have added device {}/{}').format(device.brand, device.type))
 
         return redirect(url_for('device.devices'))

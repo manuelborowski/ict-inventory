@@ -5,7 +5,7 @@
 # third-party imports
 from flask import Flask, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
@@ -22,7 +22,6 @@ log = logging.getLogger(LOG_HANDLE)
 # local imports
 from config import app_config
 
-
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -38,27 +37,33 @@ def create_admin(db):
     db.session.add(admin)
     db.session.commit()
 
+#support custom filtering while logging
+class MyLogFilter(logging.Filter):
+    def filter(self, record):
+        record.username = current_user.username if current_user and current_user.is_active else 'NONE'
+        return True
+
 
 def create_app(config_name):
     global app
     global log
 
-    log.setLevel(logging.DEBUG)
-
-    # Add the log message handler to the logger
+    #set up logging
+    try:
+        log_level = getattr(logging, app_config[config_name].LOG_LEVEL)
+    except:
+        log_level = getattr(logging, 'INFO')
+    log.setLevel(log_level)
+    log.addFilter(MyLogFilter())
     log_handler = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes=10 * 1024, backupCount=5)
-    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(username)s - %(message)s')
     log_handler.setFormatter(log_formatter)
     log.addHandler(log_handler)
 
     log.info('start IAI')
-    print('start IAI')
 
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
-#    app.create_jinja_environment()
-#    app.jinja_options={'extensions':['jinja2.ext.i18n']}
-#    app.
 
     Bootstrap(app)
 

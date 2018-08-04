@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm, ChangePasswordForm
-from .. import db
+from .. import db, log
 from . import user
 from ..models import User
 
@@ -60,6 +60,7 @@ def add(id=-1):
                     )
         db.session.add(user)
         db.session.commit()
+        log.info('add : {}'.format(user.log()))
         #flash('You have added user {}'.format(user.username))
         return redirect(url_for('user.users'))
     return render_template('user/user.html', form=form, title='Add a user', role='add', route='user.users', subject='user')
