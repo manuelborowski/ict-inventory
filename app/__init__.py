@@ -15,7 +15,7 @@ import config, logging, logging.handlers
 app = Flask(__name__, instance_relative_config=True)
 
 #enable logging
-LOG_FILENAME = 'log/iai-log.txt'
+LOG_FILENAME = '/var/log/iai/iai-log.txt'
 LOG_HANDLE = 'IAI'
 log = logging.getLogger(LOG_HANDLE)
 
