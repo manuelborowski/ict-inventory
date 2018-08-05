@@ -52,7 +52,7 @@ def add(id=-1):
                            device = form.device.data)
         db.session.add(purchase)
         db.session.commit()
-        log.info('add : {}'.format(purchase.log()))
+        log.info('add: {}'.format(purchase.log()))
         #flash(_(u'You have added purchase {}').format(purchase.since))
         return redirect(url_for('purchase.purchases'))
 
@@ -97,7 +97,7 @@ def view(id):
 @login_required
 def delete(id):
     purchase = Purchase.query.get_or_404(id)
-    log.info('delete : {}'.format(purchase.log()))
+    log.info('delete: {}'.format(purchase.log()))
     db.session.delete(purchase)
     db.session.commit()
     #flash(_('You have successfully deleted the purchase.'))

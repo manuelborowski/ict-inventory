@@ -87,6 +87,7 @@ def view(id):
 @login_required
 def delete(id):
     supplier = Supplier.query.get_or_404(id)
+    log.info('delete: {}'.format(supplier.log()))
     db.session.delete(supplier)
     db.session.commit()
     #flash('You have successfully deleted the supplier.')

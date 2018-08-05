@@ -55,7 +55,7 @@ def add(id=-1):
                         ce=form.ce.data)
         db.session.add(device)
         db.session.commit()
-        log.info('add : {}'.format(device.log()))
+        log.info('add: {}'.format(device.log()))
         #flash(_(u'You have added device {}/{}').format(device.brand, device.type))
 
         return redirect(url_for('device.devices'))
@@ -100,6 +100,7 @@ def view(id):
 @login_required
 def delete(id):
     device = Device.query.get_or_404(id)
+    log.info('delete: {}'.format(device.log()))
     db.session.delete(device)
     db.session.commit()
     #flash(_('You have successfully deleted the device.'))

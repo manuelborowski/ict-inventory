@@ -10,12 +10,11 @@ from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 from werkzeug.routing import IntegerConverter as OrigIntegerConvertor
-import config, logging, logging.handlers
+import config, logging, logging.handlers, os, sys
 
 app = Flask(__name__, instance_relative_config=True)
 
 #enable logging
-LOG_FILENAME = '/var/log/iai/iai-log.txt'
 LOG_HANDLE = 'IAI'
 log = logging.getLogger(LOG_HANDLE)
 
@@ -49,6 +48,7 @@ def create_app(config_name):
     global log
 
     #set up logging
+    LOG_FILENAME = os.path.join(sys.path[0], app_config[config_name].STATIC_PATH, 'log/iai-log.txt')
     try:
         log_level = getattr(logging, app_config[config_name].LOG_LEVEL)
     except:
