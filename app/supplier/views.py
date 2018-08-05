@@ -47,7 +47,7 @@ def add(id=-1):
                         description=form.description.data)
         db.session.add(supplier)
         db.session.commit()
-        log.info('add : {}'.format(supplier.log()))
+        log.info('add: {}'.format(supplier.log()))
         #flash('You have added supplier {}'.format(supplier.name))
 
         return redirect(url_for('supplier.suppliers'))
