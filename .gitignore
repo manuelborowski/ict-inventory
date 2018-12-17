@@ -1,3 +1,9 @@
 *.pyc
 instance/
 migrations/
+app/static/safetyinformation
+app/static/riskanalysis
+app/static/photo
+app/static/manual
+app/static/commissioning
+venv/
