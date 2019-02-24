@@ -3,7 +3,7 @@
 
 from flask_wtf import FlaskForm
 from wtforms import SelectField
-from models import Supplier, Device, Asset
+from .models import Supplier, Device, Asset
 
 
 class CategoryFilter(FlaskForm):

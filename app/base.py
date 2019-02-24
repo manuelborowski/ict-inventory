@@ -7,7 +7,7 @@ from flask_login import current_user
 from sqlalchemy import or_
 import time
 
-from models import Asset, Purchase, Device, Supplier, User, Settings
+from .models import Asset, Purchase, Device, Supplier, User, Settings
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 from . import log
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, flash, send_file, session
+from flask import render_template, redirect, url_for, request, flash, send_file, session, make_response
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm
@@ -13,9 +13,8 @@ from ..base import build_filter, get_ajax_table, get_setting_inc_index_asset_nam
 from ..tables_config import  tables_configuration
 from ..documents import download_single_doc
 
-import cStringIO, csv, re
-
-from werkzeug.datastructures import FileStorage
+from io import StringIO
+import csv, re
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
@@ -38,51 +37,53 @@ def assets():
 @asset.route('/asset/export', methods=['GET', 'POST'])
 @login_required
 def exportcsv():
-    #The following line is required only to build the filter-fields on the page.
-    __filters_enabled,  _filter_forms, _filtered_list, _total_count, _filtered_count = build_filter(tables_configuration['asset'])
-    csv_file = cStringIO.StringIO()
-    headers = [
-        'name',
-        'category',
-        'location',
-        'since',
-        'value',
-        'qr',
-        'status',
-        'supplier',
-        'brand',
-        'type',
-        'serial',
-        'power',
-        'ce',
-    ]
+    try:
+        #The following line is required only to build the filter-fields on the page.
+        __filters_enabled,  _filter_forms, _filtered_list, _total_count, _filtered_count = build_filter(tables_configuration['asset'])
+        headers = [
+            'name',
+            'category',
+            'location',
+            'since',
+            'value',
+            'qr',
+            'status',
+            'supplier',
+            'brand',
+            'type',
+            'serial',
+            'power',
+            'ce',
+        ]
 
-    rows = []
-    for a in _filtered_list:
-        rows.append(
-            {
-                'name' : a.name,
-                'category' : a.purchase.device.category,
-                'location' : a.location,
-                'since' : a.purchase.since,
-                'value' : a.purchase.value,
-                'qr' : a.qr_code,
-                'status' : a.status,
-                'supplier' : a.purchase.supplier.name,
-                'brand' : a.purchase.device.brand,
-                'type' : a.purchase.device.type,
-                'serial' : a.serial,
-                'power' : a.purchase.device.power,
-                'ce' : a.purchase.device.ce
-            }
-        )
-
-    writer = csv.DictWriter(csv_file, headers, delimiter=';')
-    writer.writeheader()
-    for r in rows:
-        writer.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in r.iteritems()))
-    csv_file.seek(0)
-    return send_file(csv_file, attachment_filename='assets.csv', as_attachment=True)
+        rows = []
+        for a in _filtered_list:
+            rows.append((
+                a.name,
+                a.purchase.device.category,
+                a.location,
+                a.purchase.since,
+                a.purchase.value,
+                a.qr_code,
+                a.status,
+                a.purchase.supplier.name,
+                a.purchase.device.brand,
+                a.purchase.device.type,
+                a.serial,
+                a.purchase.device.power,
+                a.purchase.device.ce
+            ))
+        si = StringIO()
+        cw = csv.writer(si, delimiter=';')
+        cw.writerow(headers)
+        cw.writerows(rows)
+        output = make_response(si.getvalue())
+        output.headers["Content-Disposition"] = "attachment; filename=assets.csv"
+        output.headers["Content-type"] = "text/csv"
+        return output
+    except Exception as e:
+        log.error('Could not export file {}'.format(e))
+        return redirect(url_for('asset.assets'))
 
 #add a new asset
 @asset.route('/asset/add/<int:id>/<int:qr>', methods=['GET', 'POST'])

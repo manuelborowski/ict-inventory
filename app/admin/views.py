@@ -10,7 +10,7 @@ from .. import db, app, log
 from ..documents import  get_doc_path, get_doc_list, upload_doc, document_type_list, get_doc_select, get_doc_download
 
 import os
-import unicodecsv  as  csv
+import unicodecsv
 from ..models import Asset, Device, Supplier, Purchase
 
 import zipfile
@@ -90,7 +90,7 @@ def importcsv():
         if request.files['import_filename']:
             # format csv file :
             log.info('Import from : {}'.format(request.files['import_filename']))
-            assets_file = csv.DictReader(request.files['import_filename'],  delimiter=';', encoding='utf-8-sig')
+            assets_file = unicodecsv.DictReader(request.files['import_filename'],  delimiter=';')
             commissioning_key_present = True if 'Indienststelling' in assets_file.fieldnames else False
             photo_key_present = True if 'Foto' in assets_file.fieldnames else False
             manual_key_present = True if 'Handleiding' in assets_file.fieldnames else False
