@@ -14,10 +14,10 @@ from ..documents import get_doc_list
 from ..models import Supplier, Device
 
 def get_suppliers():
-    return Supplier.query.all()
+    return Supplier.query.order_by(Supplier.name).all()
 
 def get_devices():
-    return Device.query.all()
+    return Device.query.order_by(Device.brand, Device.type).all()
 
 
 class EditForm(FlaskForm):

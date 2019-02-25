@@ -14,7 +14,7 @@ def get_suppliers():
     return Supplier.query.all()
 
 def get_purchases():
-    return Purchase.query.all()
+    return Purchase.query.order_by(Purchase.since.desc()).all()
 
 
 class UniqueQR:
@@ -25,6 +25,7 @@ class UniqueQR:
             self.message = 'Een activa met deze QR-code bestaat reeds'
 
     def __call__(self, form, field):
+        if field.data == '': return
         asset_found = Asset.query.filter(Asset.qr_code == field.data).first()
         if 'id' in form:
             id =form.id.data
@@ -43,6 +44,7 @@ class QRisValid():
 
     def __call__(self, form, field):
         try:
+            if field.data == '': return
             code = int(field.data)
         except:
             fl = field.data.split('/')
@@ -68,9 +70,6 @@ class EditForm(FlaskForm):
     serial = StringField('SerieNr')
     id = IntegerField(widget=HiddenInput())
 
-
-
-
 class AddForm(EditForm):
     pass
 
@@ -94,6 +93,4 @@ class ViewForm(FlaskForm):
     manual = StringField('Handleiding', render_kw={'readonly':''})
     safety_information = StringField('VIK', render_kw={'readonly':''})
     photo = StringField('Foto', render_kw={'readonly':''})
-
-
     id = IntegerField(widget=HiddenInput())

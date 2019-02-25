@@ -116,8 +116,9 @@ def add(id=-1, qr=-1):
     del form.id # is not required here and makes validate_on_submit fail...
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
+        qr_code = form.qr_code.data if form.qr_code.data != '' else None
         asset = Asset(name=form.name.data,
-                        qr_code=form.qr_code.data,
+                        qr_code=qr_code,
                         status=form.status.data,
                         location=form.location.data,
                         purchase=form.purchase.data,
@@ -142,6 +143,7 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
+            if asset.qr_code=='': asset.qr_code=None
             db.session.commit()
             log.info('edit : {}'.format(asset.log()))
             #flash'You have edited asset {}').format(asset.name)

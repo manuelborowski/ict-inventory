@@ -1,2 +1,0 @@
-2019-02-24 11:42:08,930 - IAI - INFO - NONE - start IAI
-2019-02-24 11:42:19,721 - IAI - INFO - ict - User logged in

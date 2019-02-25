@@ -52,7 +52,12 @@ def add(id=-1):
                         brand=form.brand.data,
                         type=form.type.data,
                         power=form.power.data,
-                        ce=form.ce.data)
+                        ce=form.ce.data,
+                        manual=form.manual.data,
+                        risk_analysis=form.risk_analysis.data,
+                        safety_information=form.safety_information.data,
+                        photo=form.photo.data,
+                        )
         db.session.add(device)
         db.session.commit()
         log.info('add: {}'.format(device.log()))
