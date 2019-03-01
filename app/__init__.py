@@ -16,10 +16,11 @@ app = Flask(__name__, instance_relative_config=True)
 
 #V1.0 : reworked to python V3.7.2
 #V1.1 : small bugfixes and updates
+#V1.2 : python 2 to 3 : zip() to list(zip())
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V1.1')
+    return dict(version = 'V1.2')
 
 
 #enable logging

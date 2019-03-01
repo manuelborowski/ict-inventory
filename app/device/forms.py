@@ -14,11 +14,11 @@ from ..documents import get_doc_list
 class EditForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
-        self.risk_analysis.choices = zip([''] + get_doc_list('risk_analysis'), [''] + get_doc_list('risk_analysis'))
-        self.photo.choices = zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo'))
-        self.manual.choices = zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual'))
-        self.safety_information.choices = zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information'))
-        self.category.choices = zip(Device.Category.get_list(), Device.Category.get_list())
+        self.risk_analysis.choices = list(zip([''] + get_doc_list('risk_analysis'), [''] + get_doc_list('risk_analysis')))
+        self.photo.choices = list(zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo')))
+        self.manual.choices = list(zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual')))
+        self.safety_information.choices = list(zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information')))
+        self.category.choices = list(zip(Device.Category.get_list(), Device.Category.get_list()))
 
     category = SelectField('Categorie', validators=[DataRequired()])
     brand = StringField('Merk', validators=[DataRequired()])

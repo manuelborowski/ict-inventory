@@ -24,7 +24,7 @@ class EditForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
-        self.commissioning.choices = zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))
+        self.commissioning.choices = list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning')))
 
     since = DateField('Datum', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     value = DecimalField('Bedrag (&euro;)', default=0.0)

@@ -61,7 +61,7 @@ class QRisValid():
 class EditForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(EditForm, self).__init__(*args, **kwargs)
-        self.status.choices=zip(Asset.Status.get_list(), Asset.Status.get_list())
+        self.status.choices=list(zip(Asset.Status.get_list(), Asset.Status.get_list()))
     name = StringField('Naam')
     location = StringField('Locatie')
     qr_code = StringField('QR', validators=[QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
