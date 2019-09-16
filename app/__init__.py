@@ -18,10 +18,11 @@ app = Flask(__name__, instance_relative_config=True)
 #V1.1 : small bugfixes and updates
 #V1.2 : python 2 to 3 : zip() to list(zip())
 #V2.0 : update to nginx
+#V2.1 : small bugfix
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.0')
+    return dict(version = 'V2.1')
 
 
 #enable logging
@@ -91,7 +92,7 @@ migrate = Migrate(app, db)
 from app import models
 
 if 'db' in sys.argv:
-    from app.database import models
+    from app import models
 else:
     #create_admin(db) # Only once
 
