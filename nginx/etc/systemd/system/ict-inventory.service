@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve ict-inventory
+After=network.target
+
+[Service]
+User=aboro
+Group=www-data
+WorkingDirectory=/home/aboro/projects/ict-inventory
+Environment="PATH=/home/aboro/projects/ict-inventory/venv/bin"
+ExecStart=/home/aboro/projects/ict-inventory/venv/bin/uwsgi --ini ict-inventory.ini
+
+[Install]
+WantedBy=multi-user.target
