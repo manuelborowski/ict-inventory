@@ -94,6 +94,7 @@ class Asset(db.Model):
     db_status = db.Column(db.String(256))    # one of: NIEW, ACTIEF, ANDERE
     serial = db.Column(db.String(256))      # serial number
     description = db.Column(db.String(256))
+    quantity = db.Column(db.Integer, default=1)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id', ondelete='CASCADE'))
 
     def __repr__(self):
@@ -104,7 +105,8 @@ class Asset(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location,
-                'db_status':self.db_status,  'serial':self.serial, 'description':self.description,'purchase':self.purchase.ret_dict()}
+                'db_status':self.db_status,  'serial':self.serial, 'description':self.description,
+                'purchase':self.purchase.ret_dict(), 'quantity': self.quantity}
 
 
 class Purchase(db.Model):
@@ -121,6 +123,7 @@ class Purchase(db.Model):
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'))
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id', ondelete='CASCADE'))
     assets = db.relationship('Asset', cascade='all, delete', backref='purchase', lazy='dynamic')
+    invoice = db.Column(db.String(256), default='')    # invoice reference
 
     def __repr__(self):
         return '{} / {}'.format(self.since, self.value)
@@ -130,7 +133,7 @@ class Purchase(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value), 'commissioning':self.commissioning,
-                'supplier': self.supplier.ret_dict(), 'device':self.device.ret_dict()}
+                'supplier': self.supplier.ret_dict(), 'device':self.device.ret_dict(), 'invoice': self.invoice}
 
 class Device(db.Model):
     __tablename__ = 'devices'

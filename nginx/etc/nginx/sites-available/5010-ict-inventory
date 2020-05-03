@@ -1,5 +1,16 @@
 #original server-block.  When installing a certificate for this site, the server-block
 #is completely changed by certbot
+#server {
+#    listen 5010;
+#    listen 80;
+#    server_name iai.exelbo.dynu.net;
+#
+#    location / {
+#        include uwsgi_params;
+#        uwsgi_pass unix:/home/aboro/projects/ict-inventory/ict-inventory.sock;
+#    }
+#}
+
 server {
     listen 5010;
     listen 80;

@@ -63,6 +63,7 @@ class EditForm(FlaskForm):
         super(EditForm, self).__init__(*args, **kwargs)
         self.status.choices=list(zip(Asset.Status.get_list(), Asset.Status.get_list()))
     name = StringField('Naam')
+    quantity = IntegerField('Aantal')
     location = StringField('Locatie')
     qr_code = StringField('QR', validators=[QRisValid(), UniqueQR()], render_kw={'autofocus': 'true'})
     status = SelectField('Status', validators=[DataRequired()])
@@ -75,6 +76,7 @@ class AddForm(EditForm):
 
 class ViewForm(FlaskForm):
     name = StringField('Naam', render_kw={'readonly':''})
+    quantity = IntegerField('Aantal', render_kw={'readonly':''})
     location = StringField('Locatie', render_kw={'readonly':''})
     qr_code = StringField('QR', render_kw={'readonly':''})
     status = StringField('Status', render_kw={'readonly':''})
