@@ -5,7 +5,7 @@
 
 {% block content2 %}
 <div class="content-section">
-  <div class="center">
+  <div class="center" style="width:99%;">
 {% if filter %}
       <form method="post" enctype=multipart/form-data>
       <table class="table-condensed ">
@@ -15,6 +15,9 @@
 {% endif %}
 {% if 'value' in filter %}
               <th>Bedrag</th>
+{% endif %}
+{% if 'invoice' in filter %}
+              <th>Factuur</th>
 {% endif %}
 {% if 'location' in filter %}
               <th>Locatie</th>
@@ -31,6 +34,9 @@
 {% if 'device' in filter %}
               <th>Toestel</th>
 {% endif %}
+{% if 'purchase_id' in filter %}
+              <th>Aankoop ID</th>
+{% endif %}
           </tr>
           <tr>
 {% if 'since' in filter %}
@@ -39,8 +45,11 @@
 {% if 'value' in filter %}
               <td><input id="value_from" class="filter" name="value_from" type="text" size="12"></td>
 {% endif %}
+{% if 'invoice' in filter %}
+              <td rowspan="2"><input id="invoice" class="filter" name="invoice" type="text" size="12"></td>
+{% endif %}
 {% if 'location' in filter %}
-              <td><input id="room" class="filter" name="room" type="text" size="12"></td>
+              <td rowspan="2"><input id="room" class="filter" name="room" type="text" size="12"></td>
 {% endif %}
 {% if 'category' in filter %}
               <td rowspan="2"  >{{ wtf.form_field(filter_form.category.category) }}</td>
@@ -54,6 +63,10 @@
 {% if 'device' in filter %}
               <td rowspan="2">{{ wtf.form_field(filter_form.device.device) }}</td>
 {% endif %}
+{% if 'purchase_id' in filter %}
+    <td rowspan="2"><input name="purchase_id" id="purchase_id" class="filter" type="text" {% if purchase_id %}value="{{ purchase_id }}"{% endif %} size="6"></td>
+{% endif %}
+
           </tr>
           <tr>
 {% if 'since' in filter %}

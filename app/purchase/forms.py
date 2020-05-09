@@ -26,6 +26,7 @@ class EditForm(FlaskForm):
         super(EditForm, self).__init__(*args, **kwargs)
         self.commissioning.choices = list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning')))
 
+    invoice = StringField('Factuur')
     since = DateField('Datum', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     value = DecimalField('Bedrag (&euro;)', default=0.0)
     supplier = QuerySelectField('Leverancier', query_factory=get_suppliers)
@@ -40,6 +41,7 @@ class AddForm(EditForm):
     """
 
 class ViewForm(FlaskForm):
+    invoice = StringField('Factuur', render_kw={'readonly':''})
     since = DateField('Datum', render_kw={'readonly':''}, format='%d-%m-%Y')
     value = DecimalField('Bedrag (&euro;)', render_kw={'readonly':''})
     supplier = StringField('Leverancier', render_kw={'readonly':''})

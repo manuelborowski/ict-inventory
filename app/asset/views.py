@@ -24,14 +24,16 @@ def source_data():
 
 #show a list of assets
 @asset.route('/asset', methods=['GET', 'POST'])
+@asset.route('/asset/<int:purchase_id>', methods=['GET', 'POST'])
 @login_required
-def assets():
+def assets(purchase_id=-1):
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['asset'])
     return render_template('base_multiple_items.html',
                            title='activa',
                            filter=_filter, filter_form=_filter_form,
-                           config = tables_configuration['asset'])
+                           config = tables_configuration['asset'],
+                           purchase_id=purchase_id)
 
 #export a list of assets
 @asset.route('/asset/export', methods=['GET', 'POST'])
@@ -117,12 +119,14 @@ def add(id=-1, qr=-1):
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         qr_code = form.qr_code.data if form.qr_code.data != '' else None
-        asset = Asset(name=form.name.data,
-                        qr_code=qr_code,
-                        status=form.status.data,
-                        location=form.location.data,
-                        purchase=form.purchase.data,
-                        serial=form.serial.data)
+        asset = Asset(
+            name=form.name.data,
+            quantity=form.quantity.data,
+            qr_code=qr_code,
+            status=form.status.data,
+            location=form.location.data,
+            purchase=form.purchase.data,
+            serial=form.serial.data)
         db.session.add(asset)
         db.session.commit()
         db.session.refresh(asset)

@@ -3,9 +3,10 @@
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from app import db, login_manager
 from sqlalchemy import UniqueConstraint
+from sqlalchemy.orm import column_property
+from sqlalchemy.sql import func
 
 class User(UserMixin, db.Model):
     # Ensures table will be named in plural and not in singular
@@ -124,16 +125,21 @@ class Purchase(db.Model):
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id', ondelete='CASCADE'))
     assets = db.relationship('Asset', cascade='all, delete', backref='purchase', lazy='dynamic')
     invoice = db.Column(db.String(256), default='')    # invoice reference
+    nbr_assets = column_property(func.nbr_assets(id))
+    asset_value = column_property(func.asset_value(id))
 
     def __repr__(self):
-        return '{} / {}'.format(self.since, self.value)
+        return f'{self.invoice} / {self.since} / {self.device.brand} / {self.device.type}'
 
     def log(self):
-        return '<Purchase: {}/{}/{}/{}/{}/{}>'.format(self.id, self.since, self.value, self.device.brand, self.device.type, self.supplier.name)
+        return '<Purchase: {}/{}/{}/{}/{}/{}>'.format(self.id, self.since, self.value, self.device.brand,
+                                                      self.device.type, self.supplier.name)
 
     def ret_dict(self):
-        return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value), 'commissioning':self.commissioning,
-                'supplier': self.supplier.ret_dict(), 'device':self.device.ret_dict(), 'invoice': self.invoice}
+        return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value),
+                'commissioning':self.commissioning, 'supplier': self.supplier.ret_dict(),
+                'device':self.device.ret_dict(), 'invoice': self.invoice, 'asset_value': float(self.asset_value),
+                'nbr_assets': self.nbr_assets}
 
 class Device(db.Model):
     __tablename__ = 'devices'

@@ -5,6 +5,7 @@
 {% extends "base_single_item.html" %}
 
 {% block content3 %}
+    {{ wtf.form_field(form.invoice) }}
     {{ wtf.form_field(form.since) }}
     {{ wtf.form_field(form.value) }}
     {{ wtf.form_field(form.supplier) }}

@@ -50,11 +50,13 @@ $(document).ready(function() {
         $('#date_after').val(filter_settings['date_after']);
         $('#value_from').val(filter_settings['value_from']);
         $('#value_till').val(filter_settings['value_till']);
+        $('#invoice').val(filter_settings['invoice']);
         $('#category').val(filter_settings['category']);
         $('#status').val(filter_settings['status']);
         $('#device').val(filter_settings['device']);
         $('#supplier').val(filter_settings['supplier']);
         $('#room').val(filter_settings['room']);
+        $('#purchase_id').val(filter_settings['purchase_id']);
     } catch (err) {
     }
 
@@ -65,11 +67,14 @@ $(document).ready(function() {
                    "date_after" : $('#date_after').val(),
                    "value_from" : $('#value_from').val(),
                    "value_till" : $('#value_till').val(),
+                   "invoice" : $('#invoice').val(),
                    "category" : $('#category').val(),
                    "status" : $('#status').val(),
                    "device" : $('#device').val(),
                    "supplier" : $('#supplier').val(),
-                   "room" : $('#room').val()}
+                   "room" : $('#room').val(),
+                   "purchase_id" : $('#purchase_id').val(),
+        }
         //alert(JSON.stringify(filter_settings));
         localStorage.setItem("Filter", JSON.stringify(filter_settings));
         table.ajax.reload();

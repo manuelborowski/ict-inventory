@@ -46,10 +46,12 @@ def add(id=-1):
     del form.id # is not required here and makes validate_on_submit fail...
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
-        purchase = Purchase(since=form.since.data,
-                            value=form.value.data,
-                           supplier = form.supplier.data,
-                           device = form.device.data)
+        purchase = Purchase(
+            invoice=form.invoice.data,
+            since=form.since.data,
+            value=form.value.data,
+            supplier = form.supplier.data,
+            device = form.device.data)
         db.session.add(purchase)
         db.session.commit()
         log.info('add: {}'.format(purchase.log()))

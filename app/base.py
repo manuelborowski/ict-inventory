@@ -98,6 +98,14 @@ def build_filter(table, paginate=True):
         value = check_value_in_form('value_till', request.values)
         if value:
             _filtered_list = _filtered_list.filter(Purchase.value <= value)
+    if 'purchase_id' in _filters_enabled:
+        value = check_value_in_form('purchase_id', request.values)
+        if value:
+            _filtered_list = _filtered_list.filter(Purchase.id == value)
+    if 'invoice' in _filters_enabled:
+        value = check_string_in_form('invoice', request.values)
+        if value:
+            _filtered_list = _filtered_list.filter(Purchase.invoice.contains(value))
     if 'location' in _filters_enabled:
         value = check_string_in_form('room', request.values)
         if value:
@@ -134,6 +142,8 @@ def build_filter(table, paginate=True):
         search_date = '%' + '-'.join(a) + '%'
         search_value = '%' + search_value + '%'
         search_constraints = []
+        if Asset.quantity in column_list:
+            search_constraints.append(Asset.quantity.like(search_value))
         if Asset.name in column_list:
             search_constraints.append(Asset.name.like(search_value))
         if Device.category in column_list:
@@ -142,6 +152,8 @@ def build_filter(table, paginate=True):
             search_constraints.append(Asset.location.like(search_value))
         if Purchase.since in column_list:
             search_constraints.append(Purchase.since.like(search_date))
+        if Purchase.invoice in column_list:
+            search_constraints.append(Purchase.invoice.like(search_value))
         if Purchase.value in column_list:
             search_constraints.append(Purchase.value.like(search_value))
         if Asset.qr_code in column_list:
