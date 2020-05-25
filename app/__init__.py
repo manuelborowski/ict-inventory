@@ -21,10 +21,11 @@ app = Flask(__name__, instance_relative_config=True)
 #V2.0 : update to nginx
 #V2.1 : small bugfix
 #V2.2 : introduced 3-levels for users, added invoice-field, assets are counted per purchase, assetvalue is added
+#V2.3 : added purchase_id in assets-view
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.2')
+    return dict(version = 'V2.3')
 
 
 #enable logging

@@ -131,6 +131,10 @@ def build_filter(table, paginate=True):
         if value:
             s = value.split('/')
             _filtered_list = _filtered_list.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
+    if 'purchase_id' in _filters_enabled:
+        value = check_value_in_form('purchase_id', request.values)
+        if value:
+            _filtered_list = _filtered_list.filter(Asset.purchase_id == value)
 
     #search, if required
     #from template, take order_by and put in a list.  This is user later on, to get the columns in which can be searched

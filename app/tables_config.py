@@ -41,6 +41,7 @@ tables_configuration = {
         'subject' :'purchase',
         'delete_message' : 'Wil je deze aankoop EN alle verbonden activa verwijderen?',
         'template' : [
+            {'name': 'Id', 'data': 'id', 'order_by': Purchase.id},
             {'name': 'Factuur', 'data': 'invoice', 'order_by': Purchase.invoice},
             {'name': 'Bedrag', 'data': 'value', 'order_by': Purchase.value},
             {'name': 'Datum', 'data': 'since', 'order_by': Purchase.since},
