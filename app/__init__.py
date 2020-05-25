@@ -11,6 +11,7 @@ from flask_bootstrap import Bootstrap
 from flask_jsglue import JSGlue
 from werkzeug.routing import IntegerConverter as OrigIntegerConvertor
 import config, logging, logging.handlers, os, sys
+from functools import wraps
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -19,10 +20,11 @@ app = Flask(__name__, instance_relative_config=True)
 #V1.2 : python 2 to 3 : zip() to list(zip())
 #V2.0 : update to nginx
 #V2.1 : small bugfix
+#V2.2 : introduced 3-levels for users, added invoice-field, assets are counted per purchase, assetvalue is added
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.1')
+    return dict(version = 'V2.2')
 
 
 #enable logging
@@ -100,6 +102,26 @@ else:
     #flask db upgrade
     #uncheck when migrating database
     #return app
+
+    def admin_required(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_at_least_admin:
+                abort(403)
+            return func(*args, **kwargs)
+
+        return decorated_view
+
+
+    # decorator to grant access to at least supervisors
+    def user_plus_required(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_at_least_user_plus:
+                abort(403)
+            return func(*args, **kwargs)
+
+        return decorated_view
 
     from .admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint)

@@ -13,6 +13,27 @@ class User(UserMixin, db.Model):
     # as is the name of the model
     __tablename__ = 'users'
 
+    class LEVEL:
+        USER = 1
+        USER_PLUS = 3
+        ADMIN = 5
+
+        ls = ["GEBRUIKER", "GEBRUIKER+", "ADMINISTRATOR"]
+
+        @staticmethod
+        def i2s(i):
+            if i == 1:
+                return User.LEVEL.ls[0]
+            elif i == 3:
+                return User.LEVEL.ls[1]
+            if i == 5:
+                return User.LEVEL.ls[2]
+
+    @staticmethod
+    def get_zipped_levels():
+        return list(zip(["1", "3", "5"], User.LEVEL.ls))
+
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(256), index=True)
     username = db.Column(db.String(256), index=True, unique=True)
@@ -21,25 +42,33 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256))
     is_admin = db.Column(db.Boolean, default=False)
     settings = db.relationship('Settings', cascade='all, delete', backref='user', lazy='dynamic')
+    level = db.Column(db.Integer)
+
+    @property
+    def is_at_least_user(self):
+        return self.level >= User.LEVEL.USER
+
+    @property
+    def is_strict_user(self):
+        return self.level == User.LEVEL.USER
+
+    @property
+    def is_at_least_user_plus(self):
+        return self.level >= User.LEVEL.USER_PLUS
+
+    @property
+    def is_at_least_admin(self):
+        return self.level >= User.LEVEL.ADMIN
 
     @property
     def password(self):
-        """
-        Prevent pasword from being accessed
-        """
         raise AttributeError('Paswoord kan je niet lezen.')
 
     @password.setter
     def password(self, password):
-        """
-        Set password to a hashed password
-        """
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
-        """
-        Check if hashed password matches actual password
-        """
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
@@ -50,7 +79,7 @@ class User(UserMixin, db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'email':self.email, 'username':self.username, 'first_name':self.first_name, 'last_name':self.last_name,
-                'is_admin': self.is_admin}
+                'is_admin': self.is_admin, 'level': User.LEVEL.i2s(self.level)}
 
 # Set up user_loader
 @login_manager.user_loader

@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm, ChangePasswordForm
-from .. import db, log
+from .. import db, log, admin_required
 from . import user
 from ..models import User
 
@@ -27,7 +27,7 @@ def users():
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['user'])
     config = tables_configuration['user']
     #floating menu depends if current user is admin or not
-    if current_user.is_admin:
+    if current_user.is_at_least_admin:
         config['floating_menu'] = admin_menu_config
     else:
         config['floating_menu'] = user_menu_config
@@ -42,6 +42,7 @@ def users():
 @user.route('/user/add/<int:id>', methods=['GET', 'POST'])
 @user.route('/user/add', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def add(id=-1):
     if id > -1:
         user = User.query.get_or_404(int(id))
@@ -52,12 +53,13 @@ def add(id=-1):
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         user = User(email=form.email.data,
-                        username=form.username.data,
-                        first_name=form.first_name.data,
-                        last_name=form.last_name.data,
-                        password=form.password.data,
-                        is_admin=form.is_admin.data
-                    )
+                    username=form.username.data,
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    password=form.password.data,
+                    level=form.level.data,
+                    is_admin=form.is_admin.data
+                )
         db.session.add(user)
         db.session.commit()
         log.info('add : {}'.format(user.log()))
@@ -93,6 +95,7 @@ def view(id):
 #delete a user
 @user.route('/user/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def delete(id):
     user = User.query.get_or_404(id)
     db.session.delete(user)

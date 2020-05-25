@@ -88,11 +88,13 @@
 
 {% endif %}
       </form>
-      <hr />
       <form method="post" action="{{ url_for(config.subject + '.add') }}" novalidate>
-      <div class="btn-group" role="group" aria-label="...">
-           <input class="btn btn-default" id="add" name="add" type="submit" value="Voeg {{config.title}} toe">
-      </div>
+      {% if not title == "users" or current_user.is_at_least_admin %}
+          <hr />
+          <div class="btn-group" role="group" aria-label="...">
+               <input class="btn btn-default" id="add" name="add" type="submit" value="Voeg {{config.title}} toe">
+          </div>
+      {%  endif %}
       <hr />
       <table cellspacing="0" class="table table-striped table-bordered " id="datatable" width="100%">
           <thead><tr>
