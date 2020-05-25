@@ -5,7 +5,7 @@ from flask import render_template, redirect, url_for, request, flash, send_file,
 from flask_login import login_required, current_user
 from ..base import get_setting_inc_index_asset_name, set_setting_inc_index_asset_name, get_setting_copy_from_last_add, set_setting_copy_from_last_add
 from . import settings
-from .. import db, app
+from .. import db, app, user_plus_required
 from ..models import Settings
 from flask_login import current_user
 
@@ -28,11 +28,13 @@ def get_settings_and_show():
 
 @settings.route('/settings', methods=['GET', 'POST'])
 @login_required
+@user_plus_required
 def show():
     return get_settings_and_show()
 
 @settings.route('/settings/save', methods=['GET', 'POST'])
 @login_required
+@user_plus_required
 def save():
     if request.form['button'] == 'Bewaar':
         set_setting_inc_index_asset_name(True if 'inc_index_asset_name' in request.form else False)

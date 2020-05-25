@@ -22,10 +22,11 @@ app = Flask(__name__, instance_relative_config=True)
 #V2.1 : small bugfix
 #V2.2 : introduced 3-levels for users, added invoice-field, assets are counted per purchase, assetvalue is added
 #V2.3 : added purchase_id in assets-view
+#V2.4 : settings are visible only by at least user+
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.3')
+    return dict(version = 'V2.4')
 
 
 #enable logging
