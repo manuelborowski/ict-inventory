@@ -15,18 +15,19 @@ from functools import wraps
 
 app = Flask(__name__, instance_relative_config=True)
 
-#V1.0 : reworked to python V3.7.2
-#V1.1 : small bugfixes and updates
-#V1.2 : python 2 to 3 : zip() to list(zip())
-#V2.0 : update to nginx
-#V2.1 : small bugfix
-#V2.2 : introduced 3-levels for users, added invoice-field, assets are counted per purchase, assetvalue is added
-#V2.3 : added purchase_id in assets-view
-#V2.4 : settings are visible only by at least user+
+# V1.0 : reworked to python V3.7.2
+# V1.1 : small bugfixes and updates
+# V1.2 : python 2 to 3 : zip() to list(zip())
+# V2.0 : update to nginx
+# V2.1 : small bugfix
+# V2.2 : introduced 3-levels for users, added invoice-field, assets are counted per purchase, assetvalue is added
+# V2.3 : added purchase_id in assets-view
+# V2.4 : settings are visible only by at least user+
+# V2.5 : moved users, settings and documents under management
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.4')
+    return dict(version = 'V2.5')
 
 
 #enable logging
@@ -125,13 +126,13 @@ else:
 
         return decorated_view
 
-    from .admin import admin as admin_blueprint
+    from .management.admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint)
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
-    from .user import user as user_blueprint
+    from .management.user import user as user_blueprint
     app.register_blueprint(user_blueprint)
 
     from .asset import asset as asset_blueprint
@@ -146,7 +147,7 @@ else:
     from .purchase import purchase as purchase_blueprint
     app.register_blueprint(purchase_blueprint)
 
-    from .settings import settings as settings_blueprint
+    from .management.settings import settings as settings_blueprint
     app.register_blueprint(settings_blueprint)
 
     from .documents import init_documents

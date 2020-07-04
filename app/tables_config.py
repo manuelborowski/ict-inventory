@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from .models import Asset, Purchase, Device, Supplier, User
-from .user.extra_filtering import filter
+from .management.user.extra_filtering import filter
 from .floating_menu import default_menu_config
 
 tables_configuration = {
     'asset' : {
         'model' : Asset,
         'title' : 'activa',
-        'route' : 'asset.assets',
         'subject' :'asset',
         'delete_message' : '',
         'template' : [
@@ -37,7 +36,6 @@ tables_configuration = {
     'purchase' : {
         'model' : Purchase,
         'title' : 'aankoop',
-        'route' : 'purchase.purchases',
         'subject' :'purchase',
         'delete_message' : 'Wil je deze aankoop EN alle verbonden activa verwijderen?',
         'template' : [
@@ -60,7 +58,6 @@ tables_configuration = {
     'device': {
         'model': Device,
         'title' : 'toestel',
-        'route' : 'device.devices',
         'subject' :'device',
         'delete_message' : 'Wil je dit toestel EN alle verbonden aankopen EN activa verwijderen?',
         'template': [
@@ -91,8 +88,7 @@ tables_configuration = {
     'user': {
         'model': User,
         'title' : 'gebruiker',
-        'route' : 'user.users',
-        'subject' :'user',
+        'subject' :'management.user',
         'delete_message' : '',
         'template': [
             {'name': 'Gebruikersnaam', 'data': 'username', 'order_by': User.username},
@@ -102,7 +98,7 @@ tables_configuration = {
             {'name': 'Niveau', 'data': 'level', 'order_by': User.level, 'orderable': True},
         ],
         'filter': [],
-        'href': [{'attribute': '["username"]', 'route': '"user.view"', 'id': '["id"]'},
+        'href': [{'attribute': '["username"]', 'route': '"management.user.view"', 'id': '["id"]'},
                  ],
         'floating_menu' : default_menu_config,
         'query_filter' : filter,

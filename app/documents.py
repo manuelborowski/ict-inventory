@@ -50,7 +50,8 @@ def get_doc_path(d):
 
 def get_doc_list(d):
     file_list = sorted(os.listdir(get_doc_path(d)))
-    return file_list if file_list else []
+    filtered_list = list(filter(lambda x: x[0] != '.', file_list))
+    return filtered_list if filtered_list else []
 
 def upload_doc(request):
     for d in document_type_list:

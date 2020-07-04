@@ -20,7 +20,7 @@ function handle_floating_menu(menu_id) {
 
 //Before removing an entry, a confirm-box is shown.
 function confirm_before_delete(id) {
-    var message = "Are you sure want to delete this " + '{{config.subject}}' + "?";
+    var message = "Bent u zeker dat u dit item wil verwijderen?";
     if ('{{ config.delete_message }}') {message='{{ config.delete_message }}';}
     bootbox.confirm(message, function(result) {
         if (result) {
@@ -86,7 +86,7 @@ $(document).ready(function() {
        stateSave: true,
        dom : 'lfiptp',
        ajax: {
-           url: '/{{config.subject}}/data',
+           url: "{{ url_for(config.subject + '.source_data') }}",
            type: 'POST',
            data : function (d) {
                return $.extend( {}, d, filter_settings);
@@ -94,11 +94,7 @@ $(document).ready(function() {
        },
        pagingType: "full_numbers",
        lengthMenu: [20, 50, 100, 200],
-       "columns": [
-       {% for h in config.template %}
-           {data: "{{h.data}}", name: "{{h.name}}"},
-       {% endfor %}
-       ],
+       "columns": datatables_columns,
        "language" : {
         /*"url" : "static/DataTables/nl_nl.lang"*/
         "url" : "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Dutch.json"

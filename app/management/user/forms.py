@@ -6,7 +6,7 @@ from wtforms import PasswordField, StringField, BooleanField, ValidationError, I
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms.widgets import HiddenInput
 
-from ..models import User
+from app.models import User
 
 
 class EditForm(FlaskForm):

@@ -5,20 +5,20 @@ from flask import render_template, redirect, url_for, request, flash, send_file,
 from flask_login import login_required, current_user
 
 from . import admin
-from .. import db, app, log
+from app import db, app, log
 
-from ..documents import  get_doc_path, get_doc_list, upload_doc, document_type_list, get_doc_select, get_doc_download
+from app.documents import  get_doc_path, get_doc_list, upload_doc, document_type_list, get_doc_select, get_doc_download
 
 import os
 import unicodecsv
-from ..models import Asset, Device, Supplier, Purchase
+from app.models import Asset, Device, Supplier, Purchase
 
 import zipfile
 
-@admin.route('/admin', methods=['GET', 'POST'])
+@admin.route('/management/admin', methods=['GET', 'POST'])
 @login_required
 def show():
-    return render_template('admin/admin.html', mode='admin',
+    return render_template('management/admin/admin.html', mode='admin',
                            commissioning_list = get_doc_list('commissioning'),
                            photo_list = get_doc_list('photo'),
                            risk_analysis_list = get_doc_list('risk_analysis'),
@@ -26,7 +26,7 @@ def show():
                            safety_information_list = get_doc_list('safety_information')
                            )
 
-@admin.route('/admin/delete', methods=['GET', 'POST'])
+@admin.route('/management/admin/delete', methods=['GET', 'POST'])
 @login_required
 def delete():
     try:
@@ -38,9 +38,9 @@ def delete():
                             os.remove(os.path.join(get_doc_path(d), i))
     except Exception as e:
         flash('Kan niet verwijderen...')
-    return redirect(url_for('admin.show'))
+    return redirect(url_for('management.admin.show'))
 
-@admin.route('/admin/download', methods=['GET', 'POST'])
+@admin.route('/management/admin/download', methods=['GET', 'POST'])
 @login_required
 def download():
     try:
@@ -58,16 +58,16 @@ def download():
                     return send_file(os.path.join(app.root_path, '..', zf_name), mimetype='zip', as_attachment=True)
     except Exception as e:
         flash('Kan niet downloaden')
-    return redirect(url_for('admin.show'))
+    return redirect(url_for('management.admin.show'))
 
-@admin.route('/admin/upload', methods=['GET', 'POST'])
+@admin.route('/management/admin/upload', methods=['GET', 'POST'])
 @login_required
 def upload():
     try:
         upload_doc(request)
     except Exception as e:
         flash('Kan niet uploaden')
-    return redirect(url_for('admin.show'))
+    return redirect(url_for('management.admin.show'))
 
 
 #Toestel        name
@@ -83,7 +83,7 @@ def upload():
 #CE             ce
 #Indienststelling   commissioning
 
-@admin.route('/admin/importcsv', methods=['GET', 'POST'])
+@admin.route('/management/admin/importcsv', methods=['GET', 'POST'])
 @login_required
 def importcsv():
     try:
@@ -143,4 +143,4 @@ def importcsv():
 
     except Exception as e:
         flash('Kan bestand niet importeren')
-    return redirect(url_for('admin.show'))
+    return redirect(url_for('management.admin.show'))

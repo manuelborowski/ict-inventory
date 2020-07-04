@@ -10,7 +10,7 @@
     <div class="center">
         <h1>{{title}}</h1>
         <br/>
-        <form method="post" enctype=multipart/form-data action="{{ url_for('admin.importcsv') }}">
+        <form method="post" enctype=multipart/form-data action="{{ url_for('management.admin.importcsv') }}">
             <input class="btn btn-default" type="button" id="import" value="Import"  onclick="$('#import_fileid').click();">
             <input id='import_fileid' type='file' name='import_filename' style="display:none" accept=".csv" onchange="$('#import_trigger').click();">
             <input id="import_trigger" type="submit" value="Import" style="display:none">
@@ -38,13 +38,13 @@
                     <td><input class="btn btn-default" type="button" id="safety_information_upload" value="Upload" onclick="$('#safety_information_fileid').click()"></td>
                     <input id='safety_information_fileid' type='file' name='safety_information_filename' style="display:none"  onchange="$('#upload_trigger').click();" multiple/>
                 </tr>
-                <input id="upload_trigger" type="submit" formaction="{{ url_for('admin.upload') }}"style="display:none">
+                <input id="upload_trigger" type="submit" formaction="{{ url_for('management.admin.upload') }}"style="display:none">
                 <tr>
-                    <td><input class="btn btn-default" type="submit"name="commissioning_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
-                    <td><input class="btn btn-default" type="submit"name="risk_analysis_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
-                    <td><input class="btn btn-default" type="submit"name="photo_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
-                    <td><input class="btn btn-default" type="submit"name="manual_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
-                    <td><input class="btn btn-default" type="submit"name="safety_information_download" formaction="{{ url_for('admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="commissioning_download" formaction="{{ url_for('management.admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="risk_analysis_download" formaction="{{ url_for('management.admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="photo_download" formaction="{{ url_for('management.admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="manual_download" formaction="{{ url_for('management.admin.download') }}" value="Download"></td>
+                    <td><input class="btn btn-default" type="submit"name="safety_information_download" formaction="{{ url_for('management.admin.download') }}" value="Download"></td>
                 </tr>
                 <tr>
                     <td>
@@ -91,7 +91,7 @@
                     <td><input class="btn btn-default" id="safety_information_delete" type="submit" onclick="confirm_before_delete(event)" value="Verwijder"></td>
                 </tr>
             </table>
-                <input id='delete_doc' type="submit" name='delete_doc' style="display:none"  formaction="{{ url_for('admin.delete') }}"/>
+                <input id='delete_doc' type="submit" name='delete_doc' style="display:none"  formaction="{{ url_for('management.admin.delete') }}"/>
 
         </form>
     </div>

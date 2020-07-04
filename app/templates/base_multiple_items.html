@@ -117,5 +117,12 @@
 
 {% block scripts %}
 {{ super() }}
+    <script>
+        var datatables_columns = [
+            {% for h in config.template %}
+               {data: "{{h.data}}", name: "{{h.name}}"},
+            {% endfor %}
+        ];
+    </script>
 <script type="text/javascript"> {% include "base_multiple_items.js" %}</script>
 {% endblock %}

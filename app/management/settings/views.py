@@ -3,10 +3,9 @@
 
 from flask import render_template, redirect, url_for, request, flash, send_file, abort
 from flask_login import login_required, current_user
-from ..base import get_setting_inc_index_asset_name, set_setting_inc_index_asset_name, get_setting_copy_from_last_add, set_setting_copy_from_last_add
+from app.base import get_setting_inc_index_asset_name, set_setting_inc_index_asset_name, get_setting_copy_from_last_add, set_setting_copy_from_last_add
 from . import settings
-from .. import db, app, user_plus_required
-from ..models import Settings
+from app import user_plus_required
 from flask_login import current_user
 
 import zipfile
@@ -22,17 +21,17 @@ def get_settings_and_show():
     #copy_from_last_add : if a url-shortcut with qr code is uses, and the qr code is not found, then a new asset is
     #added which is a copy from the previous added asset.
     copy_from_last_add = get_setting_copy_from_last_add()
-    return render_template('settings/settings.html',
+    return render_template('management/settings/settings.html',
                            inc_index_asset_name=inc_index_asset_name,
                            copy_from_last_add=copy_from_last_add)
 
-@settings.route('/settings', methods=['GET', 'POST'])
+@settings.route('/management/settings', methods=['GET', 'POST'])
 @login_required
 @user_plus_required
 def show():
     return get_settings_and_show()
 
-@settings.route('/settings/save', methods=['GET', 'POST'])
+@settings.route('/management/settings/save', methods=['GET', 'POST'])
 @login_required
 @user_plus_required
 def save():

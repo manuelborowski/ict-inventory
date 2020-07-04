@@ -5,25 +5,22 @@ from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm, ChangePasswordForm
-from .. import db, log, admin_required
+from app import db, log, admin_required
 from . import user
-from ..models import User
+from app.models import User
 
-from ..base import build_filter, get_ajax_table
-from ..tables_config import  tables_configuration
-from ..floating_menu import user_menu_config, admin_menu_config
+from app.base import build_filter, get_ajax_table
+from app.tables_config import  tables_configuration
+from app.floating_menu import user_menu_config, admin_menu_config
 
-#This route is called by an ajax call on the assets-page to populate the table.
-@user.route('/user/data', methods=['GET', 'POST'])
+@user.route('/management/user/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
     return get_ajax_table(tables_configuration['user'])
 
-#ashow a list of purchases
-@user.route('/user', methods=['GET', 'POST'])
+@user.route('/management/user', methods=['GET', 'POST'])
 @login_required
 def users():
-    #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['user'])
     config = tables_configuration['user']
     #floating menu depends if current user is admin or not
@@ -39,8 +36,8 @@ def users():
 
 
 #add a new user
-@user.route('/user/add/<int:id>', methods=['GET', 'POST'])
-@user.route('/user/add', methods=['GET', 'POST'])
+@user.route('/management/user/add/<int:id>', methods=['GET', 'POST'])
+@user.route('/management/user/add', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def add(id=-1):
@@ -58,42 +55,41 @@ def add(id=-1):
                     last_name=form.last_name.data,
                     password=form.password.data,
                     level=form.level.data,
-                    is_admin=form.is_admin.data
                 )
         db.session.add(user)
         db.session.commit()
         log.info('add : {}'.format(user.log()))
         #flash('You have added user {}'.format(user.username))
-        return redirect(url_for('user.users'))
-    return render_template('user/user.html', form=form, title='Add a user', role='add', route='user.users', subject='user')
+        return redirect(url_for('management.user.users'))
+    return render_template('management/user/user.html', form=form, title='Add a user', role='add', subject='management.user')
 
 
 #edit a user
-@user.route('/user/edit/<int:id>', methods=['GET', 'POST'])
+@user.route('/management/user/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit(id):
     user = User.query.get_or_404(id)
     form = EditForm(obj=user)
     if form.validate_on_submit():
-        if request.form['button'] == 'Save':
+        if request.form['button'] == 'Bewaar':
             form.populate_obj(user)
             db.session.commit()
             #flash('You have edited user {}'.format(user.username))
 
-        return redirect(url_for('user.users'))
-    return render_template('user/user.html', form=form, title='Edit a user', role='edit', route='user.users', subject='user')
+        return redirect(url_for('management.user.users'))
+    return render_template('management/user/user.html', form=form, title='Edit a user', role='edit', subject='management.user')
 
 #no login required
-@user.route('/user/view/<int:id>', methods=['GET', 'POST'])
+@user.route('/management/user/view/<int:id>', methods=['GET', 'POST'])
 def view(id):
     user = User.query.get_or_404(id)
     form = ViewForm(obj=user)
     if form.validate_on_submit():
-        return redirect(url_for('user.users'))
-    return render_template('user/user.html', form=form, title='View a user', role='view', route='user.users', subject='user')
+        return redirect(url_for('management.user.users'))
+    return render_template('management/user/user.html', form=form, title='View a user', role='view', subject='management.user')
 
 #delete a user
-@user.route('/user/delete/<int:id>', methods=['GET', 'POST'])
+@user.route('/management/user/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def delete(id):
@@ -101,9 +97,9 @@ def delete(id):
     db.session.delete(user)
     db.session.commit()
     #flash('You have successfully deleted the user.')
-    return redirect(url_for('user.users'))
+    return redirect(url_for('management.user.users'))
 
-@user.route('/user/change-password/<int:id>', methods=['GET', 'POST'])
+@user.route('/management/user/change-password/<int:id>', methods=['GET', 'POST'])
 @login_required
 def change_pwd(id):
     user = User.query.get_or_404(id)
@@ -113,6 +109,6 @@ def change_pwd(id):
             user.password = form.new_password.data
             db.session.commit()
             flash('Your password was successfully changed.')
-            return redirect(url_for('user.users'))
+            return redirect(url_for('management.user.users'))
         flash('Invalid username or password.')
-    return render_template('user/user.html', form=form, title='Change password', role='change_password', route='user.users', subject='user')
+    return render_template('management/user/user.html', form=form, title='Change password', role='change_password', subject='management.user')
