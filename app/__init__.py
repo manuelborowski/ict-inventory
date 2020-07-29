@@ -25,10 +25,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.4 : settings are visible only by at least user+
 # V2.5 : moved users, settings and documents under management
 # V2.6 : added table DeviceCategory
+# V2/7 : use table DeviceCategory throughout the program
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.6')
+    return dict(version = 'V2.7')
 
 
 #enable logging

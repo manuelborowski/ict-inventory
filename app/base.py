@@ -72,9 +72,11 @@ def build_filter(table, paginate=True):
     if ('since' in  _filters_enabled or 'value' in _filters_enabled) and _model is not Purchase:
         _filtered_list = _filtered_list.join(Purchase)
     if ('category' in _filters_enabled or 'device' in _filters_enabled) and _model is not Device:
-        _filtered_list = _filtered_list.join(Device)
+        _filtered_list = _filtered_list.join(Device, DeviceCategory)
     if 'supplier' in _filters_enabled and _model is not Supplier :
         _filtered_list = _filtered_list.join(Supplier)
+    if _model is Device:
+        _filtered_list = _filtered_list.join(DeviceCategory)
 
     if 'query_filter' in table:
         _filtered_list = table['query_filter'](_filtered_list)
@@ -112,9 +114,9 @@ def build_filter(table, paginate=True):
             _filtered_list = _filtered_list.filter(Asset.location.contains(value))
     if 'category' in _filters_enabled:
         _filter_forms['category'] = CategoryFilter()
-        value = check_string_in_form('category', request.values)
+        value = check_value_in_form('category', request.values)
         if value:
-            _filtered_list = _filtered_list.filter(Device.category == value)
+            _filtered_list = _filtered_list.filter(Device.category_id == value)
     if 'status' in _filters_enabled:
         _filter_forms['status'] = StatusFilter()
         value = check_string_in_form('status', request.values)

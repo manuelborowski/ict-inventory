@@ -61,7 +61,7 @@ tables_configuration = {
         'template': [
             {'name': 'Merk', 'data': 'brand', 'order_by': Device.brand},
             {'name': 'Type', 'data': 'type', 'order_by': Device.type},
-            {'name': 'Categorie', 'data': 'category', 'order_by': Device.category},
+            {'name': 'Categorie', 'data': 'category', 'order_by': DeviceCategory.name},
             {'name': 'CE', 'data': 'ce', 'order_by': Device.ce},
             {'name': 'Vermogen', 'data': 'power', 'order_by': Device.power}],
         'filter': ['category', 'device'],

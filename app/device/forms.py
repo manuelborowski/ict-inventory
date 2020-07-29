@@ -6,7 +6,7 @@ from wtforms import StringField, SelectField, DecimalField, IntegerField, Boolea
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
-from ..models import Device
+from ..models import Device, DeviceCategory
 from ..forms import NonValidatingSelectFields
 from ..documents import get_doc_list
 
@@ -18,9 +18,10 @@ class EditForm(FlaskForm):
         self.photo.choices = list(zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo')))
         self.manual.choices = list(zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual')))
         self.safety_information.choices = list(zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information')))
-        self.category.choices = list(zip(Device.Category.get_list(), Device.Category.get_list()))
+        # self.category.choices = list(zip(Device.Category.get_list(), Device.Category.get_list()))
+        self.category.choices = DeviceCategory.get_list_for_select()
 
-    category = SelectField('Categorie', validators=[DataRequired()])
+    category = SelectField('Categorie', validators=[DataRequired()], coerce=int)
     brand = StringField('Merk', validators=[DataRequired()])
     type = StringField('Type', validators=[DataRequired()])
     power = DecimalField('Vermogen', default=0.0)
@@ -41,7 +42,7 @@ class ViewForm(FlaskForm):
     brand = StringField('Merk', render_kw={'readonly':''})
     type = StringField('Type', render_kw={'readonly':''})
     power = DecimalField('Vermogen', render_kw={'readonly':''})
-    ce = BooleanField('CE', render_kw={'readonly':''})
+    ce = BooleanField('CE', render_kw={'disabled':''})
     risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
     manual = StringField('Handleiding', render_kw={'readonly':''})
     safety_information = StringField('VIK', render_kw={'readonly':''})

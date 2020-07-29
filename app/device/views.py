@@ -49,6 +49,7 @@ def add(id=-1):
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         device = Device(category=form.category.data,
+                        category_id=form.category.data,
                         brand=form.brand.data,
                         type=form.type.data,
                         power=form.power.data,

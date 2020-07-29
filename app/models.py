@@ -210,13 +210,13 @@ class Device(db.Model):
     purchases = db.relationship('Purchase', cascade='all, delete', backref='device', lazy='dynamic')
 
     def __repr__(self):
-        return '{} / {}'.format(self.brand, self.type)
+        return '{}/{}'.format(self.brand, self.type)
 
     def log(self):
         return '<Device: {}/{}/{}>'.format(self.id, self.brand, self.type)
 
     def ret_dict(self):
-        return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category, 'power':float(self.power), 'photo':self.photo,
+        return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category2.name, 'power':float(self.power), 'photo':self.photo,
         'risk_analysis': self.risk_analysis, 'manual':self.manual, 'safety_information':self.safety_information, 'ce':self.ce,
         'brandtype':self.brand + ' / ' + self.type}
 
@@ -239,13 +239,28 @@ class DeviceCategory(db.Model):
     name = db.Column(db.String(256))
     info = db.Column(db.String(1024), default='')
     active = db.Column(db.Boolean, default=True)
-    devices = db.relationship('Device', cascade='all, delete', backref='categorie2', lazy='dynamic')
+    devices = db.relationship('Device', cascade='all, delete', backref='category2', lazy='dynamic')
 
     def __repr__(self):
         return f'{self.name}/{self.active}'
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'info':self.info, 'active':boolean_to_dutch(self.active)}
+
+    @staticmethod
+    def get_list_for_select(active=True):
+        categories = DeviceCategory.query
+        if active is not None:
+            categories = categories.filter(DeviceCategory.active == active)
+        categories = categories.order_by(DeviceCategory.name).all()
+        choices = [[c.id, c.name] for c in categories]
+        return choices
+
+    @staticmethod
+    def get_list_for_select_first_empty():
+        choices = DeviceCategory.get_list_for_select(active=None)
+        choices.insert(0, [0, ''])
+        return choices
 
     @staticmethod
     def default_init():

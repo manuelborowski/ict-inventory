@@ -3,13 +3,14 @@
 
 from flask_wtf import FlaskForm
 from wtforms import SelectField
-from .models import Supplier, Device, Asset
+from .models import Supplier, Device, Asset, DeviceCategory
 
 
 class CategoryFilter(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(CategoryFilter, self).__init__(*args, **kwargs)
-        self.category.choices=list(zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
+        # self.category.choices=list(zip(Device.Category.get_list_with_empty(), Device.Category.get_list_with_empty()))
+        self.category.choices=DeviceCategory.get_list_for_select_first_empty()
 
     category = SelectField('')
 
