@@ -27,10 +27,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.6 : added table DeviceCategory
 # V2/7 : use table DeviceCategory throughout the program
 # V2.8 : added table AssetLocation
+# V2.9 : fixed github security errors
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.8')
+    return dict(version = 'V2.9')
 
 
 #enable logging
