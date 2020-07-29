@@ -28,3 +28,9 @@ admin_menu_config = [
     fmi_delete,
     fmi_change_pwd
 ]
+
+edit_add_view_menu_config = [
+    fmi_edit,
+    fmi_add,
+    fmi_view,
+]

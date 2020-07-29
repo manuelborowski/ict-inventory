@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
-from .models import Asset, Purchase, Device, Supplier, User
+from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory
 from .management.user.extra_filtering import filter
-from .floating_menu import default_menu_config
+from .floating_menu import default_menu_config, edit_add_view_menu_config
 
 tables_configuration = {
     'asset' : {
@@ -98,10 +96,27 @@ tables_configuration = {
             {'name': 'Niveau', 'data': 'level', 'order_by': User.level, 'orderable': True},
         ],
         'filter': [],
-        'href': [{'attribute': '["username"]', 'route': '"management.user.view"', 'id': '["id"]'},
-                 ],
+        'href': [
+            {'attribute': '["username"]', 'route': '"management.user.view"', 'id': '["id"]'},
+        ],
         'floating_menu' : default_menu_config,
         'query_filter' : filter,
+    },
+    'device_category': {
+        'model': DeviceCategory,
+        'title' : 'Toestel Categorie',
+        'subject' :'management.device_category',
+        'delete_message' : '',
+        'template': [
+            {'name': 'Naam', 'data': 'name', 'order_by': DeviceCategory.name, 'width': '2%'},
+            {'name': 'Actief', 'data': 'active', 'order_by': DeviceCategory.active, 'width': '1%'},
+            {'name': 'Info', 'data': 'info', 'order_by': DeviceCategory.info, 'width': '50%'},
+        ],
+        'filter': [],
+        'floating_menu' : edit_add_view_menu_config,
+        'href': [
+            {'attribute': '["name"]', 'route': '"management.device_category.view"', 'id': '["id"]'},
+        ],
     }
 }
 

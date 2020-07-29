@@ -1,0 +1,8 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base_single_item.html" %}
+
+{% block content3 %}
+{{ wtf.form_field(form.name) }}
+{{ wtf.form_field(form.active) }}
+{{ wtf.form_field(form.info) }}
+{% endblock %}

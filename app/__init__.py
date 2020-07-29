@@ -24,10 +24,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.3 : added purchase_id in assets-view
 # V2.4 : settings are visible only by at least user+
 # V2.5 : moved users, settings and documents under management
+# V2.6 : added table DeviceCategory
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.5')
+    return dict(version = 'V2.6')
 
 
 #enable logging
@@ -50,19 +51,21 @@ config_name = config_name if config_name else 'production'
 
 def create_admin(db):
     from app.models import User
-    admin = User(username='admin', password='admin', is_admin=True)
-    db.session.add(admin)
-    db.session.commit()
+    admin = User.query.filter(User.username == 'admin')
+    if not admin:
+        admin = User(username='admin', password='admin', is_admin=True)
+        db.session.add(admin)
+        db.session.commit()
 
-#support custom filtering while logging
+
+# support custom filtering while logging
 class MyLogFilter(logging.Filter):
     def filter(self, record):
         record.username = current_user.username if current_user and current_user.is_active else 'NONE'
         return True
 
 
-
-#set up logging
+# set up logging
 LOG_FILENAME = os.path.join(sys.path[0], app_config[config_name].STATIC_PATH, 'log/iai-log.txt')
 try:
     log_level = getattr(logging, app_config[config_name].LOG_LEVEL)
@@ -99,7 +102,11 @@ from app import models
 if 'db' in sys.argv:
     from app import models
 else:
-    #create_admin(db) # Only once
+    create_admin(db) # Only once
+
+    #device categories are put in a seperate table.
+    models.DeviceCategory.default_init()
+    models.Device.device_category_init()
 
     #flask db migrate
     #flask db upgrade
@@ -149,6 +156,9 @@ else:
 
     from .management.settings import settings as settings_blueprint
     app.register_blueprint(settings_blueprint)
+
+    from .management.device_category import category as category_blueprint
+    app.register_blueprint(category_blueprint)
 
     from .documents import init_documents
     init_documents(app, 'commissioning')

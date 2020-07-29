@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
-# app/models.py
-
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import column_property
 from sqlalchemy.sql import func
+
+def boolean_to_dutch(value):
+    return 'JA' if value else 'NEE'
 
 class User(UserMixin, db.Model):
     # Ensures table will be named in plural and not in singular
@@ -167,8 +167,8 @@ class Purchase(db.Model):
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value),
                 'commissioning':self.commissioning, 'supplier': self.supplier.ret_dict(),
-                'device':self.device.ret_dict(), 'invoice': self.invoice, 'asset_value': float(self.asset_value),
-                'nbr_assets': self.nbr_assets}
+                'device':self.device.ret_dict(), 'invoice': self.invoice, 'asset_value': float(self.asset_value if self.asset_value else 0),
+                'nbr_assets': self.nbr_assets if self.nbr_assets else 0}
 
 class Device(db.Model):
     __tablename__ = 'devices'
@@ -200,6 +200,7 @@ class Device(db.Model):
     brand = db.Column(db.String(256))       # the brand of the device
     type = db.Column(db.String(256))        # the type of the device
     category = db.Column(db.String(256))    # one of: PC, BEAMER, PRINTER, ANDERE
+    category_id = db.Column(db.Integer, db.ForeignKey('device_categories.id', ondelete='CASCADE'))
     power = db.Column(db.Numeric(20,1))      # e.g. 12.1
     photo = db.Column(db.String(256))    # path to photo on disk
     risk_analysis = db.Column(db.String(256))    # path to risk analysis document on disk
@@ -218,6 +219,44 @@ class Device(db.Model):
         return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category, 'power':float(self.power), 'photo':self.photo,
         'risk_analysis': self.risk_analysis, 'manual':self.manual, 'safety_information':self.safety_information, 'ce':self.ce,
         'brandtype':self.brand + ' / ' + self.type}
+
+    @staticmethod
+    def device_category_init():
+        device = Device.query.first()
+        if not device.category_id:
+            categories = {c.name: c.id for c in DeviceCategory.query.all()}
+            devices = Device.query.all()
+            for device in devices:
+                device.category_id = categories[device.category]
+            db.session.commit()
+
+
+
+class DeviceCategory(db.Model):
+    __tablename__ = 'device_categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    info = db.Column(db.String(1024), default='')
+    active = db.Column(db.Boolean, default=True)
+    devices = db.relationship('Device', cascade='all, delete', backref='categorie2', lazy='dynamic')
+
+    def __repr__(self):
+        return f'{self.name}/{self.active}'
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name, 'info':self.info, 'active':boolean_to_dutch(self.active)}
+
+    @staticmethod
+    def default_init():
+        default = ['BEAMER', 'PC', 'MONITOR', 'PRINTER', 'GEREEDSCHAP', 'KOPIEERAPPARAAT', 'TV', 'HUISHOUD', 'ANDERE']
+        beamer = DeviceCategory.query.filter(DeviceCategory.name == 'BEAMER').first()
+        if not beamer:
+            for name in default:
+                category = DeviceCategory(name=name)
+                db.session.add(category)
+            db.session.commit()
+
 
 class Supplier(db.Model):
     __tablename__ = 'suppliers'
