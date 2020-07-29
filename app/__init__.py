@@ -26,10 +26,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.5 : moved users, settings and documents under management
 # V2.6 : added table DeviceCategory
 # V2/7 : use table DeviceCategory throughout the program
+# V2.8 : added table AssetLocation
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.7')
+    return dict(version = 'V2.8')
 
 
 #enable logging
@@ -105,9 +106,13 @@ if 'db' in sys.argv:
 else:
     create_admin(db) # Only once
 
-    #device categories are put in a seperate table.
+    #device categories are put in a separate table.
     models.DeviceCategory.default_init()
     models.Device.device_category_init()
+
+    #asset location are put in a separate table
+    models.AssetLocation.default_init()
+    models.Asset.asset_location_init()
 
     #flask db migrate
     #flask db upgrade
@@ -160,6 +165,9 @@ else:
 
     from .management.device_category import category as category_blueprint
     app.register_blueprint(category_blueprint)
+
+    from .management.asset_location import location as location_blueprint
+    app.register_blueprint(location_blueprint)
 
     from .documents import init_documents
     init_documents(app, 'commissioning')

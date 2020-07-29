@@ -1,4 +1,4 @@
-from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory
+from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation
 from .management.user.extra_filtering import filter
 from .floating_menu import default_menu_config, edit_add_view_menu_config
 
@@ -117,6 +117,22 @@ tables_configuration = {
         'href': [
             {'attribute': '["name"]', 'route': '"management.device_category.view"', 'id': '["id"]'},
         ],
-    }
+    },
+    'asset_location': {
+        'model': AssetLocation,
+        'title' : 'Locatie',
+        'subject' :'management.asset_location',
+        'delete_message' : '',
+        'template': [
+            {'name': 'Naam', 'data': 'name', 'order_by': AssetLocation.name, 'width': '2%'},
+            {'name': 'Actief', 'data': 'active', 'order_by': AssetLocation.active, 'width': '1%'},
+            {'name': 'Info', 'data': 'info', 'order_by': AssetLocation.info, 'width': '50%'},
+        ],
+        'filter': [],
+        'floating_menu' : edit_add_view_menu_config,
+        'href': [
+            {'attribute': '["name"]', 'route': '"management.asset_location.view"', 'id': '["id"]'},
+        ],
+    },
 }
 

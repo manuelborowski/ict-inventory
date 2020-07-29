@@ -1,0 +1,15 @@
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base_multiple_items.html" %}
+
+{% block content2 %}
+<div class="content-section">
+  <div class="center">
+      <div class="btn-group" role="group" aria-label="...">
+           <a class="btn btn-default" href="{{ url_for('management.asset_location.add') }}" >Add Category</a>
+      </div>
+      <hr />
+      {{table}}
+  </div>
+</div>
+{% endblock %}

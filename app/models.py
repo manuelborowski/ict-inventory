@@ -126,6 +126,7 @@ class Asset(db.Model):
     description = db.Column(db.String(256))
     quantity = db.Column(db.Integer, default=1)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id', ondelete='CASCADE'))
+    location_id = db.Column(db.Integer, db.ForeignKey('asset_locations.id', ondelete='CASCADE'))
 
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
@@ -137,6 +138,58 @@ class Asset(db.Model):
         return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location,
                 'db_status':self.db_status,  'serial':self.serial, 'description':self.description,
                 'purchase':self.purchase.ret_dict(), 'quantity': self.quantity}
+
+    @staticmethod
+    def asset_location_init():
+        asset = Asset.query.first()
+        if not asset.location_id:
+            locations = {l.name: l.id for l in AssetLocation.query.all()}
+            assets = Asset.query.all()
+            for asset in assets:
+                asset.location_id = locations[asset.location]
+            db.session.commit()
+
+
+class AssetLocation(db.Model):
+    __tablename__ = 'asset_locations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    info = db.Column(db.String(1024), default='')
+    active = db.Column(db.Boolean, default=True)
+    assets = db.relationship('Asset', cascade='all, delete', backref='location2', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<AssetLocation: {self.name}/{self.active}>'
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name, 'info': self.info, 'active': boolean_to_dutch(self.active)}
+
+    @staticmethod
+    def get_list_for_select(active=True):
+        locations = AssetLocation.query
+        if active is not None:
+            locations = locations.filter(AssetLocation.active == active)
+        locations = locations.order_by(AssetLocation.name).all()
+        choices = [[l.id, l.name] for l in locations]
+        return choices
+
+
+    @staticmethod
+    def get_list_for_select_first_empty():
+        choices = AssetLocation.get_list_for_select(active=None)
+        choices.insert(0, [0, ''])
+        return choices
+
+    @staticmethod
+    def default_init():
+        location_found = Asset.query.filter(Asset.location_id != None).first()
+        if not location_found:
+            locations = db.session.query(Asset.location).distinct(Asset.location).all()
+            for location in locations:
+                new_location = AssetLocation(name=location[0])
+                db.session.add(new_location)
+            db.session.commit()
 
 
 class Purchase(db.Model):

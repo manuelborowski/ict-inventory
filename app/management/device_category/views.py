@@ -1,5 +1,5 @@
-from flask import render_template, redirect, url_for, request, flash
-from flask_login import login_required, current_user
+from flask import render_template, redirect, url_for, request
+from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from app import db, log, admin_required, user_plus_required
@@ -8,7 +8,6 @@ from app.models import DeviceCategory
 
 from app.base import build_filter, get_ajax_table
 from app.tables_config import  tables_configuration
-from app.floating_menu import user_menu_config, admin_menu_config, edit_add_view_menu_config
 
 @category.route('/management/device_category/data', methods=['GET', 'POST'])
 @login_required
@@ -43,6 +42,7 @@ def add(id=-1):
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         category = DeviceCategory(name=form.name.data,
+                                  active=form.active.data,
                                   info=form.info.data)
         db.session.add(category)
         db.session.commit()
@@ -72,28 +72,3 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('management.device_category.show'))
     return render_template('management/device_category/category.html', form=form, title='View a category', role='view', subject='management.device_category')
-
-# #delete a category
-# @category.route('/management/device_category/delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# @admin_required
-# def delete(id):
-#     category = User.query.get_or_404(id)
-#     db.session.delete(category)
-#     db.session.commit()
-#     #flash('You have successfully deleted the category.')
-#     return redirect(url_for('management.category.users'))
-#
-# @category.route('/management/device_category/change-password/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def change_pwd(id):
-#     category = User.query.get_or_404(id)
-#     form = ChangePasswordForm()
-#     if form.validate_on_submit():
-#         if category.verify_password(form.old_password.data):
-#             category.password = form.new_password.data
-#             db.session.commit()
-#             flash('Your password was successfully changed.')
-#             return redirect(url_for('management.category.users'))
-#         flash('Invalid username or password.')
-#     return render_template('management/device_category/category.html', form=form, title='Change password', role='change_password', subject='management.category')
