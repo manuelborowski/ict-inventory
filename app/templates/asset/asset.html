@@ -8,6 +8,7 @@
     {{ wtf.form_field(form.name) }}
     {{ wtf.form_field(form.quantity) }}
     {{ wtf.form_field(form.location) }}
+    <input type="hidden" name="location-id" id="location-id">
     {{ wtf.form_field(form.qr_code) }}
     {{ wtf.form_field(form.status) }}
 {% if role == 'edit' or role == 'add' %}
@@ -57,4 +58,17 @@
     </br>
 
 {% endif %}
+<div id="menu">
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% if location_select %}
+        <script>
+            var location_select_list = {{ location_select | tojson }};
+        </script>
+    {% endif %}
+    <script type="text/javascript"> {% include "asset/asset.js" %}</script>
 {% endblock %}

@@ -7,7 +7,7 @@ from flask_login import current_user
 from sqlalchemy import or_
 import time
 
-from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory
+from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory, AssetLocation
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 from . import log
 
@@ -77,6 +77,8 @@ def build_filter(table, paginate=True):
         _filtered_list = _filtered_list.join(Supplier)
     if _model is Device:
         _filtered_list = _filtered_list.join(DeviceCategory)
+    if _model is Asset:
+        _filtered_list = _filtered_list.join(AssetLocation)
 
     if 'query_filter' in table:
         _filtered_list = table['query_filter'](_filtered_list)
@@ -183,6 +185,8 @@ def build_filter(table, paginate=True):
             search_constraints.append(User.email.like(search_value))
         if DeviceCategory.name in column_list:
             search_constraints.append(DeviceCategory.name.like(search_value))
+        if AssetLocation.name in column_list:
+            search_constraints.append(AssetLocation.name.like(search_value))
 
         if search_constraints:
             _filtered_list = _filtered_list.filter(or_(*search_constraints))

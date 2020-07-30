@@ -13,7 +13,7 @@ tables_configuration = {
             {'name': '#', 'data':'quantity', 'order_by': Asset.quantity},
             {'name': 'Factuur', 'data':'purchase.invoice', 'order_by': Purchase.invoice},
             {'name': 'Categorie', 'data':'purchase.device.category', 'order_by': Device.category},
-            {'name': 'Locatie', 'data':'location', 'order_by': Asset.location},
+            {'name': 'Locatie', 'data':'location', 'order_by': AssetLocation.name},
             {'name': 'Datum', 'data':'purchase.since', 'order_by': Purchase.since},
             {'name': 'Bedrag', 'data':'purchase.asset_value', 'order_by': Purchase.asset_value},
             {'name': 'QR', 'data':'qr_code', 'order_by': Asset.qr_code},

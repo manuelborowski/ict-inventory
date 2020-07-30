@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 # app/asset/views.py
 
-from flask import render_template, redirect, url_for, request, flash, send_file, session, make_response
+from flask import render_template, redirect, url_for, request, flash, send_file, session, make_response, jsonify
 from flask_login import login_required, current_user
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, log
 from . import asset
-from ..models import Asset
+from ..models import Asset, AssetLocation
 
 from ..base import build_filter, get_ajax_table, get_setting_inc_index_asset_name
 from ..tables_config import  tables_configuration
 from ..documents import download_single_doc
 
 from io import StringIO
-import csv, re
+import csv, re, json
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @asset.route('/asset/data', methods=['GET', 'POST'])
@@ -127,6 +127,8 @@ def add(id=-1, qr=-1):
             location=form.location.data,
             purchase=form.purchase.data,
             serial=form.serial.data)
+        if 'location-id' in request.form:
+            asset.location_id = int(request.form['location-id'])
         db.session.add(asset)
         db.session.commit()
         db.session.refresh(asset)
@@ -135,8 +137,12 @@ def add(id=-1, qr=-1):
         #flash(u'You have added asset {}').format(asset.name)
         return redirect(url_for('asset.assets'))
 
+    location_select = AssetLocation.get_list_for_select()
+    fill_location_select = [[-1, ''] for i in range (len(location_select), 200)]
+    location_select += fill_location_select
     form.qr_code.data=qr if qr > -1 else ''
-    return render_template('asset/asset.html', form=form, title='Voeg activa toe', role='add', route='asset.assets', subject='asset')
+    return render_template('asset/asset.html', form=form, title='Voeg activa toe', role='add', route='asset.assets',
+                           subject='asset', location_select=location_select)
 
 #edit a asset
 @asset.route('/asset/edit/<int:id>', methods=['GET', 'POST'])
@@ -148,13 +154,18 @@ def edit(id):
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
             if asset.qr_code=='': asset.qr_code=None
+            if 'location-id' in request.form:
+                asset.location_id = int(request.form['location-id'])
             db.session.commit()
             log.info('edit : {}'.format(asset.log()))
             #flash'You have edited asset {}').format(asset.name)
 
         return redirect(url_for('asset.assets'))
-
-    return render_template('asset/asset.html', form=form, title='Pas een activa aan', role='edit', subject='asset', route='asset.assets')
+    location_select = AssetLocation.get_list_for_select()
+    fill_location_select = [[-1, ''] for i in range (len(location_select), 200)]
+    location_select += fill_location_select
+    return render_template('asset/asset.html', form=form, title='Pas een activa aan', role='edit', subject='asset',
+                           route='asset.assets', location_select=location_select)
 
 #no login required
 @asset.route('/asset/view/<int:id>', methods=['GET', 'POST'])

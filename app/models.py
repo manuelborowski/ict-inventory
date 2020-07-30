@@ -135,7 +135,7 @@ class Asset(db.Model):
         return '<Asset: {}/{}/{}/{}/{}>'.format(self.id, self.name, self.qr_code, self.purchase.since, self.purchase.value)
 
     def ret_dict(self):
-        return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location,
+        return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location2.name,
                 'db_status':self.db_status,  'serial':self.serial, 'description':self.description,
                 'purchase':self.purchase.ret_dict(), 'quantity': self.quantity}
 
@@ -225,29 +225,6 @@ class Purchase(db.Model):
 
 class Device(db.Model):
     __tablename__ = 'devices'
-
-    class Category:
-        @staticmethod
-        def get_list():
-            #l = [i.category for i in db.session.query(Device.category).distinct(Device.category).order_by(Device.category).all()]
-            l = [
-                'BEAMER',
-                'PC',
-                'MONITOR',
-                'PRINTER',
-                'GEREEDSCHAP',
-                'KOPIEERAPPARAAT',
-                'TV',
-                'HUISHOUD',
-                'ANDERE'
-            ]
-            return l
-
-        @staticmethod
-        def get_list_with_empty():
-            l = Device.Category.get_list()
-            l.insert(0, '')
-            return l
 
     id = db.Column(db.Integer, primary_key=True)
     brand = db.Column(db.String(256))       # the brand of the device
