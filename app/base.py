@@ -7,7 +7,7 @@ from flask_login import current_user
 from sqlalchemy import or_
 import time
 
-from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory, AssetLocation
+from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory, AssetLocation, Invoice
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 from . import log
 
@@ -69,7 +69,7 @@ def build_filter(table, paginate=True):
     _filters_enabled = table['filter']
     _template = table['template']
     _filtered_list = _model.query
-    if ('since' in  _filters_enabled or 'value' in _filters_enabled) and _model is not Purchase:
+    if ('since' in  _filters_enabled or 'value' in _filters_enabled) and _model is not Purchase and _model is not Invoice:
         _filtered_list = _filtered_list.join(Purchase)
     if ('category' in _filters_enabled or 'device' in _filters_enabled) and _model is not Device:
         _filtered_list = _filtered_list.join(Device, DeviceCategory)
@@ -79,6 +79,8 @@ def build_filter(table, paginate=True):
         _filtered_list = _filtered_list.join(DeviceCategory)
     if _model is Asset:
         _filtered_list = _filtered_list.join(AssetLocation)
+    if _model is Purchase:
+        _filtered_list = _filtered_list.join(Invoice)
 
     if 'query_filter' in table:
         _filtered_list = table['query_filter'](_filtered_list)
@@ -160,8 +162,8 @@ def build_filter(table, paginate=True):
             search_constraints.append(Asset.location.like(search_value))
         if Purchase.since in column_list:
             search_constraints.append(Purchase.since.like(search_date))
-        if Purchase.invoice in column_list:
-            search_constraints.append(Purchase.invoice.like(search_value))
+        if Invoice.number in column_list:
+            search_constraints.append(Invoice.number.like(search_value))
         if Purchase.value in column_list:
             search_constraints.append(Purchase.value.like(search_value))
         if Asset.qr_code in column_list:

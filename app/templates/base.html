@@ -26,6 +26,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('asset.assets') }}">Activa</a></li>
+                    <li><a href="{{ url_for('invoice.invoices') }}">Facturen</a></li>
                     <li><a href="{{ url_for('purchase.purchases') }}">Aankopen</a></li>
                     <li><a href="{{ url_for('device.devices') }}">Toestellen</a></li>
                     <li><a href="{{ url_for('supplier.suppliers') }}">Leveranciers</a></li>

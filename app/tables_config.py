@@ -1,4 +1,4 @@
-from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation
+from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation, Invoice
 from .management.user.extra_filtering import filter
 from .floating_menu import default_menu_config, edit_add_view_menu_config
 
@@ -11,7 +11,7 @@ tables_configuration = {
         'template' : [
             {'name': 'Naam', 'data':'name', 'order_by': Asset.name},
             {'name': '#', 'data':'quantity', 'order_by': Asset.quantity},
-            {'name': 'Factuur', 'data':'purchase.invoice', 'order_by': Purchase.invoice},
+            {'name': 'Factuur', 'data':'purchase.invoice', 'order_by': Invoice.number},
             {'name': 'Categorie', 'data':'purchase.device.category', 'order_by': Device.category},
             {'name': 'Locatie', 'data':'location', 'order_by': AssetLocation.name},
             {'name': 'Datum', 'data':'purchase.since', 'order_by': Purchase.since},
@@ -50,6 +50,23 @@ tables_configuration = {
             {'attribute': '["invoice"]', 'route': '"purchase.view"', 'id': '["id"]'},
             {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
             {'attribute': '["device"]["brandtype"]', 'route': '"device.view"', 'id': '["device"]["id"]'}
+                ],
+        'floating_menu' : default_menu_config,
+    },
+    'invoice' : {
+        'model' : Invoice,
+        'title' : 'Factuur',
+        'subject' :'invoice',
+        'delete_message' : 'Wil je deze Factuur EN alle verbonden activa verwijderen?',
+        'template' : [
+            {'name': 'Factuur', 'data': 'number', 'order_by': Invoice.number},
+            {'name': 'Datum', 'data': 'since', 'order_by': Invoice.since},
+            {'name': 'Leverancier', 'data': 'supplier.name', 'order_by': Supplier.name},
+            {'name': 'Info', 'data': 'info', 'order_by': Invoice.info}],
+        'filter' :  ['since', 'invoice', 'supplier'],
+        'href': [
+            {'attribute': '["number"]', 'route': '"invoice.view"', 'id': '["id"]'},
+            {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
                 ],
         'floating_menu' : default_menu_config,
     },

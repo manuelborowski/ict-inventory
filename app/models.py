@@ -4,6 +4,7 @@ from app import db, login_manager
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import column_property
 from sqlalchemy.sql import func
+import datetime
 
 def boolean_to_dutch(value):
     return 'JA' if value else 'NEE'
@@ -204,14 +205,14 @@ class Purchase(db.Model):
     value = db.Column(db.Numeric(20,2))      # e.g. 12.12
     commissioning = db.Column(db.String(256))    # path to commissioning document on disk
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'))
+    invoice_id = db.Column(db.Integer, db.ForeignKey('invoices.id', ondelete='CASCADE'))
     device_id = db.Column(db.Integer, db.ForeignKey('devices.id', ondelete='CASCADE'))
     assets = db.relationship('Asset', cascade='all, delete', backref='purchase', lazy='dynamic')
-    invoice = db.Column(db.String(256), default='')    # invoice reference
     nbr_assets = column_property(func.nbr_assets(id))
     asset_value = column_property(func.asset_value(id))
 
     def __repr__(self):
-        return f'{self.invoice} / {self.since} / {self.device.brand} / {self.device.type}'
+        return f'{self.since}/{self.device.brand}/{self.device.type}'
 
     def log(self):
         return '<Purchase: {}/{}/{}/{}/{}/{}>'.format(self.id, self.since, self.value, self.device.brand,
@@ -220,8 +221,59 @@ class Purchase(db.Model):
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value),
                 'commissioning':self.commissioning, 'supplier': self.supplier.ret_dict(),
-                'device':self.device.ret_dict(), 'invoice': self.invoice, 'asset_value': float(self.asset_value if self.asset_value else 0),
+                'device':self.device.ret_dict(), 'invoice': self.invoice.number, 'asset_value': float(self.asset_value if self.asset_value else 0),
                 'nbr_assets': self.nbr_assets if self.nbr_assets else 0}
+
+
+    @staticmethod
+    def invoice_init():
+        purchase = Purchase.query.first()
+        if not purchase.invoice_id:
+            invoice = Invoice.query.filter(Invoice.number == 'ONBEKEND').first()
+            purchases = Purchase.query.all()
+            for purchase in purchases:
+                purchase.invoice = invoice
+            db.session.commit()
+
+
+class Invoice(db.Model):
+    __tablename__= 'invoices'
+
+    @staticmethod
+    def reverse_date(date):
+        return '-'.join(date.split('-')[::-1])
+
+    id = db.Column(db.Integer, primary_key=True)
+    since = db.Column(db.Date)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id', ondelete='CASCADE'))
+    number = db.Column(db.String(256), default='')    # invoice reference
+    info = db.Column(db.String(1024), default='')
+    purchases = db.relationship('Purchase', cascade='all, delete', backref='invoice', lazy='dynamic')
+    # nbr_assets = column_property(func.nbr_assets(id))
+    # asset_value = column_property(func.asset_value(id))
+
+    def __repr__(self):
+        return f'{self.number}/{self.since}/'
+
+    def log(self):
+        return f'<Invoice: {self.id}/{self.since}/{self.invoice}>'
+
+    def ret_dict(self):
+        return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'number': self.number,
+                'supplier':self.supplier.ret_dict(), 'info': self.info}
+
+    @staticmethod
+    def default_init():
+        default = Invoice.query.filter(Invoice.number == 'ONBEKEND').all()
+        if not default:
+            default_supplier = Supplier.query.filter(Supplier.name == 'ONBEKEND').first()
+            default = Invoice(number='ONBEKEND',
+                              info='standaard factuur wanneer echte factuur niet gekend is',
+                              since=datetime.datetime.now(),
+                              supplier=default_supplier)
+            db.session.add(default)
+            db.session.commit()
+
 
 class Device(db.Model):
     __tablename__ = 'devices'
@@ -259,7 +311,6 @@ class Device(db.Model):
             for device in devices:
                 device.category_id = categories[device.category]
             db.session.commit()
-
 
 
 class DeviceCategory(db.Model):
@@ -310,6 +361,7 @@ class Supplier(db.Model):
     name = db.Column(db.String(256), unique=True)
     description = db.Column(db.String(1024))
     purchases = db.relationship('Purchase', cascade='all, delete', backref='supplier', lazy='dynamic')
+    invoices = db.relationship('Invoice', cascade='all, delete', backref='supplier', lazy='dynamic')
 
     def __repr__(self):
         return '{}'.format(self.name)
@@ -319,6 +371,16 @@ class Supplier(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'description':self.description}
+
+    @staticmethod
+    def default_init():
+        default = Supplier.query.filter(Supplier.name == 'ONBEKEND').all()
+        if not default:
+            default = Supplier(name='ONBEKEND',
+                              description='standaard leverancier wanneer echte leverancier niet gekend is')
+            db.session.add(default)
+            db.session.commit()
+
 
 class Settings(db.Model):
     __tablename__ = 'settings'

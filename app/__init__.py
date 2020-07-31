@@ -29,10 +29,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.8 : added table AssetLocation
 # V2.9 : fixed github security errors
 # V2.10 : use table AssetLocation throughout de code
+# V2.11 : added table Invoice and functionality to support it
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.10')
+    return dict(version = 'V2.11')
 
 
 #enable logging
@@ -108,6 +109,9 @@ if 'db' in sys.argv:
 else:
     create_admin(db) # Only once
 
+    #init default supplier
+    models.Supplier.default_init()
+
     #device categories are put in a separate table.
     models.DeviceCategory.default_init()
     models.Device.device_category_init()
@@ -115,6 +119,10 @@ else:
     #asset location are put in a separate table
     models.AssetLocation.default_init()
     models.Asset.asset_location_init()
+
+    #init default invoices
+    models.Invoice.default_init()
+    models.Purchase.invoice_init()
 
     #flask db migrate
     #flask db upgrade
@@ -155,6 +163,9 @@ else:
 
     from .supplier import supplier as supplier_blueprint
     app.register_blueprint(supplier_blueprint)
+
+    from .invoice import invoice as invoice_blueprint
+    app.register_blueprint(invoice_blueprint)
 
     from .device import device as device_blueprint
     app.register_blueprint(device_blueprint)
