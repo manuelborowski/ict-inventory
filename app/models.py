@@ -136,7 +136,9 @@ class Asset(db.Model):
         return '<Asset: {}/{}/{}/{}/{}>'.format(self.id, self.name, self.qr_code, self.purchase.since, self.purchase.value)
 
     def ret_dict(self):
-        return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status, 'location':self.location2.name,
+        return {'id':self.id, 'name':self.name, 'qr_code':self.qr_code, 'status':self.status,
+                'location':self.location2.ret_dict(),
+                'invoice_purchase': f'{self.purchase.invoice.number} ({self.purchase.id})',
                 'db_status':self.db_status,  'serial':self.serial, 'description':self.description,
                 'purchase':self.purchase.ret_dict(), 'quantity': self.quantity}
 
@@ -220,8 +222,8 @@ class Purchase(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value),
-                'commissioning':self.commissioning, 'supplier': self.supplier.ret_dict(),
-                'device':self.device.ret_dict(), 'invoice': self.invoice.number, 'asset_value': float(self.asset_value if self.asset_value else 0),
+                'commissioning':self.commissioning, 'device':self.device.ret_dict(), 'invoice': self.invoice.ret_dict(),
+                'asset_value': float(self.asset_value if self.asset_value else 0),
                 'nbr_assets': self.nbr_assets if self.nbr_assets else 0}
 
 
@@ -298,7 +300,7 @@ class Device(db.Model):
         return '<Device: {}/{}/{}>'.format(self.id, self.brand, self.type)
 
     def ret_dict(self):
-        return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category2.name, 'power':float(self.power), 'photo':self.photo,
+        return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category2.ret_dict(), 'power':float(self.power), 'photo':self.photo,
         'risk_analysis': self.risk_analysis, 'manual':self.manual, 'safety_information':self.safety_information, 'ce':self.ce,
         'brandtype':self.brand + ' / ' + self.type}
 

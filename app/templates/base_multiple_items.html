@@ -19,6 +19,9 @@
 {% if 'invoice' in filter %}
               <th>Factuur</th>
 {% endif %}
+{% if 'purchase_id' in filter %}
+              <th>Lijn ID</th>
+{% endif %}
 {% if 'location' in filter %}
               <th>Locatie</th>
 {% endif %}
@@ -34,9 +37,6 @@
 {% if 'device' in filter %}
               <th>Toestel</th>
 {% endif %}
-{% if 'purchase_id' in filter %}
-              <th>Aankoop ID</th>
-{% endif %}
           </tr>
           <tr>
 {% if 'since' in filter %}
@@ -47,6 +47,9 @@
 {% endif %}
 {% if 'invoice' in filter %}
               <td rowspan="2"><input id="invoice" class="filter" name="invoice" type="text" size="12"></td>
+{% endif %}
+{% if 'purchase_id' in filter %}
+    <td rowspan="2"><input name="purchase_id" id="purchase_id" class="filter" type="text" {% if purchase_id %}value="{{ purchase_id }}"{% endif %} size="6"></td>
 {% endif %}
 {% if 'location' in filter %}
               <td rowspan="2"><input id="room" class="filter" name="room" type="text" size="12"></td>
@@ -62,9 +65,6 @@
 {% endif %}
 {% if 'device' in filter %}
               <td rowspan="2">{{ wtf.form_field(filter_form.device.device) }}</td>
-{% endif %}
-{% if 'purchase_id' in filter %}
-    <td rowspan="2"><input name="purchase_id" id="purchase_id" class="filter" type="text" {% if purchase_id %}value="{{ purchase_id }}"{% endif %} size="6"></td>
 {% endif %}
 
           </tr>

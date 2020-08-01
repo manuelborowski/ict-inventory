@@ -30,10 +30,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.9 : fixed github security errors
 # V2.10 : use table AssetLocation throughout de code
 # V2.11 : added table Invoice and functionality to support it
+# V2.12 : processing table : clean up
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.11')
+    return dict(version = 'V2.12')
 
 
 #enable logging

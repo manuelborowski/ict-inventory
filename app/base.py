@@ -69,18 +69,24 @@ def build_filter(table, paginate=True):
     _filters_enabled = table['filter']
     _template = table['template']
     _filtered_list = _model.query
-    if ('since' in  _filters_enabled or 'value' in _filters_enabled) and _model is not Purchase and _model is not Invoice:
-        _filtered_list = _filtered_list.join(Purchase)
-    if ('category' in _filters_enabled or 'device' in _filters_enabled) and _model is not Device:
-        _filtered_list = _filtered_list.join(Device, DeviceCategory)
-    if 'supplier' in _filters_enabled and _model is not Supplier :
-        _filtered_list = _filtered_list.join(Supplier)
     if _model is Device:
         _filtered_list = _filtered_list.join(DeviceCategory)
     if _model is Asset:
-        _filtered_list = _filtered_list.join(AssetLocation)
+        _filtered_list = _filtered_list.join(AssetLocation, Purchase)
+        if 'since' in _filters_enabled or 'invoice' in _filters_enabled or 'supplier' in _filters_enabled:
+            _filtered_list = _filtered_list.join(Invoice)
+        if 'supplier' in _filters_enabled:
+            _filtered_list = _filtered_list.join(Supplier)
+        if 'category' in _filters_enabled or 'device' in _filters_enabled:
+            _filtered_list = _filtered_list.join(Device, DeviceCategory)
     if _model is Purchase:
         _filtered_list = _filtered_list.join(Invoice)
+        if 'supplier' in _filters_enabled:
+            _filtered_list = _filtered_list.join(Supplier)
+        if 'device' in _filters_enabled:
+            _filtered_list = _filtered_list.join(Device)
+    if _model is Invoice:
+        _filtered_list = _filtered_list.join(Supplier)
 
     if 'query_filter' in table:
         _filtered_list = table['query_filter'](_filtered_list)
@@ -93,10 +99,10 @@ def build_filter(table, paginate=True):
     if 'since' in _filters_enabled:
         date = check_date_in_form('date_after', request.values)
         if date:
-            _filtered_list = _filtered_list.filter(Purchase.since >= Purchase.reverse_date(date))
+            _filtered_list = _filtered_list.filter(Invoice.since >= Invoice.reverse_date(date))
         date = check_date_in_form('date_before', request.values)
         if date:
-            _filtered_list = _filtered_list.filter(Purchase.since <= Purchase.reverse_date(date))
+            _filtered_list = _filtered_list.filter(Invoice.since <= Invoice.reverse_date(date))
     if 'value' in _filters_enabled:
         value = check_value_in_form('value_from', request.values)
         if value:
@@ -111,16 +117,16 @@ def build_filter(table, paginate=True):
     if 'invoice' in _filters_enabled:
         value = check_string_in_form('invoice', request.values)
         if value:
-            _filtered_list = _filtered_list.filter(Purchase.invoice.contains(value))
+            _filtered_list = _filtered_list.filter(Invoice.number.contains(value))
     if 'location' in _filters_enabled:
         value = check_string_in_form('room', request.values)
         if value:
-            _filtered_list = _filtered_list.filter(Asset.location.contains(value))
+            _filtered_list = _filtered_list.filter(AssetLocation.name.contains(value))
     if 'category' in _filters_enabled:
         _filter_forms['category'] = CategoryFilter()
         value = check_value_in_form('category', request.values)
         if value:
-            _filtered_list = _filtered_list.filter(Device.category_id == value)
+            _filtered_list = _filtered_list.filter(DeviceCategory.id == value)
     if 'status' in _filters_enabled:
         _filter_forms['status'] = StatusFilter()
         value = check_string_in_form('status', request.values)
@@ -137,10 +143,6 @@ def build_filter(table, paginate=True):
         if value:
             s = value.split('/')
             _filtered_list = _filtered_list.filter(Device.brand==s[0].strip(), Device.type==s[1].strip())
-    if 'purchase_id' in _filters_enabled:
-        value = check_value_in_form('purchase_id', request.values)
-        if value:
-            _filtered_list = _filtered_list.filter(Asset.purchase_id == value)
 
     #search, if required
     #from template, take order_by and put in a list.  This is user later on, to get the columns in which can be searched
