@@ -1,10 +1,55 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base_single_item.html" %}
 
+{% block head %}
+{{ super() }}
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+{%  endblock %}
+
 {% block content3 %}
     {{ wtf.form_field(form.number) }}
     {{ wtf.form_field(form.since) }}
     {{ wtf.form_field(form.supplier) }}
     {{ wtf.form_field(form.info) }}
+    <table id="purchase_table" border="1">
+    <thead>
+        <tr>
+            <th data-override="purchase-id" style="display: none">Lijn ID</th>
+            <th data-override="value">Bedrag</th>
+            <th data-override="category">Categorie</th>
+            <th data-override="device">Toestel</th>
+            <th data-override="commissioning">Indienststelling</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+    <input type="hidden" name="purchase-data">
+
 {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    var select_list = {{ (select_list or []) | tojson }}
+    var purchase_data = {{ (purchase_data or []) | tojson }}
+</script>
+<script type="text/javascript"> {% include "invoice/invoice.js" %}</script>
+{% endblock %}
+
 

@@ -1,15 +1,16 @@
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, log
 from ..documents import upload_doc
 from . import invoice
-from ..models import Invoice
+from ..models import Invoice, DeviceCategory, Device, Purchase
+from ..documents import get_doc_list
 
 from ..base import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
-import os
+import os, json
 from flask_uploads import UploadSet, configure_uploads, DOCUMENTS
 
 #This route is called by an ajax call on the assets-page to populate the table.
@@ -44,15 +45,33 @@ def add(id=-1):
         invoice = Invoice(
             number=form.number.data,
             since=form.since.data,
-            supplier_id = form.supplier.data)
+            info=form.info.data,
+            supplier = form.supplier.data)
         db.session.add(invoice)
+        purchase_data = json.loads(request.form['purchase-data'])
+        for purchase in purchase_data:
+            if int(purchase['device']) != -1:
+                try:
+                    new_purchase = Purchase(
+                        invoice=invoice,
+                        value=float(purchase['value'].replace(',', '.')),
+                        device_id=int(purchase['device']),
+                        commissioning=purchase['commissioning']
+                    )
+                    db.session.add(new_purchase)
+                except Exception:
+                    pass
         db.session.commit()
         log.info('add: {}'.format(invoice.log()))
         #flash(_(u'You have added invoice {}').format(invoice.since))
         return redirect(url_for('invoice.invoices'))
-
+    select_list = {
+        'category': DeviceCategory.get_list_for_select_first_empty(),
+        'commissioning': list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))),
+        'device': Device.get_list_for_select_first_empty()
+    }
     return render_template('invoice/invoice.html', form=form, title='Voeg een factuur toe', role='add',
-                           route='invoice.invoices', subject='invoice')
+                           route='invoice.invoices', subject='invoice', select_list=select_list)
 
 
 #edit a invoice
@@ -64,17 +83,53 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == 'Bewaar':
             form.populate_obj(invoice)
-            try:
-                upload_doc(request)
-            except Exception as e:
-                flash('Could not import file')
+            purchase_data = json.loads(request.form['purchase-data'])
+            for purchase in purchase_data:
+                if int(purchase['purchase-id']) != -1:
+                    update_purchase = Purchase.query.get(int(purchase['purchase-id']))
+                    update_purchase.value = float(purchase['value'].replace(',', '.')),
+                    update_purchase.device_id = int(purchase['device']),
+                    update_purchase.commissioning = purchase['commissioning']
+                elif int(purchase['device']) != -1:
+                    try:
+                        new_purchase = Purchase(
+                            invoice=invoice,
+                            value=float(purchase['value'].replace(',', '.')),
+                            device_id=int(purchase['device']),
+                            commissioning=purchase['commissioning']
+                        )
+                        db.session.add(new_purchase)
+                    except Exception:
+                        pass
             db.session.commit()
             log.info('edit : {}'.format(invoice.log()))
             #flash(_(u'You have edited invoice {}').format(invoice))
-
         return redirect(url_for('invoice.invoices'))
-    return render_template('invoice/invoice.html', form=form, title='Pas een aankoop aan', role='edit', route='invoice.invoices',
-                           subject='invoice')
+    select_list = {
+        'category': DeviceCategory.get_list_for_select_first_empty(),
+        'commissioning': list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))),
+        'device': Device.get_list_for_select_first_empty()
+    }
+    purchase_data = []
+    for purchase in invoice.purchases:
+        purchase_data.append({
+            'id': purchase.id,
+            'value': float(purchase.value),
+            'category_id': purchase.device.category_id,
+            'device_id': purchase.device.id,
+            'commissioning': purchase.commissioning
+        })
+    # purchase_data = []
+    # for purchase in invoice.purchases:
+    #     purchase_data.append({
+    #         'id': purchase.id,
+    #         'category': [purchase.device.category.id, purchase.device.category.name],
+    #         'device': [purchase.device.id, f'{purchase.device.brand}/{purchase.device.type}'],
+    #         'commissioning': purchase.commissioning
+    #     })
+    return render_template('invoice/invoice.html', form=form, title='Pas een aankoop aan', role='edit',
+                           route='invoice.invoices', subject='invoice', select_list=select_list,
+                           purchase_data=purchase_data)
 
 
 #no login required
@@ -98,3 +153,19 @@ def delete(id):
     #flash(_('You have successfully deleted the invoice.'))
 
     return redirect(url_for('invoice.invoices'))
+
+@invoice.route('/invoice/item_ajax/<string:jds>', methods=['GET', 'POST'])
+@login_required
+def item_ajax(jds):
+    try:
+        jd = json.loads(jds)
+        if jd['action'] == 'category-changed':
+            data = {
+                'device_options': Device.get_list_for_select_first_empty(int(jd['category-id'])),
+                'opaque_element_id': jd['opaque-element-id'],
+            }
+            return jsonify({"status": True, "data": data})
+    except Exception as e:
+        return jsonify({"status": False, 'details': f'{e}'})
+    return jsonify({"status": False, 'details': f'Er is iets fout gegaan met action: {jd["action"]}\n{jds}'})
+

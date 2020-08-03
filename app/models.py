@@ -258,7 +258,7 @@ class Invoice(db.Model):
         return f'{self.number}/{self.since}/'
 
     def log(self):
-        return f'<Invoice: {self.id}/{self.since}/{self.invoice}>'
+        return f'<Invoice: {self.id}/{self.since}/{self.number}>'
 
     def ret_dict(self):
         return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'number': self.number,
@@ -314,6 +314,22 @@ class Device(db.Model):
                 device.category_id = categories[device.category]
             db.session.commit()
 
+    @staticmethod
+    def get_list_for_select(filter_category_id=None):
+        devices = Device.query
+        if filter_category_id:
+            devices = devices.filter(Device.category_id == filter_category_id)
+        devices = devices.order_by(Device.brand, Device.type).all()
+        options = [[d.id, f'{d.brand}/{d.type}'] for d in devices]
+        return options
+
+    @staticmethod
+    def get_list_for_select_first_empty(filter_category_id=None):
+        options = Device.get_list_for_select(filter_category_id)
+        options.insert(0, [-1, ''])
+        return options
+
+
 
 class DeviceCategory(db.Model):
     __tablename__ = 'device_categories'
@@ -342,7 +358,7 @@ class DeviceCategory(db.Model):
     @staticmethod
     def get_list_for_select_first_empty():
         choices = DeviceCategory.get_list_for_select(active=None)
-        choices.insert(0, [0, ''])
+        choices.insert(0, [-1, ''])
         return choices
 
     @staticmethod

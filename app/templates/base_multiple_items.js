@@ -93,7 +93,7 @@ $(document).ready(function() {
            }
        },
        pagingType: "full_numbers",
-       lengthMenu: [20, 50, 100, 200],
+       lengthMenu: [50, 100, 200],
        "columns": datatables_columns,
        "language" : {
         /*"url" : "static/DataTables/nl_nl.lang"*/

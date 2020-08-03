@@ -35,7 +35,6 @@ $(document).ready(function() {
             menu(posX, posY);
             e.preventDefault();
             e.stopPropagation();
-            // row_id = $(e.target).closest('tr').prop('id');
             document.addEventListener('click', disable_menu, false);
         }, false);
 
