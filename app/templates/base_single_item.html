@@ -13,22 +13,24 @@
         {% if role == "add" %}
             <form action="{{ url_for(subject + '.add')}}" method="post" class="form" role="form">
         {% else %}
-            <form action="" method="post" class="form" role="form"  enctype=multipart/form-data>
+            <form id="base-single-action" action="" method="post" class="form" role="form"  enctype=multipart/form-data>
         {% endif %}
                 {{ form.csrf_token }}
 
                 {% block content3 %}
                 {% endblock %}
 
-                {% if role == "view" %}
-                    {% if current_user.is_authenticated %}
-                        <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Pas aan</a>
+                {% if current_user.is_at_least_user_plus %}
+                    {% if role == "view" %}
+                        {% if current_user.is_authenticated %}
+                            <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Pas aan</a>
+                        {% else %}
+                            <a class="btn btn-default"
+                           href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Pas aan</a>
+                        {% endif %}
                     {% else %}
-                        <a class="btn btn-default"
-                       href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Pas aan</a>
+                        <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
                     {% endif %}
-                {% else %}
-                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
                 {% endif %}
                 <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
             </form>

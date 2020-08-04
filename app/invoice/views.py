@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
-from .. import db, log
+from .. import db, log, admin_required, user_plus_required
 from ..documents import upload_doc
 from . import invoice
 from ..models import Invoice, DeviceCategory, Device, Purchase
@@ -24,8 +24,7 @@ def source_data():
 def invoices():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['invoice'])
-    return render_template('base_multiple_items.html',
-                           title='facturen',
+    return render_template('base_multiple_items.html', title='facturen',
                            filter=_filter, filter_form=_filter_form,
                            config=tables_configuration['invoice'])
 
@@ -33,12 +32,23 @@ def invoices():
 @invoice.route('/invoice/add/<int:id>', methods=['GET', 'POST'])
 @invoice.route('/invoice/add', methods=['GET', 'POST'])
 @login_required
+@user_plus_required
 def add(id=-1):
     if id > -1:
         invoice = Invoice.query.get_or_404(int(id))
         form = AddForm(obj=invoice)
+        purchase_data = []
+        for purchase in invoice.purchases:
+            purchase_data.append({
+                'id': purchase.id,
+                'value': float(purchase.value),
+                'category_id': purchase.device.category_id,
+                'device_id': purchase.device.id,
+                'commissioning': purchase.commissioning
+            })
     else:
         form = AddForm()
+        purchase_data = []
     del form.id # is not required here and makes validate_on_submit fail...
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
@@ -63,7 +73,6 @@ def add(id=-1):
                     pass
         db.session.commit()
         log.info('add: {}'.format(invoice.log()))
-        #flash(_(u'You have added invoice {}').format(invoice.since))
         return redirect(url_for('invoice.invoices'))
     select_list = {
         'category': DeviceCategory.get_list_for_select_first_empty(),
@@ -71,12 +80,14 @@ def add(id=-1):
         'device': Device.get_list_for_select_first_empty()
     }
     return render_template('invoice/invoice.html', form=form, title='Voeg een factuur toe', role='add',
-                           route='invoice.invoices', subject='invoice', select_list=select_list)
+                           route='invoice.invoices', subject='invoice', select_list=select_list,
+                           purchase_data=purchase_data)
 
 
 #edit a invoice
 @invoice.route('/invoice/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
+@user_plus_required
 def edit(id):
     invoice = Invoice.query.get_or_404(id)
     form = EditForm(obj=invoice)
@@ -103,7 +114,6 @@ def edit(id):
                         pass
             db.session.commit()
             log.info('edit : {}'.format(invoice.log()))
-            #flash(_(u'You have edited invoice {}').format(invoice))
         return redirect(url_for('invoice.invoices'))
     select_list = {
         'category': DeviceCategory.get_list_for_select_first_empty(),
@@ -119,15 +129,7 @@ def edit(id):
             'device_id': purchase.device.id,
             'commissioning': purchase.commissioning
         })
-    # purchase_data = []
-    # for purchase in invoice.purchases:
-    #     purchase_data.append({
-    #         'id': purchase.id,
-    #         'category': [purchase.device.category.id, purchase.device.category.name],
-    #         'device': [purchase.device.id, f'{purchase.device.brand}/{purchase.device.type}'],
-    #         'commissioning': purchase.commissioning
-    #     })
-    return render_template('invoice/invoice.html', form=form, title='Pas een aankoop aan', role='edit',
+    return render_template('invoice/invoice.html', form=form, title='Wijzig een factuur', role='edit',
                            route='invoice.invoices', subject='invoice', select_list=select_list,
                            purchase_data=purchase_data)
 
@@ -140,18 +142,33 @@ def view(id):
     if form.validate_on_submit():
         return redirect(url_for('invoice.invoices'))
 
-    return render_template('invoice/invoice.html', form=form, title='Bekijk een aankoop', role='view', route='invoice.invoices', subject='invoice')
+    select_list = {
+        'category': DeviceCategory.get_list_for_select_first_empty(),
+        'commissioning': list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))),
+        'device': Device.get_list_for_select_first_empty()
+    }
+    purchase_data = []
+    for purchase in invoice.purchases:
+        purchase_data.append({
+            'id': purchase.id,
+            'value': float(purchase.value),
+            'category_id': purchase.device.category_id,
+            'device_id': purchase.device.id,
+            'commissioning': purchase.commissioning
+        })
+    return render_template('invoice/invoice.html', form=form, title='Bekijk een factuur', role='view',
+                           route='invoice.invoices', subject='invoice', select_list=select_list,
+                           purchase_data=purchase_data)
 
 #delete a invoice
 @invoice.route('/invoice/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
+@user_plus_required
 def delete(id):
     invoice = Invoice.query.get_or_404(id)
     log.info('delete: {}'.format(invoice.log()))
     db.session.delete(invoice)
     db.session.commit()
-    #flash(_('You have successfully deleted the invoice.'))
-
     return redirect(url_for('invoice.invoices'))
 
 @invoice.route('/invoice/item_ajax/<string:jds>', methods=['GET', 'POST'])

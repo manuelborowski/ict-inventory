@@ -1,19 +1,30 @@
+var category_options;
+var device_options;
+var commissioning_options;
+var table_length;
+var purchase_table = $("#purchase_table tbody");
+
 $(document).ready(function() {
-    var purchase_table = $("#purchase_table tbody");
+    category_options = create_option_list(select_list.category);
+    device_options = create_option_list(select_list.device);
+    commissioning_options = create_option_list(select_list.commissioning);
+    table_length = purchase_data.length > 0 ? purchase_data.length : 10;
 
-    var category_options = create_option_list(select_list.category);
-    var device_options = create_option_list(select_list.device);
-    var commissioning_options = create_option_list(select_list.commissioning);
+    for(r = 0; r < table_length; r++) {
+        table_add_row(r);
+        // var row = "<tr id='tr-" + r + "'>" +
+        //     "<td style=\"display: none\"><input type='text' value='-1' id='purchase-id-" + r + "'></td>" +
+        //     "<td><input type='text' class='disable' size='10' id='value-" + r + "'></td>" +
+        //     "<td><select class='on-change disable' id='category-" + r + "'>" + category_options + "</select></td>" +
+        //     "<td><select class='disable' id='device-" + r + "'>" + device_options + "</select></td>" +
+        //     "<td><select class='disable' id='commissioning-" + r + "'>" + commissioning_options + "</select></td>" +
+        //     "<td><input type='button' onclick='download_commissioning_file(" + r + ");' value=\"Download\"></td>" +
+        //     "</tr>"
+        // purchase_table.append(row);
+    }
 
-    for(r = 0; r < 10; r++) {
-        var row = "<tr id='tr-'" + r + ">" +
-            "<td style=\"display: none\"><input type='text' value='-1' id='purchase-id-" + r + "'></td>" +
-            "<td><input type='text' size='10' id='value-" + r + "'></td>" +
-            "<td><select class='on-change' id='category-" + r + "'>" + category_options + "</select></td>" +
-            "<td><select id='device-" + r + "'>" + device_options + "</select></td>" +
-            "<td><select id='commissioning-" + r + "'>" + commissioning_options + "</select></td>" +
-            "</tr>"
-        purchase_table.append(row);
+    if(view_only) {
+        $(".disable").attr("disabled", true);
     }
 
     $("#submit").click(function(){
@@ -26,7 +37,6 @@ $(document).ready(function() {
     });
 
     $(".on-change").change(function(event){
-        console.log(event);
         var element_id = this.id.split("-")[1];
         var category_id = this.value;
 
@@ -62,6 +72,13 @@ $(document).ready(function() {
     });
 });
 
+function download_commissioning_file(row_id) {
+    var commissioning_file = $("#commissioning-" + row_id).val();
+    $("input[name='commissioning']").val(commissioning_file);
+    $("#base-single-action").prop("action", "{{ url_for('asset.download') }}").submit();
+}
+
+
 function create_option_list(list) {
     var out = []
     $.each(list, function (i, v){
@@ -72,4 +89,16 @@ function create_option_list(list) {
         }
     });
     return out;
+}
+
+function table_add_row(row_id) {
+    var row = "<tr id='tr-" + row_id + "'>" +
+        "<td style=\"display: none\"><input type='text' value='-1' id='purchase-id-" + row_id + "'></td>" +
+        "<td><input type='text' class='disable' size='10' id='value-" + row_id + "'></td>" +
+        "<td><select class='on-change disable' id='category-" + row_id + "'>" + category_options + "</select></td>" +
+        "<td><select class='disable' id='device-" + row_id + "'>" + device_options + "</select></td>" +
+        "<td><select class='disable' id='commissioning-" + row_id + "'>" + commissioning_options + "</select></td>" +
+        "<td><input type='button' onclick='download_commissioning_file(" + row_id + ");' value=\"Download\"></td>" +
+        "</tr>"
+    purchase_table.append(row);
 }

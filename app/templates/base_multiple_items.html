@@ -108,7 +108,7 @@
 </div>
 
 <div id="menu">
-    {% for i in config.floating_menu %}
+    {% for i in config.floating_menu[current_user.get_level] %}
         <a style="font-size:15px;" id="{{i['menu_id']}}" onclick="handle_floating_menu('{{i['menu_id']}}')">{{i['menu_text']}}</a>
     {% endfor %}
 </div>

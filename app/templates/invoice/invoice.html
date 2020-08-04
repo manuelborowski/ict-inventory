@@ -27,6 +27,9 @@ tr:nth-child(even) {
     {{ wtf.form_field(form.since) }}
     {{ wtf.form_field(form.supplier) }}
     {{ wtf.form_field(form.info) }}
+    {% if role == "add" or role == "edit" %}
+        <a class="btn btn-default" onclick="table_length++;table_add_row(table_length);">Nieuwe lijn</a>
+    {% endif %}
     <table id="purchase_table" border="1">
     <thead>
         <tr>
@@ -35,11 +38,14 @@ tr:nth-child(even) {
             <th data-override="category">Categorie</th>
             <th data-override="device">Toestel</th>
             <th data-override="commissioning">Indienststelling</th>
+            <th >Download</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
     <input type="hidden" name="purchase-data">
+    <input type="hidden" name="commissioning">
+    <input type="hidden" name="commissioning_download" value="Download">
 
 {% endblock %}
 
@@ -48,6 +54,7 @@ tr:nth-child(even) {
 <script>
     var select_list = {{ (select_list or []) | tojson }}
     var purchase_data = {{ (purchase_data or []) | tojson }}
+    var view_only = {{ (role == 'view')|tojson }}
 </script>
 <script type="text/javascript"> {% include "invoice/invoice.js" %}</script>
 {% endblock %}

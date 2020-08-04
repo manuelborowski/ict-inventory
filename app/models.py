@@ -62,6 +62,10 @@ class User(UserMixin, db.Model):
         return self.level >= User.LEVEL.ADMIN
 
     @property
+    def get_level(self):
+        return self.level
+
+    @property
     def password(self):
         raise AttributeError('Paswoord kan je niet lezen.')
 
@@ -217,11 +221,10 @@ class Purchase(db.Model):
         return f'{self.since}/{self.device.brand}/{self.device.type}'
 
     def log(self):
-        return '<Purchase: {}/{}/{}/{}/{}/{}>'.format(self.id, self.since, self.value, self.device.brand,
-                                                      self.device.type, self.supplier.name)
+        return f'<Purchase: {self.id}, {self.value}, {self.device.brand}, {self.device.type}'
 
     def ret_dict(self):
-        return {'id':self.id, 'since':self.since.strftime('%d-%m-%Y'), 'value':float(self.value),
+        return {'id':self.id, 'value':float(self.value),
                 'commissioning':self.commissioning, 'device':self.device.ret_dict(), 'invoice': self.invoice.ret_dict(),
                 'asset_value': float(self.asset_value if self.asset_value else 0),
                 'nbr_assets': self.nbr_assets if self.nbr_assets else 0}

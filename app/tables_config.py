@@ -1,6 +1,6 @@
 from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation, Invoice
 from .management.user.extra_filtering import filter
-from .floating_menu import default_menu_config, edit_add_view_menu_config
+from .floating_menu import default_menu, user_menu, no_delete_menu
 
 tables_configuration = {
     'asset' : {
@@ -30,7 +30,7 @@ tables_configuration = {
             {'attribute': '["purchase"]["invoice"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["purchase"]["invoice"]["supplier"]["id"]'},
             {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
         ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : default_menu,
         'export' : 'asset.exportcsv',
     },
     'purchase' : {
@@ -39,7 +39,7 @@ tables_configuration = {
         'subject' :'purchase',
         'delete_message' : 'Wil je deze aankoop EN alle verbonden activa verwijderen?',
         'template' : [
-            {'name': 'Id', 'data': 'id', 'order_by': Purchase.id},
+            {'name': 'Lijn ID', 'data': 'id', 'order_by': Purchase.id},
             {'name': 'Factuur', 'data': 'invoice.number', 'order_by': Invoice.number},
             {'name': 'Bedrag', 'data': 'value', 'order_by': Purchase.value},
             {'name': 'Datum', 'data': 'invoice.since', 'order_by': Invoice.since},
@@ -48,12 +48,12 @@ tables_configuration = {
             {'name': 'Toestel', 'data': 'device.brandtype', 'order_by':Device.brand}],
         'filter' :  ['since', 'invoice', 'supplier', 'device'],
         'href': [
-            {'attribute': '["id"]', 'route': '"purchase.view"', 'id': '["id"]'},
+            {'attribute': '["value"]', 'route': '"purchase.view"', 'id': '["id"]'},
             {'attribute': '["invoice"]["number"]', 'route': '"invoice.view"', 'id': '["invoice"]["id"]'},
             {'attribute': '["invoice"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["invoice"]["supplier"]["id"]'},
             {'attribute': '["device"]["brandtype"]', 'route': '"device.view"', 'id': '["device"]["id"]'}
             ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : default_menu,
     },
     'invoice' : {
         'model' : Invoice,
@@ -70,7 +70,7 @@ tables_configuration = {
             {'attribute': '["number"]', 'route': '"invoice.view"', 'id': '["id"]'},
             {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
             ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : default_menu,
     },
     'device': {
         'model': Device,
@@ -86,7 +86,7 @@ tables_configuration = {
         'filter': ['category', 'device'],
         'href': [{'attribute': '["brand"]', 'route': '"device.view"', 'id': '["id"]'},
                  ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : default_menu,
     },
     'supplier': {
         'model': Supplier,
@@ -100,7 +100,7 @@ tables_configuration = {
         'filter': ['supplier'],
         'href': [{'attribute': '["name"]', 'route': '"supplier.view"', 'id': '["id"]'},
                  ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : default_menu,
     },
     'user': {
         'model': User,
@@ -118,7 +118,7 @@ tables_configuration = {
         'href': [
             {'attribute': '["username"]', 'route': '"management.user.view"', 'id': '["id"]'},
         ],
-        'floating_menu' : default_menu_config,
+        'floating_menu' : user_menu,
         'query_filter' : filter,
     },
     'device_category': {
@@ -132,7 +132,7 @@ tables_configuration = {
             {'name': 'Info', 'data': 'info', 'order_by': DeviceCategory.info, 'width': '50%'},
         ],
         'filter': [],
-        'floating_menu' : edit_add_view_menu_config,
+        'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.device_category.view"', 'id': '["id"]'},
         ],
@@ -148,7 +148,7 @@ tables_configuration = {
             {'name': 'Info', 'data': 'info', 'order_by': AssetLocation.info, 'width': '50%'},
         ],
         'filter': [],
-        'floating_menu' : edit_add_view_menu_config,
+        'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.asset_location.view"', 'id': '["id"]'},
         ],

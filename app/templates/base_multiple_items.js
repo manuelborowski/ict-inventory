@@ -1,7 +1,7 @@
 //row_id is filled in with the database id of the item (asset, purchase,...) at the moment the user rightclicks on a row
 var row_id
 //The metadata of the floating menu.  See tables_config.py
-var floating_menu = JSON.parse('{{config.floating_menu|tojson}}');
+var floating_menu = JSON.parse('{{config.floating_menu[current_user.get_level]|tojson}}');
 //menu_id indicates what entry is clicked in the floating menu (edit, add, ...)
 function handle_floating_menu(menu_id) {
     console.log(menu_id + ' : ' + row_id);

@@ -11,7 +11,6 @@ from app.models import User
 
 from app.base import build_filter, get_ajax_table
 from app.tables_config import  tables_configuration
-from app.floating_menu import user_menu_config, admin_menu_config
 
 @user.route('/management/user/data', methods=['GET', 'POST'])
 @login_required
@@ -23,16 +22,8 @@ def source_data():
 def users():
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['user'])
     config = tables_configuration['user']
-    #floating menu depends if current user is admin or not
-    if current_user.is_at_least_admin:
-        config['floating_menu'] = admin_menu_config
-    else:
-        config['floating_menu'] = user_menu_config
-
-    return render_template('base_multiple_items.html',
-                           title='users',
-                           filter=_filter, filter_form=_filter_form,
-                           config=config)
+    return render_template('base_multiple_items.html', title='users',
+                           filter=_filter, filter_form=_filter_form, config=config)
 
 
 #add a new user
