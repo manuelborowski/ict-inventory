@@ -6,7 +6,7 @@ from app import db, log, admin_required, user_plus_required
 from . import category
 from app.models import DeviceCategory
 
-from app.base import build_filter, get_ajax_table
+from app.support import build_filter, get_ajax_table
 from app.tables_config import  tables_configuration
 
 @category.route('/management/device_category/data', methods=['GET', 'POST'])

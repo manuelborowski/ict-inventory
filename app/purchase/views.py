@@ -10,7 +10,7 @@ from ..documents import upload_doc
 from . import purchase
 from ..models import Purchase
 
-from ..base import build_filter, get_ajax_table
+from ..support import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
 import os
 from flask_uploads import UploadSet, configure_uploads, DOCUMENTS

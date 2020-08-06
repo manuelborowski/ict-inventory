@@ -9,7 +9,7 @@ from .. import db, log
 from . import supplier
 from ..models import Supplier
 
-from ..base import build_filter, get_ajax_table
+from ..support import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
 
 #This route is called by an ajax call on the assets-page to populate the table.

@@ -6,7 +6,7 @@ from app import db, log, admin_required, user_plus_required
 from . import location
 from app.models import AssetLocation
 
-from app.base import build_filter, get_ajax_table
+from app.support import build_filter, get_ajax_table
 from app.tables_config import  tables_configuration
 
 @location.route('/management/asset_location/data', methods=['GET', 'POST'])

@@ -8,7 +8,7 @@ from . import invoice
 from ..models import Invoice, DeviceCategory, Device, Purchase
 from ..documents import get_doc_list
 
-from ..base import build_filter, get_ajax_table
+from ..support import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
 import os, json
 from flask_uploads import UploadSet, configure_uploads, DOCUMENTS

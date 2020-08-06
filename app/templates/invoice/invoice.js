@@ -12,15 +12,6 @@ $(document).ready(function() {
 
     for(r = 0; r < table_length; r++) {
         table_add_row(r);
-        // var row = "<tr id='tr-" + r + "'>" +
-        //     "<td style=\"display: none\"><input type='text' value='-1' id='purchase-id-" + r + "'></td>" +
-        //     "<td><input type='text' class='disable' size='10' id='value-" + r + "'></td>" +
-        //     "<td><select class='on-change disable' id='category-" + r + "'>" + category_options + "</select></td>" +
-        //     "<td><select class='disable' id='device-" + r + "'>" + device_options + "</select></td>" +
-        //     "<td><select class='disable' id='commissioning-" + r + "'>" + commissioning_options + "</select></td>" +
-        //     "<td><input type='button' onclick='download_commissioning_file(" + r + ");' value=\"Download\"></td>" +
-        //     "</tr>"
-        // purchase_table.append(row);
     }
 
     if(view_only) {
@@ -72,23 +63,21 @@ $(document).ready(function() {
     });
 });
 
+
 function download_commissioning_file(row_id) {
     var commissioning_file = $("#commissioning-" + row_id).val();
-    $("input[name='commissioning']").val(commissioning_file);
-    $("#base-single-action").prop("action", "{{ url_for('asset.download') }}").submit();
+    download_single_file("commissioning", commissioning_file);
 }
 
+function update_commissioning_select(opaque, file_list) {
+    console.log(opaque, file_list);
+    if (filelist.length > 0) {
+        var file_name = filelist[0].name;
+    }
+}
 
-function create_option_list(list) {
-    var out = []
-    $.each(list, function (i, v){
-        if (v[0] == 'disabled') {
-            out += "<option value='" + v[0] + "' disabled>" + v[1] + "</option>";
-        } else {
-            out += "<option value='" + v[0] + "'>" + v[1] + "</option>";
-        }
-    });
-    return out;
+function upload_commissioning_file(row_id) {
+    upload_files("commissioning", false, update_commissioning_select, row_id);
 }
 
 function table_add_row(row_id) {
@@ -97,8 +86,11 @@ function table_add_row(row_id) {
         "<td><input type='text' class='disable' size='10' id='value-" + row_id + "'></td>" +
         "<td><select class='on-change disable' id='category-" + row_id + "'>" + category_options + "</select></td>" +
         "<td><select class='disable' id='device-" + row_id + "'>" + device_options + "</select></td>" +
-        "<td><select class='disable' id='commissioning-" + row_id + "'>" + commissioning_options + "</select></td>" +
-        "<td><input type='button' onclick='download_commissioning_file(" + row_id + ");' value=\"Download\"></td>" +
-        "</tr>"
+        "<td><select class='disable' id='commissioning-" + row_id + "'>" + commissioning_options + "</select>" +
+        "<input type='button' onclick='download_commissioning_file(" + row_id + ");' value=\"Download\">"
+    if (!view_only) {
+        row += "<input type='button' onclick='upload_commissioning_file(" + row_id + ");' value=\"Upload\">"
+    }
+    row += "</td></tr>"
     purchase_table.append(row);
 }

@@ -9,7 +9,7 @@ from app import db, log, admin_required
 from . import user
 from app.models import User
 
-from app.base import build_filter, get_ajax_table
+from app.support import build_filter, get_ajax_table
 from app.tables_config import  tables_configuration
 
 @user.route('/management/user/data', methods=['GET', 'POST'])

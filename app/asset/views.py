@@ -9,9 +9,9 @@ from .. import db, log
 from . import asset
 from ..models import Asset, AssetLocation
 
-from ..base import build_filter, get_ajax_table, get_setting_inc_index_asset_name
+from ..support import build_filter, get_ajax_table, get_setting_inc_index_asset_name
 from ..tables_config import  tables_configuration
-from ..documents import download_single_doc
+from ..documents import download_single_doc2
 
 from io import StringIO
 import csv, re, json
@@ -242,7 +242,7 @@ def delete(id):
 @login_required
 def download():
     try:
-        return download_single_doc(request)
+        return download_single_doc2(request)
     except Exception as e:
         flash('Kan niet downloaden  ')
     return ('', 204)

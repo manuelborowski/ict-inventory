@@ -153,6 +153,9 @@ else:
     from .management.admin import admin as admin_blueprint
     app.register_blueprint(admin_blueprint)
 
+    from .base import base as base_blueprint
+    app.register_blueprint(base_blueprint)
+
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 

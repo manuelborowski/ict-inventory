@@ -10,7 +10,7 @@ from . import device
 from ..documents import upload_doc
 from ..models import Device
 
-from ..base import build_filter, get_ajax_table
+from ..support import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
 
 #This route is called by an ajax call on the assets-page to populate the table.

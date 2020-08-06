@@ -10,34 +10,56 @@
     <div class="center">
         <h1>{{title}}</h1>
         <br/>
+        <form id="base-single-action" action="{{ url_for(subject + '.' + role, id=form.id.data)}}" method="post">
         {% if role == "add" %}
-            <form action="{{ url_for(subject + '.add')}}" method="post" class="form" role="form">
+{#            <form id="base-single-action" action="{{ url_for(subject + '.add')}}" method="post" class="form" role="form">#}
         {% else %}
-            <form id="base-single-action" action="" method="post" class="form" role="form"  enctype=multipart/form-data>
+{#            <form id="base-single-action" action="" method="post" class="form" role="form"  enctype=multipart/form-data>#}
+{#            <form id="base-single-action" action="" method="post" class="form" role="form">#}
         {% endif %}
-                {{ form.csrf_token }}
+            {{ form.csrf_token }}
 
-                {% block content3 %}
-                {% endblock %}
+            {% block content3 %}
+            {% endblock %}
 
-                {% if current_user.is_at_least_user_plus %}
-                    {% if role == "view" %}
-                        {% if current_user.is_authenticated %}
-                            <a class="btn btn-default" href="{{ url_for(subject + '.edit', id=form.id.data) }}">Pas aan</a>
-                        {% else %}
-                            <a class="btn btn-default"
-                           href="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}">Pas aan</a>
-                        {% endif %}
-                    {% else %}
-                        <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
-                    {% endif %}
+            {% if current_user.is_at_least_user_plus %}
+                {% if role == "view" %}
+                    <a class="btn btn-default" id="edit-button">Pas aan</a>
+                {% else %}
+                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
+{#                <a class="btn btn-default" name="button" type="submit" value="Bewaar">Bewaar</a>#}
                 {% endif %}
-                <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
-            </form>
+            {% endif %}
+            <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
+        </form>
     </div>
 </div>
+
+<form id="download-form" method="post">
+    <input id="download-submit" type="submit" hidden>
+</form>
+
+<form id="upload-form" method="post" enctype=multipart/form-data>
+    <input id='file-picker' type='file' name='file_list' style="display:none"/>
+    <input id="upload-submit" type="submit" hidden>
+    <input id="document-type" name="document-type" type="text" hidden>
+</form>
+
+
+
 {% endblock %}
+
 {% block scripts %}
 {{ super() }}
+<script>
+    {#var subject = {{ subject|tojson }};#}
+    {#var user_is_at_least_user_plus = {{ current_user.is_at_least_user_plus|tojson }};#}
+    if ({{ current_user.is_authenticated|tojson }}) {
+        var edit_href ="{{ url_for(subject + '.edit', id=form.id.data) }}";
+    } else {
+        var edit_href ="{{ url_for('auth.login', redirect_url=url_for(subject + '.edit', id=form.id.data)) }}";
+    }
+    $("#edit-button").prop("href", edit_href);
+</script>
 <script type="text/javascript"> {% include "base_single_item.js" %}</script>
 {% endblock %}

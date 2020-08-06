@@ -1,38 +1,71 @@
+$(document).ready(function() {
+    var file_picker = $("#file-picker");
+    file_picker.on("change", function() {
+        console.log(file_picker.prop("multiple"));
+        // $("#upload-submit").click();
+        upload_files_ajax();
+    });
+});
 
-function init_up_download(_file_type, _subject) {
-    var file_el = _file_type + '_fileid';
-    var upload_el = _file_type + '_upload';
-    var download_el = _file_type + '_download';
-    var fd = document.getElementById(file_el);
-    console.log('at document ready : file_el ' + fd.id);
-
-    {% if role == "edit" %}
-        //The actual filedialog element is hidden because it does not blend in with the bootstrap css.
-        //Pushing the bootstrap-upload button generates a click-event on the filedialog element
-        document.getElementById(upload_el).addEventListener('click', function() {fd.click();});
-    {% endif %}
-    document.getElementById(download_el).addEventListener('click', download);
-
-
-    //Called when the filedialog closes
-    fd.addEventListener('change', function() {
-        var _select = document.getElementById(_file_type);
-         for(var i=0; i < _select.options.length; i++) {
-            if (_select.options[i].value == fd.files[0].name) {
-                toastr.error('Bestand "' + fd.files[0].name + '" bestaat reeds, kies een ander');
-                fd.value="";
-                return;
-            }
-        }
-        var option = document.createElement("option");
-        option.text = fd.files[0].name;
-        _select.add(option, 0);
-        _select.selectedIndex = "0";
-     });
-
-    //To download the file, jump to the download url with the filename as parameter
-    function download() {
-        var _file = document.getElementById(_file_type).value;
-        window.location.href = Flask.url_for(_subject + ".download", {'type' : this.id,'file' : _file});
-    }
+function download_single_file(document_type, file_name) {
+    var download_form = $("#download-form")
+    var href = Flask.url_for("base.download", {document: document_type, file: file_name});
+    download_form.prop("action", href);
+    $("#download-submit").click();
 }
+
+var upload_files_cb = {
+    cb: null,
+    cb_opaque: null,
+}
+
+function upload_files(document_type, single_file=false, cb=null, cb_opaque=null) {
+    var upload_form = $("#upload-form");
+    var file_picker = $("#file-picker");
+    $("#document-type").val(document_type);
+    var href = Flask.url_for("base.upload", {document: document_type, url: encodeURIComponent(encodeURIComponent(window.location.href))});
+    upload_form.prop("action", href);
+    if(cb) {
+        upload_files_cb.cb = cb;
+        upload_files_cb.cb_opaque = cb_opaque;
+    }
+    file_picker.prop("multiple", !single_file);
+    file_picker.click();
+}
+
+
+function create_option_list(list) {
+    var out = []
+    $.each(list, function (i, v){
+        if (v[0] == 'disabled') {
+            out += "<option value='" + v[0] + "' disabled>" + v[1] + "</option>";
+        } else {
+            out += "<option value='" + v[0] + "'>" + v[1] + "</option>";
+        }
+    });
+    return out;
+}
+
+function upload_files_ajax() {
+    var form_data = new FormData( $("#upload-form")[0]);
+    $(function() {
+    $.ajax({
+        type: 'POST',
+        url:  Flask.url_for("base.upload_ajax"),
+        data: form_data,
+        contentType: false,
+        cache: false,
+        processData: false,
+        success: function(data) {
+            if (data.status) {
+                if (upload_files_cb.cb) {
+                    upload_files_cb.cb(upload_files_cb.cb_opaque, $("#file-picker")[0].files);
+                    upload_files_cb.cb = null;
+                }
+            }
+            console.log('Success!');
+        },
+      })
+    });
+}
+

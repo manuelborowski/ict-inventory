@@ -3,7 +3,7 @@
 
 from flask import render_template, redirect, url_for, request, flash, send_file, abort
 from flask_login import login_required, current_user
-from app.base import get_setting_inc_index_asset_name, set_setting_inc_index_asset_name, get_setting_copy_from_last_add, set_setting_copy_from_last_add
+from app.support import get_setting_inc_index_asset_name, set_setting_inc_index_asset_name, get_setting_copy_from_last_add, set_setting_copy_from_last_add
 from . import settings
 from app import user_plus_required
 from flask_login import current_user

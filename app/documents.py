@@ -53,6 +53,15 @@ def get_doc_list(d):
     filtered_list = list(filter(lambda x: x[0] != '.', file_list))
     return filtered_list if filtered_list else []
 
+
+def upload_documents(document_type, file_list):
+    fl = get_doc_list(document_type)
+    for f in file_list:
+        if not f.filename in fl:
+            filename = get_doc_reference(document_type).save(f, name=f.filename)
+            fl.append(f.filename)
+
+
 def upload_doc(request):
     for d in document_type_list:
         if get_doc_filename(d) in request.files and request.files[get_doc_filename(d)]:
@@ -63,7 +72,15 @@ def upload_doc(request):
                     fl.append(f.filename)
 
 
-def download_single_doc(request):
+def download_single_document(document_type, file_name):
+    try:
+        return send_file(os.path.join(app.root_path, '..', get_doc_path(document_type), file_name), as_attachment=True)
+    except Exception as e:
+        pass
+    return ('', 204)
+
+
+def download_single_doc2(request):
     for d in document_type_list:
         if get_doc_download(d) in request.form and request.form[d]:
             return send_file(os.path.join(app.root_path, '..', get_doc_path(d), request.form[d]), as_attachment=True)
