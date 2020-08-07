@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var location_select = $("#menu");
+    var location_select = $("#floating_menu");
     var div_string = "<table><tr>"
 
     if (location_select_list.length > 0) {
@@ -17,33 +17,21 @@ $(document).ready(function() {
         div_string += "</tr></table>";
         location_select.append(div_string);
 
-        function disable_menu(e) {
-            location_select_style.opacity = "0";
-            setTimeout(function () {
-                location_select_style.visibility = "hidden";
-                document.removeEventListener('click', disable_menu, false);
-            }, 1);
-        }
 
-        var location_select_style = document.getElementById("menu").style;
-        location_select_style.opacity = "0";
-        location_select_style.visibility = "hidden";
-        // document.getElementById("location").addEventListener('contextmenu', function(e) {
+        var location_select_style = document.getElementById("floating_menu").style;
         document.getElementById("location").addEventListener('click', function (e) {
-            var posX = e.clientX;
-            var posY = e.clientY;
-            menu(posX, posY);
-            e.preventDefault();
-            e.stopPropagation();
-            document.addEventListener('click', disable_menu, false);
-        }, false);
-
-        function menu(x, y) {
             location_select_style.top = "100px";
             location_select_style.left = "100px";
             location_select_style.visibility = "visible";
             location_select_style.opacity = "1";
-        }
+            e.preventDefault();
+            e.stopPropagation();
+        }, false);
+
+        document.addEventListener('click', function(e){
+            location_select_style.opacity = "0";
+            setTimeout(function () {location_select_style.visibility = "hidden";}, 1);
+        }, false);
 
         $("input[name=location-select-btn]").click(function () {
             var location_btn = $("input[name=location-select-btn]:checked");

@@ -4,7 +4,6 @@ var row_id
 var floating_menu = JSON.parse('{{config.floating_menu[current_user.get_level]|tojson}}');
 //menu_id indicates what entry is clicked in the floating menu (edit, add, ...)
 function handle_floating_menu(menu_id) {
-    console.log(menu_id + ' : ' + row_id);
     for(var i=0; i < floating_menu.length; i++) {
         if(floating_menu[i].menu_id == menu_id) {
             if(floating_menu[i].flags.includes('confirm_before_delete')) {
@@ -114,32 +113,19 @@ $(document).ready(function() {
         }
      });
 
-
     //right click on an item in the table.  A menu pops up to execute an action on the selected row/item
-    var i = document.getElementById("menu").style;
+    var floating_menu_style = document.getElementById("floating_menu").style;
     document.getElementById("datatable").addEventListener('contextmenu', function(e) {
-        var posX = e.clientX;
-        var posY = e.clientY;
-        menu(posX, posY);
+        floating_menu_style.top = e.clientY + "px";
+        floating_menu_style.left = e.clientX + "px";
+        floating_menu_style.visibility = "visible";
+        floating_menu_style.opacity = "1";
         e.preventDefault();
         row_id = $(e.target).closest('tr').prop('id');
     }, false);
+
     document.addEventListener('click', function(e) {
-        i.opacity = "0";
-        setTimeout(function() {i.visibility = "hidden";}, 1);
+        floating_menu_style.opacity = "0";
+        setTimeout(function() {floating_menu_style.visibility = "hidden";}, 1);
     }, false);
-
-    // Get column index when right clicking on a cell
-    //$('#datatable tbody').on( 'contextmenu', 'td', function () {
-    //    column_id = table.cell( this ).index().column;
-    //    console.log( 'Clicked on cell in visible column: '+column_id );
-    //});
-
-
-    function menu(x, y) {
-      i.top = y + "px";
-      i.left = x + "px";
-      i.visibility = "visible";
-      i.opacity = "1";
-    }
 });
