@@ -49,7 +49,7 @@ def add(id=-1):
     else:
         form = AddForm()
         purchase_data = []
-    del form.id # is not required here and makes validate_on_submit fail...
+    # del form.id # is not required here and makes validate_on_submit fail...
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         invoice = Invoice(
@@ -60,7 +60,7 @@ def add(id=-1):
         db.session.add(invoice)
         purchase_data = json.loads(request.form['purchase-data'])
         for purchase in purchase_data:
-            if int(purchase['device']) != -1:
+            if purchase['device'] != '':
                 try:
                     new_purchase = Purchase(
                         invoice=invoice,

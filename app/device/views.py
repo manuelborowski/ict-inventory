@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-# app/device/views.py
-
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required
 
 from .forms import AddForm, EditForm, ViewForm
@@ -12,6 +9,7 @@ from ..models import Device
 
 from ..support import build_filter, get_ajax_table
 from ..tables_config import  tables_configuration
+import json
 
 #This route is called by an ajax call on the assets-page to populate the table.
 @device.route('/device/data', methods=['GET', 'POST'])
@@ -112,3 +110,19 @@ def delete(id):
     #flash(_('You have successfully deleted the device.'))
 
     return redirect(url_for('device.devices'))
+
+@device.route('/device/ajax_request/<string:jds>', methods=['GET', 'POST'])
+@login_required
+def ajax_request(jds):
+    try:
+        jd = json.loads(jds)
+        if jd['action'] == 'get-device-list':
+            data = {
+                'device_options': Device.get_list_for_select_first_empty(int(jd['category-id'])),
+                'opaque': jd['opaque'],
+            }
+            return jsonify({"status": True, "data": data})
+    except Exception as e:
+        return jsonify({"status": False, 'details': f'{e}'})
+    return jsonify({"status": False, 'details': f'Er is iets fout gegaan met action: {jd["action"]}\n{jds}'})
+

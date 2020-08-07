@@ -31,10 +31,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.10 : use table AssetLocation throughout de code
 # V2.11 : added table Invoice and functionality to support it
 # V2.12 : processing table : clean up
+# V2.13 : invoice is working
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.12')
+    return dict(version = 'V2.13')
 
 
 #enable logging
