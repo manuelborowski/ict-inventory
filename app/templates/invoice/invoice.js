@@ -15,21 +15,12 @@ $(document).ready(function() {
     var now = new Date();
     since_element.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
 
-        // begin_date.datepicker(datepicker_options);
-        // end_date.datepicker(datepicker_options);
-        // var now = new Date();
-        // begin_date.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
-        // end_date.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
-
-
     // build purchase table
     for(r = 0; r < table_length; r++) {
         table_add_row(r);
     }
 
-    if(view_only) {
-        $(".disable").attr("disabled", true);
-    }
+    if(view_only) {$(".disable").attr("disabled", true);}
 
     // when the save-button is clicked, convert the purchases table to a json table
     $("#submit").click(function(){
@@ -43,12 +34,14 @@ $(document).ready(function() {
 
     // populate the purchase table when in edit mode
     $.each(purchase_data, function (i, v){
-        $("#purchase-id-" + i).val(v.id);
+        $("#purchase-" + i).val(v.id);
         $("#value-" + i).val(v.value);
         $("#category-" + i).val(v.category_id).change();
         $("#device-" + i).val(v.device_id);
         $("#commissioning-" + i).val(v.commissioning);
     });
+
+    add_floating_menu($("#invoice_floating_menu"), purchase_table, "click", floating_menu_cb, null);
 });
 
 //download the current commissioning file
@@ -89,8 +82,8 @@ function update_commissioning_select(opaque, file_list) {
 }
 
 function table_add_row(row_id) {
-    var row = "<tr id='tr-" + row_id + "'>" +
-        "<td style=\"display: none\"><input type='text' value='-1' id='purchase-id-" + row_id + "'></td>" +
+    var row = "<tr id='" + row_id + "'>" +
+        "<td style=\"display: none\"><input type='text' id='purchase-" + row_id + "'></td>" +
         "<td><input type='text' class='disable' size='10' id='value-" + row_id + "'></td>" +
         "<td><select class='on-change-category disable' id='category-" + row_id + "'>" + category_options + "</select></td>" +
         "<td><select class='disable' id='device-" + row_id + "'>" + device_options + "</select></td>" +
@@ -129,4 +122,15 @@ function category_changed_event(event){
                 alert(jd.details);
             }
     });
+}
+
+var row_id;
+function floating_menu_cb(e, opaque) {
+        row_id = $(e.target).closest('tr').prop('id');
+}
+
+function add_asset_with_purchase_id() {
+    console.log(row_id);
+    var purchase_id = $("#purchase-" + row_id).val();
+    window.location.href = Flask.url_for("invoice.add_asset", {purchase_id: purchase_id});
 }

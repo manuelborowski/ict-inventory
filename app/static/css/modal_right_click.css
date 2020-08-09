@@ -4,7 +4,7 @@ body {
   color: #5e5e5e;
 }
 
-#floating_menu {
+.floating-menu {
   visibility: hidden;
   opacity: 0;
   position: fixed;
@@ -19,17 +19,17 @@ body {
   border: 1px solid #C6C6C6;
 }
 
-#floating_menu a {
+.floating-menu a {
   display: block;
   color: #555;
   text-decoration: none;
   padding: 2px 2px 2px 2px;
-  width: 100px;
+  width: 150px;
   position: relative;
 }
 
-#floating_menu a img,
-#floating_menu a i.fa {
+.floating-menu a img,
+.floating-menu a i.fa {
   height: 20px;
   font-size: 17px;
   width: 20px;
@@ -38,17 +38,17 @@ body {
   top: 2px;
 }
 
-#floating_menu a span {
+.floating-menu a span {
   color: #BCB1B3;
   float: right;
 }
 
-#floating_menu a:hover {
+.floating-menu a:hover {
   color: #fff;
   background: #3879D9;
 }
 
-#floating_menu hr {
+.floating-menu hr {
   border: 1px solid #EBEBEB;
   border-bottom: 0;
 }

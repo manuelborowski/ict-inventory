@@ -7,7 +7,7 @@ from flask_login import login_required, current_user
 from .forms import AddForm, EditForm, ViewForm
 from .. import db, log
 from . import asset
-from ..models import Asset, AssetLocation
+from ..models import Asset, AssetLocation, Purchase
 
 from ..support import build_filter, get_ajax_table, get_setting_inc_index_asset_name
 from ..tables_config import  tables_configuration
@@ -88,12 +88,12 @@ def exportcsv():
         return redirect(url_for('asset.assets'))
 
 #add a new asset
+@asset.route('/asset/add/<int:id>/<int:qr>/<int:purchase_id>', methods=['GET', 'POST'])
 @asset.route('/asset/add/<int:id>/<int:qr>', methods=['GET', 'POST'])
-@asset.route('/asset/add/<int:qr>', methods=['GET', 'POST'])
 @asset.route('/asset/add/<int:id>', methods=['GET', 'POST'])
 @asset.route('/asset/add', methods=['GET', 'POST'])
 @login_required
-def add(id=-1, qr=-1):
+def add(id=-1, qr=-1, purchase_id=-1):
     #qr_code can be inserted in 2 forms :
     #regular number, e.g. 433
     #complete url, e.g. http://blabla.com/qr/433.  If it contains http.*qr/, extract the number after last slash.
@@ -115,6 +115,9 @@ def add(id=-1, qr=-1):
         form.location.data = asset.location
     else:
         form = AddForm()
+    if purchase_id > -1:
+        purchase = Purchase.query.get(purchase_id)
+        form.purchase.data = purchase
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         qr_code = form.qr_code.data if form.qr_code.data != '' else None

@@ -218,7 +218,7 @@ class Purchase(db.Model):
     asset_value = column_property(func.asset_value(id))
 
     def __repr__(self):
-        return f'{self.since}/{self.device.brand}/{self.device.type}'
+        return f'{self.invoice.number}/{self.device.brand}/{self.device.type}'
 
     def log(self):
         return f'<Purchase: {self.id}, {self.value}, {self.device.brand}, {self.device.type}'

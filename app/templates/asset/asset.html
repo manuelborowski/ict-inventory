@@ -58,16 +58,14 @@
     </br>
 
 {% endif %}
-<div id="floating_menu"></div>
+<div id="floating_menu" class="floating-menu"></div>
 
 {% endblock %}
 
 {% block scripts %}
     {{ super() }}
-    {% if location_select %}
-        <script>
-            var location_select_list = {{ location_select | tojson }};
-        </script>
-    {% endif %}
+    <script>
+        var location_select_list = {{ (location_select or []) | tojson }};
+    </script>
     <script type="text/javascript"> {% include "asset/asset.js" %}</script>
 {% endblock %}

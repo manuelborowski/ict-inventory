@@ -108,4 +108,29 @@ function create_option_list(list) {
     return out;
 }
 
+var floating_menu_cb = {
+    cb: null,
+    opaque: null
+}
+var floating_menu_style;
+function add_floating_menu($menu_element, $trigger_element, trigger_type, callback, opaque) {
+    if (callback) {
+        floating_menu_cb.cb = callback;
+        floating_menu_cb.opaque = opaque;
+    }
+    floating_menu_style = $menu_element[0].style;
+    $trigger_element.on(trigger_type, function (e) {
+        floating_menu_style.top = e.clientY + "px";
+        floating_menu_style.left = e.clientX + "px";
+        floating_menu_style.visibility = "visible";
+        floating_menu_style.opacity = "1";
+        e.preventDefault();
+        e.stopPropagation();
+        if (floating_menu_cb.cb) {floating_menu_cb.cb(e, floating_menu_cb.opaque)}
+    });
 
+    document.addEventListener('click', function (e) {
+        floating_menu_style.opacity = "0";
+        setTimeout(function () {floating_menu_style.visibility = "hidden";}, 1);
+    }, false);
+}

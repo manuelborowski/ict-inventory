@@ -1,34 +1,3 @@
-//row_id is filled in with the database id of the item (asset, purchase,...) at the moment the user rightclicks on a row
-var row_id
-//The metadata of the floating menu.  See tables_config.py
-var floating_menu = JSON.parse('{{config.floating_menu[current_user.get_level]|tojson}}');
-//menu_id indicates what entry is clicked in the floating menu (edit, add, ...)
-function handle_floating_menu(menu_id) {
-    for(var i=0; i < floating_menu.length; i++) {
-        if(floating_menu[i].menu_id == menu_id) {
-            if(floating_menu[i].flags.includes('confirm_before_delete')) {
-                confirm_before_delete(row_id);
-            } else if(floating_menu[i].flags.includes('id_required')) {
-                window.location.href=Flask.url_for('{{config.subject}}.' + floating_menu[i].route, {'id':row_id});
-            } else {
-                window.location.href=Flask.url_for('{{config.subject}}.' + floating_menu[i].route);
-            }
-        }
-    }
-}
-
-//Before removing an entry, a confirm-box is shown.
-function confirm_before_delete(id) {
-    var message = "Bent u zeker dat u dit item wil verwijderen?";
-    if ('{{ config.delete_message }}') {message='{{ config.delete_message }}';}
-    bootbox.confirm(message, function(result) {
-        if (result) {
-            window.location.href = Flask.url_for('{{config.subject}}' + ".delete", {'id' : id})
-        }
-    });
-}
-
-
 $(document).ready(function() {
     //The clear button of the filter is pushed
     $('#clear').click(function() {
@@ -100,6 +69,9 @@ $(document).ready(function() {
       }
     });
 
+
+    add_floating_menu($("#floating_menu"), $('#datatable'), 'contextmenu', floating_menu_cb, null);
+
      //flash messages, if required
      table.on( 'draw', function () {
         var j = table.ajax.json();
@@ -112,20 +84,37 @@ $(document).ready(function() {
                 $("#flash-list").html(flash_string);
         }
      });
-
-    //right click on an item in the table.  A menu pops up to execute an action on the selected row/item
-    var floating_menu_style = document.getElementById("floating_menu").style;
-    document.getElementById("datatable").addEventListener('contextmenu', function(e) {
-        floating_menu_style.top = e.clientY + "px";
-        floating_menu_style.left = e.clientX + "px";
-        floating_menu_style.visibility = "visible";
-        floating_menu_style.opacity = "1";
-        e.preventDefault();
-        row_id = $(e.target).closest('tr').prop('id');
-    }, false);
-
-    document.addEventListener('click', function(e) {
-        floating_menu_style.opacity = "0";
-        setTimeout(function() {floating_menu_style.visibility = "hidden";}, 1);
-    }, false);
 });
+
+var row_id;
+function floating_menu_cb(e, opaque) {
+        row_id = $(e.target).closest('tr').prop('id');
+}
+
+var floating_menu = JSON.parse('{{config.floating_menu[current_user.get_level]|tojson}}');
+function handle_floating_menu(menu_id) {
+    for(var i=0; i < floating_menu.length; i++) {
+        if(floating_menu[i].menu_id == menu_id) {
+            if(floating_menu[i].flags.includes('confirm_before_delete')) {
+                confirm_before_delete(row_id);
+            } else if(floating_menu[i].flags.includes('id_required')) {
+                window.location.href=Flask.url_for('{{config.subject}}.' + floating_menu[i].route, {'id':row_id});
+            } else {
+                window.location.href=Flask.url_for('{{config.subject}}.' + floating_menu[i].route);
+            }
+        }
+    }
+}
+
+//Before removing an entry, a confirm-box is shown.
+function confirm_before_delete(id) {
+    var message = "Bent u zeker dat u dit item wil verwijderen?";
+    if ('{{ config.delete_message }}') {message='{{ config.delete_message }}';}
+    bootbox.confirm(message, function(result) {
+        if (result) {
+            window.location.href = Flask.url_for('{{config.subject}}' + ".delete", {'id' : id})
+        }
+    });
+}
+
+

@@ -13,7 +13,6 @@ from ..tables_config import  tables_configuration
 import os, json
 from flask_uploads import UploadSet, configure_uploads, DOCUMENTS
 
-#This route is called by an ajax call on the assets-page to populate the table.
 @invoice.route('/invoice/data', methods=['GET', 'POST'])
 @login_required
 def source_data():
@@ -22,7 +21,6 @@ def source_data():
 @invoice.route('/invoice', methods=['GET', 'POST'])
 @login_required
 def invoices():
-    #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['invoice'])
     return render_template('base_multiple_items.html', title='facturen',
                            filter=_filter, filter_form=_filter_form,
@@ -49,8 +47,6 @@ def add(id=-1):
     else:
         form = AddForm()
         purchase_data = []
-    # del form.id # is not required here and makes validate_on_submit fail...
-    #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         invoice = Invoice(
             number=form.number.data,
@@ -84,7 +80,6 @@ def add(id=-1):
                            purchase_data=purchase_data)
 
 
-#edit a invoice
 @invoice.route('/invoice/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @user_plus_required
@@ -134,7 +129,6 @@ def edit(id):
                            purchase_data=purchase_data)
 
 
-#no login required
 @invoice.route('/invoice/view/<int:id>', methods=['GET', 'POST'])
 def view(id):
     invoice = Invoice.query.get_or_404(id)
@@ -160,7 +154,6 @@ def view(id):
                            route='invoice.invoices', subject='invoice', select_list=select_list,
                            purchase_data=purchase_data)
 
-#delete a invoice
 @invoice.route('/invoice/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 @user_plus_required
@@ -186,3 +179,9 @@ def item_ajax(jds):
         return jsonify({"status": False, 'details': f'{e}'})
     return jsonify({"status": False, 'details': f'Er is iets fout gegaan met action: {jd["action"]}\n{jds}'})
 
+
+@invoice.route('/invoice/add_asset/<int:purchase_id>', methods=['GET', 'POST'])
+@login_required
+@user_plus_required
+def add_asset(purchase_id):
+    return redirect(url_for('asset.add', id=-1, qr=-1, purchase_id=purchase_id))

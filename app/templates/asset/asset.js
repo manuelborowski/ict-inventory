@@ -17,7 +17,6 @@ $(document).ready(function() {
         div_string += "</tr></table>";
         location_select.append(div_string);
 
-
         var location_select_style = document.getElementById("floating_menu").style;
         document.getElementById("location").addEventListener('click', function (e) {
             location_select_style.top = "100px";
