@@ -96,10 +96,11 @@ def build_filter(table, paginate=True):
     _filter_forms = {}
 
     #Create the sql-request with the apropriate filters
-    if 'since' in _filters_enabled:
+    if 'date_after' in _filters_enabled:
         date = check_date_in_form('date_after', request.values)
         if date:
             _filtered_list = _filtered_list.filter(Invoice.since >= Invoice.reverse_date(date))
+    if 'date_before' in _filters_enabled:
         date = check_date_in_form('date_before', request.values)
         if date:
             _filtered_list = _filtered_list.filter(Invoice.since <= Invoice.reverse_date(date))
@@ -119,7 +120,7 @@ def build_filter(table, paginate=True):
         if value:
             _filtered_list = _filtered_list.filter(Invoice.number.contains(value))
     if 'location' in _filters_enabled:
-        value = check_string_in_form('room', request.values)
+        value = check_string_in_form('location', request.values)
         if value:
             _filtered_list = _filtered_list.filter(AssetLocation.name.contains(value))
     if 'category' in _filters_enabled:

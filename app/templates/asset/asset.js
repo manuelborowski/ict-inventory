@@ -10,7 +10,7 @@ $(document).ready(function() {
                 '<input type="radio" id="' + name + '" name="location-select-btn" value="' + id + '">\n' +
                 '<label for="' + name + '">' + name + '</label><br>' +
                 '</td>'
-            if (((index + 1) % 20) == 0) { //table is 20 buttons wide
+            if (((index + 1) % 20) === 0) { //table is 20 buttons wide
                 div_string += '</tr><tr>';
             }
         });

@@ -33,7 +33,7 @@ tr:nth-child(even) {
     <table id="purchase_table" border="1">
         <thead>
             <tr>
-                <th data-override="purchase-id" style="display: none">Lijn ID</th>
+                <th data-override="purchase-id">Lijn ID</th>
                 <th data-override="value">Bedrag</th>
                 <th data-override="category">Categorie</th>
                 <th data-override="device">Toestel</th>
@@ -45,6 +45,7 @@ tr:nth-child(even) {
     <input type="hidden" name="purchase-data">
     <div id="invoice_floating_menu" class="floating-menu">
             <a onclick="add_asset_with_purchase_id()">Activa toevoegen</a>
+            <a onclick="view_assets_with_purchase_id()">Activa bekijken</a>
     </div>
 {% endblock %}
 

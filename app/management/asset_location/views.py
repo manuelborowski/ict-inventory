@@ -38,7 +38,6 @@ def add(id=-1):
     else:
         form = AddForm()
         form.active.data = True
-    del form.id # is not required here and makes validate_on_submit fail...
     #Validate on the second pass only (when button 'Bewaar' is pushed)
     if 'button' in request.form and request.form['button'] == 'Bewaar' and form.validate_on_submit():
         location = AssetLocation(name=form.name.data,

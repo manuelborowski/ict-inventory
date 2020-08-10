@@ -10,7 +10,7 @@
       <form method="post" enctype=multipart/form-data>
       <table class="table-condensed ">
           <tr>
-{% if 'since' in filter %}
+{% if 'date_before' in filter or 'date_after' in filter %}
               <th>Datum</th>
 {% endif %}
 {% if 'value' in filter %}
@@ -39,7 +39,7 @@
 {% endif %}
           </tr>
           <tr>
-{% if 'since' in filter %}
+{% if 'date_after' in filter %}
               <td><input id="date_after" class="filter" name="date_after" type="text" size="12"></td>
 {% endif %}
 {% if 'value' in filter %}
@@ -49,10 +49,10 @@
               <td rowspan="2"><input id="invoice" class="filter" name="invoice" type="text" size="12"></td>
 {% endif %}
 {% if 'purchase_id' in filter %}
-    <td rowspan="2"><input name="purchase_id" id="purchase_id" class="filter" type="text" {% if purchase_id %}value="{{ purchase_id }}"{% endif %} size="6"></td>
+              <td rowspan="2"><input  id="purchase_id" class="filter" name="purchase_id" type="text" size="6"></td>
 {% endif %}
 {% if 'location' in filter %}
-              <td rowspan="2"><input id="room" class="filter" name="room" type="text" size="12"></td>
+              <td rowspan="2"><input id="location" class="filter" name="location" type="text" size="12"></td>
 {% endif %}
 {% if 'category' in filter %}
               <td rowspan="2"  >{{ wtf.form_field(filter_form.category.category) }}</td>
@@ -69,7 +69,7 @@
 
           </tr>
           <tr>
-{% if 'since' in filter %}
+{% if 'date_before' in filter %}
               <td><input id="date_before" class="filter" name="date_before" type="text" size="12"></td>
 {% endif %}
 {% if 'value' in filter %}
@@ -123,6 +123,8 @@
                {data: "{{h.data}}", name: "{{h.name}}", width: "{{h.width}}"},
             {% endfor %}
         ];
+        var default_filter_values = {{ (default_filter_values or []) | tojson }};
+        var filter = {{ (filter or []) | tojson}};
     </script>
 <script type="text/javascript"> {% include "base_multiple_items.js" %}</script>
 {% endblock %}

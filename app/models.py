@@ -185,7 +185,7 @@ class AssetLocation(db.Model):
     @staticmethod
     def get_list_for_select_first_empty():
         choices = AssetLocation.get_list_for_select(active=None)
-        choices.insert(0, [0, ''])
+        choices.insert(0, ['', ''])
         return choices
 
     @staticmethod
@@ -329,7 +329,7 @@ class Device(db.Model):
     @staticmethod
     def get_list_for_select_first_empty(filter_category_id=None):
         options = Device.get_list_for_select(filter_category_id)
-        options.insert(0, [-1, ''])
+        options.insert(0, ['', ''])
         return options
 
 
@@ -361,7 +361,7 @@ class DeviceCategory(db.Model):
     @staticmethod
     def get_list_for_select_first_empty():
         choices = DeviceCategory.get_list_for_select(active=None)
-        choices.insert(0, [-1, ''])
+        choices.insert(0, ['', ''])
         return choices
 
     @staticmethod

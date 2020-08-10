@@ -26,13 +26,17 @@ def source_data():
 @asset.route('/asset', methods=['GET', 'POST'])
 @asset.route('/asset/<int:purchase_id>', methods=['GET', 'POST'])
 @login_required
-def assets(purchase_id=-1):
+def assets(purchase_id=None):
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['asset'])
+    default_filter_values = {}
+    if purchase_id:
+        default_filter_values['purchase_id'] = purchase_id
     return render_template('base_multiple_items.html',
                            title='activa',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['asset'],
+                           default_filter_values=default_filter_values,
                            purchase_id=purchase_id)
 
 #export a list of assets
@@ -130,7 +134,11 @@ def add(id=-1, qr=-1, purchase_id=-1):
             purchase=form.purchase.data,
             serial=form.serial.data)
         if 'location-id' in request.form:
-            asset.location_id = int(request.form['location-id'])
+            try:
+                asset.location_id = int(request.form['location-id'])
+            except:
+                unknown_location = AssetLocation.query.filter(AssetLocation.name=='ONBEKEND').first()
+                asset.location2 = unknown_location
         db.session.add(asset)
         db.session.commit()
         db.session.refresh(asset)
@@ -140,8 +148,6 @@ def add(id=-1, qr=-1, purchase_id=-1):
         return redirect(url_for('asset.assets'))
 
     location_select = AssetLocation.get_list_for_select()
-    fill_location_select = [[-1, ''] for i in range (len(location_select), 200)]
-    location_select += fill_location_select
     form.qr_code.data=qr if qr > -1 else ''
     return render_template('asset/asset.html', form=form, title='Voeg activa toe', role='add', route='asset.assets',
                            subject='asset', location_select=location_select)
@@ -164,8 +170,6 @@ def edit(id):
 
         return redirect(url_for('asset.assets'))
     location_select = AssetLocation.get_list_for_select()
-    fill_location_select = [[-1, ''] for i in range (len(location_select), 200)]
-    location_select += fill_location_select
     return render_template('asset/asset.html', form=form, title='Pas een activa aan', role='edit', subject='asset',
                            route='asset.assets', location_select=location_select)
 

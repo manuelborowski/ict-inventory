@@ -1,3 +1,4 @@
+var filter_settings = {}
 $(document).ready(function() {
     //The clear button of the filter is pushed
     $('#clear').click(function() {
@@ -10,41 +11,34 @@ $(document).ready(function() {
         $('#filter').trigger('click');
     });
 
-    var filter_settings
-    //Get content from localstorage and store in fields
-    try {
-        filter_settings = JSON.parse(localStorage.getItem("Filter"));
-        $('#date_before').val(filter_settings['date_before']);
-        $('#date_after').val(filter_settings['date_after']);
-        $('#value_from').val(filter_settings['value_from']);
-        $('#value_till').val(filter_settings['value_till']);
-        $('#invoice').val(filter_settings['invoice']);
-        $('#category').val(filter_settings['category']);
-        $('#status').val(filter_settings['status']);
-        $('#device').val(filter_settings['device']);
-        $('#supplier').val(filter_settings['supplier']);
-        $('#room').val(filter_settings['room']);
-        $('#purchase_id').val(filter_settings['purchase_id']);
-    } catch (err) {
-    }
-
-    //The filter button of the filter is pushed
-    $('#filter').click(function() {
-        //Store filter in localstorage
-        filter_settings = {"date_before" : $('#date_before').val(),
-                   "date_after" : $('#date_after').val(),
-                   "value_from" : $('#value_from').val(),
-                   "value_till" : $('#value_till').val(),
-                   "invoice" : $('#invoice').val(),
-                   "category" : $('#category').val(),
-                   "status" : $('#status').val(),
-                   "device" : $('#device').val(),
-                   "supplier" : $('#supplier').val(),
-                   "room" : $('#room').val(),
-                   "purchase_id" : $('#purchase_id').val(),
+    $.each(default_filter_values, function(k, v){
+        try {
+            localStorage.setItem(k, JSON.stringify(v));
+        } catch (err) {
+            //let is pass
         }
-        //alert(JSON.stringify(filter_settings));
-        localStorage.setItem("Filter", JSON.stringify(filter_settings));
+    });
+
+    $.each(filter, function (i, v){
+        try {
+            var value = JSON.parse(localStorage.getItem(v));
+            $("#" + v).val(value);
+            filter_settings[v] = value;
+        } catch (err) {
+            //let is pass
+        }
+    });
+
+    $("#filter").click(function() {
+        $.each(filter, function (i, v) {
+            try {
+                var value = $("#" + v).val();
+                localStorage.setItem(v, JSON.stringify(value));
+                filter_settings[v] = value;
+            } catch (err) {
+                //let is pass
+            }
+        });
         table.ajax.reload();
     });
 
@@ -69,7 +63,6 @@ $(document).ready(function() {
       }
     });
 
-
     add_floating_menu($("#floating_menu"), $('#datatable'), 'contextmenu', floating_menu_cb, null);
 
      //flash messages, if required
@@ -84,6 +77,13 @@ $(document).ready(function() {
                 $("#flash-list").html(flash_string);
         }
      });
+
+     // document.addEventListener("keyup", function(e){
+     //     if (e.keyCode === 13) {
+     //         $("#export").blur();
+     //         $("#filter").focus().click();
+     //     }
+     // });
 });
 
 var row_id;

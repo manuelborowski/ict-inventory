@@ -33,10 +33,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.12 : processing table : clean up
 # V2.13 : invoice is working
 # V2.14 : cleanup in floating menu
+# V2.15 : added functionality for easier navigating between topics
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.14')
+    return dict(version = 'V2.15')
 
 
 #enable logging

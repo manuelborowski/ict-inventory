@@ -22,11 +22,10 @@ tables_configuration = {
             {'name': 'Leverancier', 'data':'purchase.invoice.supplier.name', 'order_by': Supplier.name},
             {'name': 'Toestel', 'data':'purchase.device.brandtype', 'order_by': Device.brand},
             {'name': 'SerieNr', 'data': 'serial', 'order_by': Asset.serial}],
-        'filter' :  ['since', 'invoice', 'location', 'category', 'status', 'supplier', 'device', 'purchase_id'],
+        'filter' :  ['date_before', 'date_after', 'invoice', 'location', 'category', 'status', 'supplier', 'device', 'purchase_id'],
         'href': [
             {'attribute': '["name"]', 'route': '"asset.view"', 'id': '["id"]'},
             {'attribute': '["purchase"]["invoice"]["number"]', 'route': '"invoice.view"', 'id': '["purchase"]["invoice"]["id"]'},
-            {'attribute': '["purchase"]["id"]', 'route': '"purchase.view"', 'id': '["purchase"]["id"]'},
             {'attribute': '["purchase"]["invoice"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["purchase"]["invoice"]["supplier"]["id"]'},
             {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
         ],
@@ -46,7 +45,7 @@ tables_configuration = {
             {'name': 'Aantal', 'data': 'nbr_assets', 'order_by': Purchase.nbr_assets},
             {'name': 'Leverancier', 'data': 'invoice.supplier.name', 'order_by': Supplier.name},
             {'name': 'Toestel', 'data': 'device.brandtype', 'order_by':Device.brand}],
-        'filter' :  ['since', 'invoice', 'supplier', 'device'],
+        'filter' :  ['date_before', 'date_after', 'invoice', 'supplier', 'device'],
         'href': [
             {'attribute': '["value"]', 'route': '"purchase.view"', 'id': '["id"]'},
             {'attribute': '["invoice"]["number"]', 'route': '"invoice.view"', 'id': '["invoice"]["id"]'},
@@ -65,7 +64,7 @@ tables_configuration = {
             {'name': 'Datum', 'data': 'since', 'order_by': Invoice.since},
             {'name': 'Leverancier', 'data': 'supplier.name', 'order_by': Supplier.name},
             {'name': 'Info', 'data': 'info', 'order_by': Invoice.info}],
-        'filter' :  ['since', 'invoice', 'supplier'],
+        'filter' :  ['date_before', 'date_after', 'invoice', 'supplier'],
         'href': [
             {'attribute': '["number"]', 'route': '"invoice.view"', 'id': '["id"]'},
             {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
