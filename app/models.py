@@ -295,6 +295,7 @@ class Device(db.Model):
     safety_information = db.Column(db.String(256))    # path to safety information document on disk
     ce = db.Column(db.Boolean, default=False)       # conform CE regulations
     purchases = db.relationship('Purchase', cascade='all, delete', backref='device', lazy='dynamic')
+    control_template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
 
     def __repr__(self):
         return '{}/{}'.format(self.brand, self.type)
@@ -422,3 +423,71 @@ class Settings(db.Model):
 
     def log(self):
         return '<Setting: {}/{}/{}/{}>'.format(self.id, self.name, self.value, self.type)
+
+
+class ControlCardTemplate(db.Model):
+    __tablename__ = 'control_card_templates'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    info = db.Column(db.String(1024), default='')
+    active = db.Column(db.Boolean, default=True)
+    checks = db.relationship('ControlCheck', cascade='all, delete', backref='template', lazy='dynamic')
+    standards = db.relationship('ControlStandard', cascade='all, delete', backref='template', lazy='dynamic')
+    devices = db.relationship('Device', cascade='all, delete', backref='control_template', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<ControlCardTemplate: {self.name}/{self.active}>'
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name, 'active': self.active, 'info': self.info}
+
+    @staticmethod
+    def get_list_for_select(active=True):
+        templates = ControlCardTemplate.query
+        if active is not None:
+            templates = templates.filter(ControlCardTemplate.active == active)
+        templates = templates.order_by(ControlCardTemplate.name).all()
+        choices = [[l.id, l.name] for l in templates]
+        return choices
+
+
+    @staticmethod
+    def get_list_for_select_first_empty():
+        templates = ControlCardTemplate.get_list_for_select(active=None)
+        templates.insert(0, ['', ''])
+        return templates
+
+
+class ControlCheck(db.Model):
+    __tablename__ = 'control_checks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    index = db.Column(db.Integer)
+    is_check = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True)
+    template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
+
+    def __repr__(self):
+        return f'<ControlCheck: {self.name}/{self.index}/{self.is_check}/{self.active}>'
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name}
+
+
+class ControlStandard(db.Model):
+    __tablename__ = 'control_standards'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    active = db.Column(db.Boolean, default=True)
+    template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
+
+    def __repr__(self):
+        return f'<ControlStandard: {self.name}/{self.active}>'
+
+    def ret_dict(self):
+        return {'id':self.id, 'name':self.name}
+
+

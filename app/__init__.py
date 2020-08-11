@@ -34,10 +34,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.13 : invoice is working
 # V2.14 : cleanup in floating menu
 # V2.15 : added functionality for easier navigating between topics
+# V2.16 : imort control cards from excel and load into database
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.15')
+    return dict(version = 'V2.16')
 
 
 #enable logging
@@ -188,6 +189,9 @@ else:
 
     from .management.asset_location import location as location_blueprint
     app.register_blueprint(location_blueprint)
+
+    from .management.control import control as control_blueprint
+    app.register_blueprint(control_blueprint)
 
     from .documents import init_documents
     init_documents(app, 'commissioning')

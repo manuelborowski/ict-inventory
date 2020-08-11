@@ -13,7 +13,13 @@
         <form method="post" enctype=multipart/form-data action="{{ url_for('management.admin.importcsv') }}">
             <input class="btn btn-default" type="button" id="import" value="Import"  onclick="$('#import_fileid').click();">
             <input id='import_fileid' type='file' name='import_filename' style="display:none" accept=".csv" onchange="$('#import_trigger').click();">
-            <input id="import_trigger" type="submit" value="Import" style="display:none">
+            <input id="import_trigger" type="submit" formaction="{{ url_for('management.admin.importcsv') }}" value="Import" style="display:none">
+            Importeer een lijst van activa.<br>
+            <input class="btn btn-default" type="button" id="import" value="Import"  onclick="$('#controlcard_fileid').click();">
+            <input id='controlcard_fileid' type='file' name='import_controlcard' style="display:none" accept=".xlsx" onchange="$('#controlcard_trigger').click();">
+            <input id="controlcard_trigger" type="submit" formaction="{{ url_for('management.admin.import_controlcard_templates') }}"style="display:none">
+            Importeer een xlsx-bestand met controle-fiches.
+
             <table class="table-condensed table-bordered">
                 <tr>
                     <th>Indienststelling</th>

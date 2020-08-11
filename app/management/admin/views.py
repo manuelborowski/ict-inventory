@@ -11,9 +11,9 @@ from app.documents import  get_doc_path, get_doc_list, upload_doc, document_type
 
 import os
 import unicodecsv
-from app.models import Asset, Device, Supplier, Purchase
+from app.models import Asset, Device, Supplier, Purchase, ControlCheck, ControlCardTemplate, ControlStandard
 
-import zipfile
+import zipfile, xlrd
 
 @admin.route('/management/admin', methods=['GET', 'POST'])
 @login_required
@@ -140,6 +140,89 @@ def importcsv():
 
             db.session.commit()
             log.info('import: added {} assets, {} purchases and {} devices'.format(nbr_assets, nbr_purchases, nbr_devices))
+
+    except Exception as e:
+        flash('Kan bestand niet importeren')
+    return redirect(url_for('management.admin.show'))
+
+@admin.route('/management/admin/import_controlcard_templates', methods=['GET', 'POST'])
+@login_required
+def import_controlcard_templates():
+    try:
+        if request.files['import_controlcard']:
+            log.info('Import controlcard from : {}'.format(request.files['import_controlcard']))
+            workbook = xlrd.open_workbook(file_contents=request.files['import_controlcard'].read())
+            control_standards = ControlStandard.query.all()
+            standard_cache = {s.name: s for s in control_standards}
+            control_templates = ControlCardTemplate.query.all()
+            template_cache = {t.name: t for t in control_templates}
+
+            for worksheet in workbook.sheets():
+                # print(worksheet.name)
+                is_controlcard = False
+                controlcard_row = 0
+                name_found = False
+                name = ''
+                header_found = False
+                standards = []
+                checks = []
+                for i in range(0, worksheet.nrows):
+                    row = worksheet.row(i)
+
+                    if not is_controlcard and row[0].ctype == xlrd.XL_CELL_TEXT and 'Controleverslag' in row[0].value:
+                        controlcard_row = i
+                        is_controlcard = True
+                        continue
+
+                    if not name_found and is_controlcard and row[0].ctype == xlrd.XL_CELL_TEXT and \
+                            len(row[0].value.strip().split('.')) > 1:
+                        name_found = True
+                        name = ' '.join(row[0].value.strip().split(' ')[1:])
+                        continue
+
+                    if is_controlcard and not name_found and i > (controlcard_row + 2):
+                        is_controlcard = False
+                        break
+
+                    if not header_found and name_found and len(row) > 5 and row[5].ctype == xlrd.XL_CELL_TEXT and \
+                            'Opmerkingen' in row[5].value:
+                        header_found = True
+                        if row[1].ctype == xlrd.XL_CELL_TEXT and len(row[1].value) > 0:
+                            standards.append(row[1].value.strip())
+                        second_standard_row = worksheet.row(i + 1)
+                        if second_standard_row[0].ctype == xlrd.XL_CELL_EMPTY and \
+                                second_standard_row[1].ctype == xlrd.XL_CELL_TEXT and \
+                                len(second_standard_row[1].value) > 0:
+                            standards.append(second_standard_row[1].value.strip())
+                        continue
+
+                    if header_found:
+                        if row[0].ctype == xlrd.XL_CELL_TEXT:
+                            checks.append([row[0].value.strip(), False])
+                        elif row[0].ctype == xlrd.XL_CELL_NUMBER:
+                            checks.append([row[1].value.strip(), True])
+
+                if is_controlcard:
+                    if name in template_cache:
+                        continue
+
+                    template = ControlCardTemplate(name=name, info=worksheet.name)
+                    for s in standards:
+                        if s in standard_cache:
+                            standard = standard_cache[s]
+                        else:
+                            standard = ControlStandard(name=s)
+                            standard_cache[s] = standard
+                            db.session.add(standard)
+                        template.standards.append(standard)
+                    for i, c in enumerate(checks):
+                        check = ControlCheck(name=c[0], is_check=c[1], index=i)
+                        db.session.add(check)
+                        template.checks.append(check)
+                    template_cache[name] = template
+                    db.session.add(template)
+                    db.session.commit()
+
 
     except Exception as e:
         flash('Kan bestand niet importeren')

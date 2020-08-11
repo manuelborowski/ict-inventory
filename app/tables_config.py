@@ -1,4 +1,5 @@
-from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation, Invoice
+from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation, Invoice, \
+    ControlStandard, ControlCardTemplate, ControlCheck
 from .management.user.extra_filtering import filter
 from .floating_menu import default_menu, user_menu, no_delete_menu
 
@@ -150,6 +151,22 @@ tables_configuration = {
         'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.asset_location.view"', 'id': '["id"]'},
+        ],
+    },
+    'control': {
+        'model': ControlCardTemplate,
+        'title' : 'Controle fiches',
+        'subject' :'management.control',
+        'delete_message' : '',
+        'template': [
+            {'name': 'Naam', 'data': 'name', 'order_by': ControlCardTemplate.name, 'width': '2%'},
+            {'name': 'Actief', 'data': 'active', 'order_by': ControlCardTemplate.active, 'width': '1%'},
+            {'name': 'Info', 'data': 'info', 'order_by': ControlCardTemplate.info, 'width': '50%'},
+        ],
+        'filter': [],
+        'floating_menu' : no_delete_menu,
+        'href': [
+            {'attribute': '["name"]', 'route': '"management.control.view"', 'id': '["id"]'},
         ],
     },
 }
