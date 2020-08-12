@@ -3,10 +3,11 @@
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, DecimalField, IntegerField, BooleanField
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import DataRequired
 from wtforms.widgets import HiddenInput
 
-from ..models import Device, DeviceCategory
+from ..models import Device, DeviceCategory, ControlCardTemplate
 from ..forms import NonValidatingSelectFields
 from ..documents import get_doc_list
 
@@ -18,7 +19,6 @@ class EditForm(FlaskForm):
         self.photo.choices = list(zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo')))
         self.manual.choices = list(zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual')))
         self.safety_information.choices = list(zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information')))
-        # self.category.choices = list(zip(Device.Category.get_list(), Device.Category.get_list()))
         self.category.choices = DeviceCategory.get_list_for_select()
 
     category = SelectField('Categorie', validators=[DataRequired()], coerce=int)
@@ -26,6 +26,7 @@ class EditForm(FlaskForm):
     type = StringField('Type', validators=[DataRequired()])
     power = DecimalField('Vermogen', default=0.0)
     ce = BooleanField('CE')
+    control_template = QuerySelectField('Conrole Fiche', query_factory=ControlCardTemplate.get_all, default=ControlCardTemplate.get_default)
     risk_analysis = NonValidatingSelectFields('Risicoanalyse')
     manual = NonValidatingSelectFields('Handleiding')
     safety_information = NonValidatingSelectFields('VIK')
@@ -33,9 +34,7 @@ class EditForm(FlaskForm):
     id = IntegerField(widget=HiddenInput())
 
 class AddForm(EditForm):
-    """
-    Add an asset
-    """
+    pass
 
 class ViewForm(FlaskForm):
     category = StringField('Categorie', render_kw={'readonly':''})
@@ -43,6 +42,7 @@ class ViewForm(FlaskForm):
     type = StringField('Type', render_kw={'readonly':''})
     power = DecimalField('Vermogen', render_kw={'readonly':''})
     ce = BooleanField('CE', render_kw={'disabled':''})
+    control_template = StringField('Controle Fiche', render_kw={'readonly':''})
     risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
     manual = StringField('Handleiding', render_kw={'readonly':''})
     safety_information = StringField('VIK', render_kw={'readonly':''})

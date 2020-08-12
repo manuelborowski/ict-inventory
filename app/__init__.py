@@ -35,10 +35,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.14 : cleanup in floating menu
 # V2.15 : added functionality for easier navigating between topics
 # V2.16 : imort control cards from excel and load into database
+# V2.17 : a device can have a control card
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.16')
+    return dict(version = 'V2.17')
 
 
 #enable logging
@@ -128,6 +129,10 @@ else:
     #init default invoices
     models.Invoice.default_init()
     models.Purchase.invoice_init()
+
+    #init control card templates
+    models.ControlCardTemplate.default_init()
+    models.Device.device_control_template_init()
 
     #flask db migrate
     #flask db upgrade

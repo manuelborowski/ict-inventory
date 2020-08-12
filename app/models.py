@@ -306,7 +306,7 @@ class Device(db.Model):
     def ret_dict(self):
         return {'id':self.id, 'brand':self.brand, 'type':self.type, 'category':self.category2.ret_dict(), 'power':float(self.power), 'photo':self.photo,
         'risk_analysis': self.risk_analysis, 'manual':self.manual, 'safety_information':self.safety_information, 'ce':self.ce,
-        'brandtype':self.brand + ' / ' + self.type}
+        'brandtype':self.brand + ' / ' + self.type , 'control_template': self.control_template.ret_dict()}
 
     @staticmethod
     def device_category_init():
@@ -333,6 +333,14 @@ class Device(db.Model):
         options.insert(0, ['', ''])
         return options
 
+    @staticmethod
+    def device_control_template_init():
+        device = Device.query.first()
+        if not device.control_template_id:
+            template = ControlCardTemplate.query.filter(ControlCardTemplate.name=='NVT').first()
+            for device in Device.query.all():
+                device.control_template = template
+            db.session.commit()
 
 
 class DeviceCategory(db.Model):
@@ -437,7 +445,7 @@ class ControlCardTemplate(db.Model):
     devices = db.relationship('Device', cascade='all, delete', backref='control_template', lazy='dynamic')
 
     def __repr__(self):
-        return f'<ControlCardTemplate: {self.name}/{self.active}>'
+        return f'{self.name}'
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name, 'active': self.active, 'info': self.info}
@@ -451,12 +459,32 @@ class ControlCardTemplate(db.Model):
         choices = [[l.id, l.name] for l in templates]
         return choices
 
+    @staticmethod
+    def get_all(active=None):
+        templates = ControlCardTemplate.query
+        if active:
+            templates = templates.filter(ControlCardTemplate.active==active)
+        templates = templates.order_by(ControlCardTemplate.name).all()
+        return templates
+
+    @staticmethod
+    def get_default():
+        return ControlCardTemplate.default_init()
 
     @staticmethod
     def get_list_for_select_first_empty():
         templates = ControlCardTemplate.get_list_for_select(active=None)
         templates.insert(0, ['', ''])
         return templates
+
+    @staticmethod
+    def default_init():
+        template = ControlCardTemplate.query.filter(ControlCardTemplate.name == 'NVT').first()
+        if not template:
+            template = ControlCardTemplate(name='NVT', info='Er is geen controle fiche voor dit toestel')
+            db.session.add(template)
+            db.session.commit()
+        return template
 
 
 class ControlCheck(db.Model):

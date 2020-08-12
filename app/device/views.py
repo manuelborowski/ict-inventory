@@ -55,6 +55,7 @@ def add(id=-1):
                         risk_analysis=form.risk_analysis.data,
                         safety_information=form.safety_information.data,
                         photo=form.photo.data,
+                        control_template=form.control_template.data,
                         )
         db.session.add(device)
         db.session.commit()

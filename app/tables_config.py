@@ -82,6 +82,7 @@ tables_configuration = {
             {'name': 'Type', 'data': 'type', 'order_by': Device.type},
             {'name': 'Categorie', 'data': 'category.name', 'order_by': DeviceCategory.name},
             {'name': 'CE', 'data': 'ce', 'order_by': Device.ce},
+            {'name': 'Controle Fiche', 'data': 'control_template.name', 'order_by': ControlCardTemplate.name},
             {'name': 'Vermogen', 'data': 'power', 'order_by': Device.power}],
         'filter': ['category', 'device'],
         'href': [{'attribute': '["brand"]', 'route': '"device.view"', 'id': '["id"]'},
