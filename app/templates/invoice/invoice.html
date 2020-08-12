@@ -1,27 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base_single_item.html" %}
 
-{% block head %}
-{{ super() }}
-<style>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
-</style>
-{%  endblock %}
-
 {% block content3 %}
     {{ wtf.form_field(form.number) }}
     {{ wtf.form_field(form.since) }}
@@ -30,7 +9,7 @@ tr:nth-child(even) {
     {% if role == "add" or role == "edit" %}
         <a class="btn btn-default" onclick="table_length++;table_add_row(table_length);">Nieuwe lijn</a>
     {% endif %}
-    <table id="purchase_table" border="1">
+    <table id="purchase_table" class="striped-table">
         <thead>
             <tr>
                 <th data-override="purchase-id">Lijn ID</th>

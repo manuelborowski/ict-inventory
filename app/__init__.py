@@ -36,10 +36,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.15 : added functionality for easier navigating between topics
 # V2.16 : imort control cards from excel and load into database
 # V2.17 : a device can have a control card
+# V2.18 : add, edit, view control card templates
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.17')
+    return dict(version = 'V2.18')
 
 
 #enable logging

@@ -11,7 +11,7 @@ from app.documents import  get_doc_path, get_doc_list, upload_doc, document_type
 
 import os
 import unicodecsv
-from app.models import Asset, Device, Supplier, Purchase, ControlCheck, ControlCardTemplate, ControlStandard
+from app.models import Asset, Device, Supplier, Purchase, ControlCheck, ControlCardTemplate
 
 import zipfile, xlrd
 
@@ -152,8 +152,6 @@ def import_controlcard_templates():
         if request.files['import_controlcard']:
             log.info('Import controlcard from : {}'.format(request.files['import_controlcard']))
             workbook = xlrd.open_workbook(file_contents=request.files['import_controlcard'].read())
-            control_standards = ControlStandard.query.all()
-            standard_cache = {s.name: s for s in control_standards}
             control_templates = ControlCardTemplate.query.all()
             template_cache = {t.name: t for t in control_templates}
 
@@ -177,7 +175,7 @@ def import_controlcard_templates():
                     if not name_found and is_controlcard and row[0].ctype == xlrd.XL_CELL_TEXT and \
                             len(row[0].value.strip().split('.')) > 1:
                         name_found = True
-                        name = ' '.join(row[0].value.strip().split(' ')[1:])
+                        name = ' '.join(row[0].value.strip().split(' ')[1:]).strip()
                         continue
 
                     if is_controlcard and not name_found and i > (controlcard_row + 2):
@@ -206,15 +204,7 @@ def import_controlcard_templates():
                     if name in template_cache:
                         continue
 
-                    template = ControlCardTemplate(name=name, info=worksheet.name)
-                    for s in standards:
-                        if s in standard_cache:
-                            standard = standard_cache[s]
-                        else:
-                            standard = ControlStandard(name=s)
-                            standard_cache[s] = standard
-                            db.session.add(standard)
-                        template.standards.append(standard)
+                    template = ControlCardTemplate(name=name, info=worksheet.name.strip(), standards=', '.join(standards))
                     for i, c in enumerate(checks):
                         check = ControlCheck(name=c[0], is_check=c[1], index=i)
                         db.session.add(check)

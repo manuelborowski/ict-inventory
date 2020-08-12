@@ -295,7 +295,7 @@ class Device(db.Model):
     safety_information = db.Column(db.String(256))    # path to safety information document on disk
     ce = db.Column(db.Boolean, default=False)       # conform CE regulations
     purchases = db.relationship('Purchase', cascade='all, delete', backref='device', lazy='dynamic')
-    control_template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
+    control_template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id'))
 
     def __repr__(self):
         return '{}/{}'.format(self.brand, self.type)
@@ -441,14 +441,14 @@ class ControlCardTemplate(db.Model):
     info = db.Column(db.String(1024), default='')
     active = db.Column(db.Boolean, default=True)
     checks = db.relationship('ControlCheck', cascade='all, delete', backref='template', lazy='dynamic')
-    standards = db.relationship('ControlStandard', cascade='all, delete', backref='template', lazy='dynamic')
-    devices = db.relationship('Device', cascade='all, delete', backref='control_template', lazy='dynamic')
+    standards = db.Column(db.String(1024), default='')
+    devices = db.relationship('Device', backref='control_template', lazy='dynamic')
 
     def __repr__(self):
         return f'{self.name}'
 
     def ret_dict(self):
-        return {'id':self.id, 'name':self.name, 'active': self.active, 'info': self.info}
+        return {'id':self.id, 'name':self.name, 'active': self.active, 'info': self.info, 'standards': self.standards}
 
     @staticmethod
     def get_list_for_select(active=True):
@@ -502,20 +502,3 @@ class ControlCheck(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name}
-
-
-class ControlStandard(db.Model):
-    __tablename__ = 'control_standards'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))
-    active = db.Column(db.Boolean, default=True)
-    template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
-
-    def __repr__(self):
-        return f'<ControlStandard: {self.name}/{self.active}>'
-
-    def ret_dict(self):
-        return {'id':self.id, 'name':self.name}
-
-

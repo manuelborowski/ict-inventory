@@ -32,7 +32,7 @@ $(document).ready(function() {
 
     // populate the purchase table when in edit mode
     $.each(purchase_data, function (i, v){
-        $("#purchase-" + i).html(v.id);
+        $("#purchase-" + i).val(v.id);
         $("#value-" + i).val(v.value);
         $("#category-" + i).val(v.category_id).change();
         $("#device-" + i).val(v.device_id);
@@ -81,7 +81,7 @@ function update_commissioning_select(opaque, file_list) {
 
 function table_add_row(row_id) {
     var row = "<tr id='" + row_id + "'>" +
-        "<td id='purchase-" + row_id + "'>-1</td>" +
+        "<td><input type='text' id='purchase-" + row_id + "' size='5' value='-1' disabled></td>" +
         "<td><input type='text' class='disable' size='10' id='value-" + row_id + "'></td>" +
         "<td><select class='on-change-category disable' id='category-" + row_id + "'>" + category_options + "</select></td>" +
         "<td><select class='disable' id='device-" + row_id + "'>" + device_options + "</select></td>" +

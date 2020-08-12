@@ -125,3 +125,19 @@ p.copyright {
     margin-left: auto;
     margin-right: auto;
 }
+
+.striped-table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.striped-table td, .striped-table th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+.striped-table tr:nth-child(even) {
+  background-color: #dddddd;
+}
