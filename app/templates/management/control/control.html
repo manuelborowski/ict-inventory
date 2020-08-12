@@ -1,0 +1,36 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base_single_item.html" %}
+
+{% block content3 %}
+    {{ wtf.form_field(form.name) }}
+    {{ wtf.form_field(form.info) }}
+    {{ wtf.form_field(form.standards) }}
+    {{ wtf.form_field(form.active) }}
+    <br>
+    {% if role == "add" or role == "edit" %}
+        <a class="btn btn-default" onclick="check_table_length++;check_table_add_row(check_table_length);">Nieuwe lijn</a>
+    {% endif %}
+    <table id="check-table" class="striped-table">
+        <thead>
+            <tr>
+                <th data-override="index" style="padding:0px;">Index</th>
+                <th data-override="up" style="padding:0px;">&#8657;</th>
+                <th data-override="down" style="padding:0px;">&#8659;</th>
+                <th data-override="active">Actief</th>
+                <th data-override="is_check">Check?</th>
+                <th data-override="name">Naam</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <input type="hidden" name="check-data">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var check_data = {{ (check_data or []) | tojson }}
+        var view_only = {{ (role == 'view')|tojson }}
+    </script>
+    <script type="text/javascript"> {% include "management/control/control.js" %}</script>
+{% endblock %}
