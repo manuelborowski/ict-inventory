@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from .forms import AddForm, EditForm, ViewForm
 from ... import db, log, user_plus_required
 from . import control
-from ...models import Asset, AssetLocation, Purchase, ControlCheck, ControlCardTemplate
+from ...models import Asset, AssetLocation, Purchase, ControlCheckTemplate, ControlCardTemplate
 
 from ...support import build_filter, get_ajax_table, get_setting_inc_index_asset_name
 from ...tables_config import  tables_configuration
@@ -27,7 +27,7 @@ def show():
     #The following line is required only to build the filter-fields on the page.
     _filter, _filter_form, a,b, c = build_filter(tables_configuration['control'])
     return render_template('base_multiple_items.html',
-                           title='Controle fiches',
+                           title='Inspectie fiches',
                            filter=_filter, filter_form=_filter_form,
                            config = tables_configuration['control'],
                            )
@@ -49,14 +49,14 @@ def add():
             i = 0
             for check in check_data:
                 if check['name'] == '': continue
-                new_check = ControlCheck(index=i, name=check['name'], active=check['active'],
-                                         is_check=check['is_check'], template=template)
+                new_check = ControlCheckTemplate(index=i, name=check['name'], active=check['active'],
+                                                 is_check=check['is_check'], template=template)
                 db.session.add(new_check)
                 i += 1
             db.session.commit()
         return redirect(url_for('management.control.show'))
 
-    return render_template('management/control/control.html', form=form, title='Nieuwe controle fiche',
+    return render_template('management/control/control.html', form=form, title='Nieuwe inspectie fiche',
                            role='add', subject='management.control', route='management.control.show')
 
 
@@ -79,8 +79,8 @@ def edit(id):
                     check_cache[index].name = check['name']
                 elif index == -1 and check['name'] != '':
                     new_index = len(check_cache)
-                    new_check = ControlCheck(index=new_index, name=check['name'], active=check['active'],
-                                             is_check=check['is_check'], template=template)
+                    new_check = ControlCheckTemplate(index=new_index, name=check['name'], active=check['active'],
+                                                     is_check=check['is_check'], template=template)
                     db.session.add(new_check)
                     check_cache[new_index] = new_check
             db.session.commit()
@@ -93,7 +93,7 @@ def edit(id):
         'active': c.active
     } for c in template.checks]
 
-    return render_template('management/control/control.html', form=form, title='Wijzig een controle fiche',
+    return render_template('management/control/control.html', form=form, title='Wijzig een inspectie fiche',
                            role='edit', subject='management.control', route='management.control.show',
                            check_data=check_data)
 
@@ -112,6 +112,6 @@ def view(id):
         'active': c.active
     } for c in template.checks]
 
-    return render_template('management/control/control.html', form=form, title='Bekijk een controle fiche',
+    return render_template('management/control/control.html', form=form, title='Bekijk een inspectie fiche',
                            role='view', subject='management.control', route='management.control.show',
                            check_data=check_data)

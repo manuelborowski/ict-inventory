@@ -38,10 +38,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.17 : a device can have a control card
 # V2.18 : add, edit, view control card templates
 # V2.19 : check-lines can be moved up and down
+# V2.20 : clean up of several topics, added inspect topic
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.19')
+    return dict(version = 'V2.20')
 
 
 #enable logging
@@ -172,6 +173,9 @@ else:
 
     from .management.user import user as user_blueprint
     app.register_blueprint(user_blueprint)
+
+    from .inspect import inspect as inspect_blueprint
+    app.register_blueprint(inspect_blueprint)
 
     from .asset import asset as asset_blueprint
     app.register_blueprint(asset_blueprint)

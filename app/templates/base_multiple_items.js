@@ -84,6 +84,15 @@ $(document).ready(function() {
      //         $("#filter").focus().click();
      //     }
      // });
+    if (filter.includes("date_after")) {
+        var date_after_element = $("#date_after");
+        date_after_element.datepicker(datepicker_options);
+    }
+    if (filter.includes("date_before")) {
+        var date_before_element = $("#date_before");
+        date_before_element.datepicker(datepicker_options);
+    }
+
 });
 
 var row_id;

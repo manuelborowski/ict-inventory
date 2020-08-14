@@ -7,7 +7,7 @@ from flask_login import current_user
 from sqlalchemy import or_
 import time
 
-from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory, AssetLocation, Invoice
+from .models import Asset, Purchase, Device, Supplier, User, Settings, DeviceCategory, AssetLocation, Invoice, ControlCardTemplate, InspectCard
 from .forms import CategoryFilter, DeviceFilter, StatusFilter, SupplierFilter
 from . import log
 
@@ -70,15 +70,15 @@ def build_filter(table, paginate=True):
     _template = table['template']
     _filtered_list = _model.query
     if _model is Device:
-        _filtered_list = _filtered_list.join(DeviceCategory)
+        _filtered_list = _filtered_list.join(DeviceCategory, ControlCardTemplate)
     if _model is Asset:
-        _filtered_list = _filtered_list.join(AssetLocation, Purchase)
+        _filtered_list = _filtered_list.join(AssetLocation, Purchase, Device, ControlCardTemplate)
         if 'since' in _filters_enabled or 'invoice' in _filters_enabled or 'supplier' in _filters_enabled:
             _filtered_list = _filtered_list.join(Invoice)
         if 'supplier' in _filters_enabled:
             _filtered_list = _filtered_list.join(Supplier)
         if 'category' in _filters_enabled or 'device' in _filters_enabled:
-            _filtered_list = _filtered_list.join(Device, DeviceCategory)
+            _filtered_list = _filtered_list.join(DeviceCategory)
     if _model is Purchase:
         _filtered_list = _filtered_list.join(Invoice)
         if 'supplier' in _filters_enabled:
@@ -99,11 +99,17 @@ def build_filter(table, paginate=True):
     if 'date_after' in _filters_enabled:
         date = check_date_in_form('date_after', request.values)
         if date:
-            _filtered_list = _filtered_list.filter(Invoice.since >= Invoice.reverse_date(date))
+            if _model is Invoice:
+                _filtered_list = _filtered_list.filter(Invoice.since >= Invoice.reverse_date(date))
+            elif _model is InspectCard:
+                _filtered_list = _filtered_list.filter(InspectCard.date >= Invoice.reverse_date(date))
     if 'date_before' in _filters_enabled:
         date = check_date_in_form('date_before', request.values)
         if date:
-            _filtered_list = _filtered_list.filter(Invoice.since <= Invoice.reverse_date(date))
+            if _model is Invoice:
+                _filtered_list = _filtered_list.filter(Invoice.since <= Invoice.reverse_date(date))
+            elif _model is InspectCard:
+                _filtered_list = _filtered_list.filter(InspectCard.date <= Invoice.reverse_date(date))
     if 'value' in _filters_enabled:
         value = check_value_in_form('value_from', request.values)
         if value:
@@ -192,6 +198,12 @@ def build_filter(table, paginate=True):
             search_constraints.append(DeviceCategory.name.like(search_value))
         if AssetLocation.name in column_list:
             search_constraints.append(AssetLocation.name.like(search_value))
+        if InspectCard.inspector in column_list:
+            search_constraints.append(InspectCard.inspector.like(search_value))
+        if InspectCard.info in column_list:
+            search_constraints.append(InspectCard.info.like(search_value))
+        if Invoice.info in column_list:
+            search_constraints.append(Invoice.info.like(search_value))
 
         if search_constraints:
             _filtered_list = _filtered_list.filter(or_(*search_constraints))

@@ -1,7 +1,7 @@
 from .models import Asset, Purchase, Device, Supplier, User, DeviceCategory, AssetLocation, Invoice, \
-    ControlCardTemplate, ControlCheck
+    ControlCardTemplate, InspectCard
 from .management.user.extra_filtering import filter
-from .floating_menu import default_menu, user_menu, no_delete_menu
+from .floating_menu import default_menu, user_menu, no_delete_menu, asset_menu, inspect_menu
 
 tables_configuration = {
     'asset' : {
@@ -18,19 +18,21 @@ tables_configuration = {
             {'name': 'Locatie', 'data':'location.name', 'order_by': AssetLocation.name},
             {'name': 'Datum', 'data':'purchase.invoice.since', 'order_by': Invoice.since},
             {'name': 'Bedrag', 'data':'purchase.asset_value', 'order_by': Purchase.asset_value},
+            {'name': 'Controle Fiche', 'data': 'purchase.device.control_template.name', 'order_by': ControlCardTemplate.name},
             {'name': 'QR', 'data':'qr_code', 'order_by': Asset.qr_code},
             {'name': 'Status', 'data':'status', 'order_by': Asset.status},
             {'name': 'Leverancier', 'data':'purchase.invoice.supplier.name', 'order_by': Supplier.name},
             {'name': 'Toestel', 'data':'purchase.device.brandtype', 'order_by': Device.brand},
             {'name': 'SerieNr', 'data': 'serial', 'order_by': Asset.serial}],
         'filter' :  ['date_before', 'date_after', 'invoice', 'location', 'category', 'status', 'supplier', 'device', 'purchase_id'],
+        'buttons': ['add'],
         'href': [
             {'attribute': '["name"]', 'route': '"asset.view"', 'id': '["id"]'},
             {'attribute': '["purchase"]["invoice"]["number"]', 'route': '"invoice.view"', 'id': '["purchase"]["invoice"]["id"]'},
             {'attribute': '["purchase"]["invoice"]["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["purchase"]["invoice"]["supplier"]["id"]'},
             {'attribute': '["purchase"]["device"]["brandtype"]', 'route': '"device.view"', 'id': '["purchase"]["device"]["id"]'}
         ],
-        'floating_menu' : default_menu,
+        'floating_menu' : asset_menu,
         'export' : 'asset.exportcsv',
     },
     'purchase' : {
@@ -66,6 +68,7 @@ tables_configuration = {
             {'name': 'Leverancier', 'data': 'supplier.name', 'order_by': Supplier.name},
             {'name': 'Info', 'data': 'info', 'order_by': Invoice.info}],
         'filter' :  ['date_before', 'date_after', 'invoice', 'supplier'],
+        'buttons': ['add'],
         'href': [
             {'attribute': '["number"]', 'route': '"invoice.view"', 'id': '["id"]'},
             {'attribute': '["supplier"]["name"]', 'route': '"supplier.view"', 'id': '["supplier"]["id"]'},
@@ -85,6 +88,7 @@ tables_configuration = {
             {'name': 'Controle Fiche', 'data': 'control_template.name', 'order_by': ControlCardTemplate.name},
             {'name': 'Vermogen', 'data': 'power', 'order_by': Device.power}],
         'filter': ['category', 'device'],
+        'buttons': ['add'],
         'href': [{'attribute': '["brand"]', 'route': '"device.view"', 'id': '["id"]'},
                  ],
         'floating_menu' : default_menu,
@@ -99,6 +103,7 @@ tables_configuration = {
             {'name': 'Naam', 'data': 'name', 'order_by': Supplier.name},
             {'name': 'Beschrijving', 'data' : 'description', 'order_by': Supplier.description}],
         'filter': ['supplier'],
+        'buttons': ['add'],
         'href': [{'attribute': '["name"]', 'route': '"supplier.view"', 'id': '["id"]'},
                  ],
         'floating_menu' : default_menu,
@@ -116,6 +121,7 @@ tables_configuration = {
             {'name': 'Niveau', 'data': 'level', 'order_by': User.level, 'orderable': True},
         ],
         'filter': [],
+        'buttons': ['add'],
         'href': [
             {'attribute': '["username"]', 'route': '"management.user.view"', 'id': '["id"]'},
         ],
@@ -133,6 +139,7 @@ tables_configuration = {
             {'name': 'Info', 'data': 'info', 'order_by': DeviceCategory.info, 'width': '50%'},
         ],
         'filter': [],
+        'buttons': ['add'],
         'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.device_category.view"', 'id': '["id"]'},
@@ -149,6 +156,7 @@ tables_configuration = {
             {'name': 'Info', 'data': 'info', 'order_by': AssetLocation.info, 'width': '50%'},
         ],
         'filter': [],
+        'buttons': ['add'],
         'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.asset_location.view"', 'id': '["id"]'},
@@ -156,7 +164,7 @@ tables_configuration = {
     },
     'control': {
         'model': ControlCardTemplate,
-        'title' : 'Controle fiches',
+        'title' : 'Inspectie fiches',
         'subject' :'management.control',
         'delete_message' : '',
         'template': [
@@ -166,9 +174,32 @@ tables_configuration = {
             {'name': 'Info', 'data': 'info', 'order_by': ControlCardTemplate.info, 'width': '50%'},
         ],
         'filter': [],
+        'buttons': ['add'],
         'floating_menu' : no_delete_menu,
         'href': [
             {'attribute': '["name"]', 'route': '"management.control.view"', 'id': '["id"]'},
+        ],
+    },
+    'inspect': {
+        'model': InspectCard,
+        'title' : 'Inspectie fiches',
+        'subject' :'inspect',
+        'delete_message' : '',
+        'template': [
+            {'name': 'Datum', 'data': 'date', 'order_by': InspectCard.date, 'width': '2%'},
+            {'name': 'Naam controleur', 'data': 'inspector', 'order_by': InspectCard.inspector, 'width': '10%'},
+            {'name': 'Activa', 'data': 'asset.name', 'order_by': Asset.name, 'width': '10%'},
+            {'name': 'Controle fiche', 'data': 'template.name', 'order_by': ControlCardTemplate.name, 'width': '10%'},
+            {'name': 'Actief', 'data': 'active', 'order_by': InspectCard.active, 'width': '1%'},
+            {'name': 'Info', 'data': 'info', 'order_by': InspectCard.info, 'width': '10%'},
+        ],
+        'filter': ['date_before', 'date_after'],
+        'buttons' : [],
+        'floating_menu' : inspect_menu,
+        'href': [
+            {'attribute': '["date"]', 'route': '"inspect.view"', 'id': '["id"]'},
+            {'attribute': '["template"]["name"]', 'route': '"management.control.view"', 'id': '["template"]["id"]'},
+            {'attribute': '["asset"]["name"]', 'route': '"asset.view"', 'id': '["asset"]["id"]'},
         ],
     },
 }

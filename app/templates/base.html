@@ -26,6 +26,7 @@
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('asset.assets') }}">Activa</a></li>
+                    <li><a href="{{ url_for('inspect.show') }}">Inspectie</a></li>
                     <li><a href="{{ url_for('invoice.invoices') }}">Facturen</a></li>
                     <li><a href="{{ url_for('device.devices') }}">Toestellen</a></li>
                     <li><a href="{{ url_for('supplier.suppliers') }}">Leveranciers</a></li>
@@ -39,7 +40,7 @@
                                 <li><a href="{{ url_for('management.admin.show') }}">Documenten</a></li>
                                 <li><a href="{{ url_for('management.device_category.show') }}">Toestel Categorieën</a></li>
                                 <li><a href="{{ url_for('management.asset_location.show') }}">Locaties</a></li>
-                                <li><a href="{{ url_for('management.control.show') }}">Controle fiches</a></li>
+                                <li><a href="{{ url_for('management.control.show') }}">Inspectie fiches</a></li>
                             </ul>
                         </li>
                     {% endif %}

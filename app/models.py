@@ -132,6 +132,8 @@ class Asset(db.Model):
     quantity = db.Column(db.Integer, default=1)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id', ondelete='CASCADE'))
     location_id = db.Column(db.Integer, db.ForeignKey('asset_locations.id', ondelete='CASCADE'))
+    inspections = db.relationship('InspectCard', cascade='all, delete', backref='asset', lazy='dynamic')
+
 
     def __repr__(self):
         return '<Asset: {}>'.format(self.name)
@@ -440,15 +442,16 @@ class ControlCardTemplate(db.Model):
     name = db.Column(db.String(256))
     info = db.Column(db.String(1024), default='')
     active = db.Column(db.Boolean, default=True)
-    checks = db.relationship('ControlCheck', cascade='all, delete', backref='template', lazy='dynamic')
+    checks = db.relationship('ControlCheckTemplate', cascade='all, delete', backref='template', lazy='dynamic')
     standards = db.Column(db.String(1024), default='')
     devices = db.relationship('Device', backref='control_template', lazy='dynamic')
+    inspect_cards = db.relationship('InspectCard', backref='template', lazy='dynamic')
 
     def __repr__(self):
         return f'{self.name}'
 
     def ret_dict(self):
-        return {'id':self.id, 'name':self.name, 'active': self.active, 'info': self.info, 'standards': self.standards}
+        return {'id':self.id, 'name':self.name, 'active': boolean_to_dutch(self.active), 'info': self.info, 'standards': self.standards}
 
     @staticmethod
     def get_list_for_select(active=True):
@@ -487,8 +490,8 @@ class ControlCardTemplate(db.Model):
         return template
 
 
-class ControlCheck(db.Model):
-    __tablename__ = 'control_checks'
+class ControlCheckTemplate(db.Model):
+    __tablename__ = 'control_check_templates'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256))
@@ -502,3 +505,41 @@ class ControlCheck(db.Model):
 
     def ret_dict(self):
         return {'id':self.id, 'name':self.name}
+
+
+class InspectCard(db.Model):
+    __tablename__ = 'inspect_cards'
+
+    id = db.Column(db.Integer, primary_key=True)
+    inspector = db.Column(db.String(256))
+    date = db.Column(db.Date)
+    info = db.Column(db.String(1024), default='')
+    active = db.Column(db.Boolean, default=True)
+    card_template_id = db.Column(db.Integer, db.ForeignKey('control_card_templates.id', ondelete='CASCADE'))
+    asset_id = db.Column(db.Integer, db.ForeignKey('assets.id', ondelete='CASCADE'))
+    checks = db.relationship('InspectCheck', cascade='all, delete', backref='card', lazy='dynamic')
+
+    def __repr__(self):
+        return f'{self.inspector}/{self.date}'
+
+    def ret_dict(self):
+        return {'id': self.id, 'inspector':self.inspector, 'date': self.date.strftime('%d-%m-%Y'),
+                'active': boolean_to_dutch(self.active), 'info': self.info, 'template': self.template.ret_dict(),
+                'asset': self.asset.ret_dict()}
+
+class InspectCheck(db.Model):
+    __tablename__ = 'inspect_checks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    result = db.Column(db.String(256))
+    remark = db.Column(db.String(256))
+    index = db.Column(db.Integer)
+    card_id = db.Column(db.Integer, db.ForeignKey('inspect_cards.id', ondelete='CASCADE'))
+
+    def __repr__(self):
+        return f'{self.result}/{self.index}/{self.remark}'
+
+    def ret_dict(self):
+        return {'id':self.id, 'result': self.result, 'index': self.index, 'remark': self.remark}
+
+

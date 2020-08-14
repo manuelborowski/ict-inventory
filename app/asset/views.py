@@ -252,3 +252,14 @@ def download():
     except Exception as e:
         flash('Kan niet downloaden  ')
     return ('', 204)
+
+
+@asset.route('/asset/add_inspection/<int:id>', methods=['GET', 'POST'])
+@login_required
+def add_inspection(id=-1):
+    asset = Asset.query.get(id)
+    control_template = asset.purchase.device.control_template
+    if control_template.name == 'NVT':
+        flash("Je kan geen inspectie doen op deze activa")
+        return redirect(url_for('asset.assets'))
+    return redirect(url_for('inspect.add_from_asset', asset_id=id))

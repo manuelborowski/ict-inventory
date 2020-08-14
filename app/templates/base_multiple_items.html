@@ -6,7 +6,7 @@
 {% block content2 %}
 <div class="content-section">
   <div class="center" style="width:99%;">
-{% if filter %}
+{% if filter|length > 0 %}
       <form method="post" enctype=multipart/form-data>
       <table class="table-condensed ">
           <tr>
@@ -89,8 +89,8 @@
 {% endif %}
       </form>
       <form method="post" action="{{ url_for(config.subject + '.add') }}" novalidate>
-      {% if not title == "users" or current_user.is_at_least_admin %}
-          <hr />
+      {% if "add" in config.buttons and current_user.is_at_least_admin %}
+          <hr/>
           <div class="btn-group" role="group" aria-label="...">
                <input class="btn btn-default" id="add" name="add" type="submit" value="Voeg {{config.title}} toe">
           </div>

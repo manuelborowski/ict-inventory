@@ -11,7 +11,7 @@ from app.documents import  get_doc_path, get_doc_list, upload_doc, document_type
 
 import os
 import unicodecsv
-from app.models import Asset, Device, Supplier, Purchase, ControlCheck, ControlCardTemplate
+from app.models import Asset, Device, Supplier, Purchase, ControlCheckTemplate, ControlCardTemplate
 
 import zipfile, xlrd
 
@@ -182,8 +182,8 @@ def import_controlcard_templates():
                         is_controlcard = False
                         break
 
-                    if not header_found and name_found and len(row) > 5 and row[5].ctype == xlrd.XL_CELL_TEXT and \
-                            'Opmerkingen' in row[5].value:
+                    if not header_found and name_found and len(row) > 5 and row[2].ctype == xlrd.XL_CELL_TEXT and \
+                            'Ja' in row[2].value:
                         header_found = True
                         if row[1].ctype == xlrd.XL_CELL_TEXT and len(row[1].value) > 0:
                             standards.append(row[1].value.strip())
@@ -206,12 +206,13 @@ def import_controlcard_templates():
 
                     template = ControlCardTemplate(name=name, info=worksheet.name.strip(), standards=', '.join(standards))
                     for i, c in enumerate(checks):
-                        check = ControlCheck(name=c[0], is_check=c[1], index=i)
+                        check = ControlCheckTemplate(name=c[0], is_check=c[1], index=i)
                         db.session.add(check)
                         template.checks.append(check)
                     template_cache[name] = template
                     db.session.add(template)
-                    db.session.commit()
+
+            db.session.commit()
 
 
     except Exception as e:
