@@ -41,10 +41,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.20 : clean up of several topics, added inspect topic
 # V2.21 : added overview of inspections per asset
 # V3.0 : introduce invoices and inspections
+# V3.1 : included database functions in models
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.0')
+    return dict(version = 'V3.1')
 
 
 #enable logging

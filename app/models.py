@@ -543,3 +543,28 @@ class InspectCheck(db.Model):
         return {'id':self.id, 'result': self.result, 'index': self.index, 'remark': self.remark}
 
 
+# database functions
+# CREATE DEFINER=`root`@`localhost` FUNCTION `asset_value`(id int) RETURNS decimal(10,2)
+# BEGIN
+# 	DECLARE nbr decimal(10, 2);
+#     DECLARE purchase_value decimal(10, 2);
+#     select sum(assets.quantity) into nbr
+#     from purchases
+# 	join assets on assets.purchase_id = purchases.id
+# 	where purchases.id = id;
+#     select purchases.value into purchase_value
+#     from purchases
+# 	where purchases.id = id;
+#     return purchase_value / nbr;
+# END
+#
+#
+# CREATE DEFINER=`root`@`localhost` FUNCTION `nbr_assets`(id int) RETURNS int(11)
+# BEGIN
+# 	DECLARE nbr INT;
+#     select sum(assets.quantity) into nbr
+#     from purchases
+# 	join assets on assets.purchase_id = purchases.id
+# 	where purchases.id = id;
+#     return nbr;
+# END
