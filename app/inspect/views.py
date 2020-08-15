@@ -81,6 +81,49 @@ def add_from_asset(asset_id=-1):
                            check_template_data=check_template_data)
 
 
+@inspect.route('/inspect/overview_from_asset/<int:asset_id>', methods=['GET', 'POST'])
+@login_required
+@user_plus_required
+def overview_from_asset(asset_id=-1):
+    asset = Asset.query.get(asset_id)
+    if not asset.inspections: return redirect (url_for('inspection.show'))
+    all_checks_data = []
+    for inspect in sorted(asset.inspections, key=lambda x: x.date):
+        inspect_check_cache = {c.index: c for c in inspect.checks}
+        template_check_cache = {c.index: c for c in inspect.template.checks}
+        check_data = []
+        for i in sorted(template_check_cache):
+            if not template_check_cache[i].active: continue
+            result = inspect_check_cache[i].result if template_check_cache[i].is_check else 'na'
+            remark = inspect_check_cache[i].remark if template_check_cache[i].is_check else ''
+            check_data.append({
+                'is_check': template_check_cache[i].is_check,
+                'result': result,
+                'remark': remark,
+            })
+        date = inspect.date.strftime('%d-%m-%Y').replace('-', '<br>')
+        all_checks_data.append({
+            'date': date,
+            'inspector': inspect.inspector,
+            'info': inspect.info,
+            'checks': check_data
+        })
+    template = asset.inspections[0].template
+    inspection_items = [{
+        'name': c.name,
+        'is_check': c.is_check,
+    } for c in sorted(template.checks, key=lambda x: x.index)]
+    inspect_overview_data = {
+        'asset': asset.name,
+        'template_name': template.name,
+        'template_standards': template.standards,
+        'template_info': template.info,
+        'template_items': inspection_items,
+        'all_checks': all_checks_data
+    }
+
+    return render_template('inspect/inspection_overview.html', title='Overzicht inspecties', overview_data=inspect_overview_data)
+
 @inspect.route('/inspect/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 @user_plus_required

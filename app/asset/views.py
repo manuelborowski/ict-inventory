@@ -263,3 +263,13 @@ def add_inspection(id=-1):
         flash("Je kan geen inspectie doen op deze activa")
         return redirect(url_for('asset.assets'))
     return redirect(url_for('inspect.add_from_asset', asset_id=id))
+
+@asset.route('/asset/inspection_overview/<int:id>', methods=['GET', 'POST'])
+@login_required
+def inspection_overview(id=-1):
+    asset = Asset.query.get(id)
+    control_template = asset.purchase.device.control_template
+    if control_template.name == 'NVT':
+        flash("Deze activa heeft geen inspecties")
+        return redirect(url_for('asset.assets'))
+    return redirect(url_for('inspect.overview_from_asset', asset_id=id))

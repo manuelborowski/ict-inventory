@@ -39,10 +39,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.18 : add, edit, view control card templates
 # V2.19 : check-lines can be moved up and down
 # V2.20 : clean up of several topics, added inspect topic
+# V2.21 : added overview of inspections per asset
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.20')
+    return dict(version = 'V2.21')
 
 
 #enable logging

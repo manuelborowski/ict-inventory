@@ -22,7 +22,7 @@
             <tr>
                 <th data-override="check-index">index</th>
                 <th data-override="is-check" >is_check</th>
-                <th data-override="name">Controle item</th>
+                <th data-override="name">Inspectie item</th>
                 {%  if role == "view" %}
                 <th data-override="result">Ok</th>
                 {%  else %}
@@ -43,6 +43,7 @@
 <script>
     var check_template_data = {{ (check_template_data or []) | tojson }}
     var view_only = {{ (role == 'view')|tojson }}
+    var add_only = {{ (role == 'add')|tojson }}
 </script>
 <script type="text/javascript"> {% include "inspect/inspect.js" %}</script>
 {% endblock %}

@@ -4,9 +4,10 @@ var check_table = $("#check-table tbody");
 $(document).ready(function() {
     var date_element = $("#date");
     date_element.datepicker(datepicker_options);
-    var now = new Date();
-    date_element.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
-
+    if (add_only) {
+        var now = new Date();
+        date_element.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
+    }
 
     // if(view_only) {$(".disable").attr("disabled", true);}
 
@@ -29,8 +30,6 @@ $(document).ready(function() {
 
     // populate the purchase table
     $.each(check_template_data, function (i, v){
-        // $("#choice-" + i).val(v.device_id);
-        // $("#remark-" + i).val(v.commissioning);
         var row = "<tr id='" + i + "'>" +
             "<td>" + v.index+ "</td>" +
             "<td>" + v.is_check + "</td>"
