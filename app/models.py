@@ -86,6 +86,16 @@ class User(UserMixin, db.Model):
         return {'id':self.id, 'email':self.email, 'username':self.username, 'first_name':self.first_name, 'last_name':self.last_name,
                 'is_admin': self.is_admin, 'level': User.LEVEL.i2s(self.level)}
 
+    @staticmethod
+    def default_init():
+        user = User.query.first()
+        if not user.level:
+            users = User.query.all()
+            for user in users:
+                user.level = User.LEVEL.ADMIN
+            db.session.commit()
+
+
 # Set up user_loader
 @login_manager.user_loader
 def load_user(user_id):

@@ -42,10 +42,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.21 : added overview of inspections per asset
 # V3.0 : introduce invoices and inspections
 # V3.1 : included database functions in models
+# V3.2 : default user initialization
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.1')
+    return dict(version = 'V3.2')
 
 
 #enable logging
@@ -120,6 +121,9 @@ if 'db' in sys.argv:
     from app import models
 else:
     create_admin(db) # Only once
+
+    #init default users level
+    models.User.default_init()
 
     #init default supplier
     models.Supplier.default_init()
