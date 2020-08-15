@@ -9,8 +9,6 @@ $(document).ready(function() {
         date_element.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
     }
 
-    // if(view_only) {$(".disable").attr("disabled", true);}
-
     // when the save-button is clicked, convert the purchases table to a json table
     $("#submit").click(function(){
         var check_table_json = $("#check-table").tableToJSON({
@@ -42,7 +40,7 @@ $(document).ready(function() {
                 "<td><input type='radio' id='no-" + i + "' name='check-" + i + "' value='no'></td>" +
                 "<td><input type='radio' id='na-" + i + "' name='check-" + i + "' value='na' checked></td>"
             }
-                row += "<td><input type='text' id='remark-" + i + "'></td>"
+                row += "<td><input type='text' id='remark-" + i + "' size='100'></td>"
         } else {
             row += "<td id='name-" + i + "' style='font-size:20px;color:#ff4500;'></td>"
         }
@@ -63,5 +61,4 @@ $(document).ready(function() {
     });
 
     if(view_only) {$("#check-table :input").attr("disabled", true);}
-    // add_floating_menu($("#invoice_floating_menu"), purchase_table, "contextmenu", floating_menu_cb, null);
 });

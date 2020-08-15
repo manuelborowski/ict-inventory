@@ -18,7 +18,7 @@ tables_configuration = {
             {'name': 'Locatie', 'data':'location.name', 'order_by': AssetLocation.name},
             {'name': 'Datum', 'data':'purchase.invoice.since', 'order_by': Invoice.since},
             {'name': 'Bedrag', 'data':'purchase.asset_value', 'order_by': Purchase.asset_value},
-            {'name': 'Controle Fiche', 'data': 'purchase.device.control_template.name', 'order_by': ControlCardTemplate.name},
+            {'name': 'Inspectie Fiche', 'data': 'purchase.device.control_template.name', 'order_by': ControlCardTemplate.name},
             {'name': 'QR', 'data':'qr_code', 'order_by': Asset.qr_code},
             {'name': 'Status', 'data':'status', 'order_by': Asset.status},
             {'name': 'Leverancier', 'data':'purchase.invoice.supplier.name', 'order_by': Supplier.name},

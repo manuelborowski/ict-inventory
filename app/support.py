@@ -204,6 +204,9 @@ def build_filter(table, paginate=True):
             search_constraints.append(InspectCard.info.like(search_value))
         if Invoice.info in column_list:
             search_constraints.append(Invoice.info.like(search_value))
+        if ControlCardTemplate.name in column_list:
+            search_constraints.append(ControlCardTemplate.name.like(search_value))
+
 
         if search_constraints:
             _filtered_list = _filtered_list.filter(or_(*search_constraints))

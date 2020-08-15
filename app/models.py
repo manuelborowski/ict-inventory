@@ -132,7 +132,7 @@ class Asset(db.Model):
     quantity = db.Column(db.Integer, default=1)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id', ondelete='CASCADE'))
     location_id = db.Column(db.Integer, db.ForeignKey('asset_locations.id', ondelete='CASCADE'))
-    inspections = db.relationship('InspectCard', cascade='all, delete', backref='asset', lazy='dynamic')
+    inspections = db.relationship('InspectCard', cascade='all, delete', backref='asset', lazy='joined')
 
 
     def __repr__(self):

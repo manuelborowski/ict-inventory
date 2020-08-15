@@ -40,10 +40,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V2.19 : check-lines can be moved up and down
 # V2.20 : clean up of several topics, added inspect topic
 # V2.21 : added overview of inspections per asset
+# V3.0 : introduce invoices and inspections
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V2.21')
+    return dict(version = 'V3.0')
 
 
 #enable logging

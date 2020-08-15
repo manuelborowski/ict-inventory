@@ -86,9 +86,12 @@ def add_from_asset(asset_id=-1):
 @user_plus_required
 def overview_from_asset(asset_id=-1):
     asset = Asset.query.get(asset_id)
-    if not asset.inspections: return redirect (url_for('inspection.show'))
+    inspections = asset.inspections
+    if not inspections:
+        flash('Er zijn geen inspectie fiches voor deze activa')
+        return redirect (url_for('asset.assets'))
     all_checks_data = []
-    for inspect in sorted(asset.inspections, key=lambda x: x.date):
+    for inspect in sorted(inspections, key=lambda x: x.date):
         inspect_check_cache = {c.index: c for c in inspect.checks}
         template_check_cache = {c.index: c for c in inspect.template.checks}
         check_data = []
@@ -108,7 +111,7 @@ def overview_from_asset(asset_id=-1):
             'info': inspect.info,
             'checks': check_data
         })
-    template = asset.inspections[0].template
+    template = inspections[0].template
     inspection_items = [{
         'name': c.name,
         'is_check': c.is_check,
