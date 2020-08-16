@@ -37,13 +37,22 @@ class AddForm(EditForm):
     pass
 
 class ViewForm(FlaskForm):
+    def __init__(self, *args, **kwargs):
+        super(ViewForm, self).__init__(*args, **kwargs)
+        self.risk_analysis.choices = list(zip([''] + get_doc_list('risk_analysis'), [''] + get_doc_list('risk_analysis')))
+        self.photo.choices = list(zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo')))
+        self.manual.choices = list(zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual')))
+        self.safety_information.choices = list(zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information')))
+        self.category.choices = DeviceCategory.get_list_for_select()
+
     category = StringField('Categorie', render_kw={'readonly':''})
     brand = StringField('Merk', render_kw={'readonly':''})
     type = StringField('Type', render_kw={'readonly':''})
     power = DecimalField('Vermogen', render_kw={'readonly':''})
     ce = BooleanField('CE', render_kw={'disabled':''})
     control_template = StringField('Controle Fiche', render_kw={'readonly':''})
-    risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
+    risk_analysis = NonValidatingSelectFields('Risicoanalyse', render_kw={'disabled':''})
+    # risk_analysis = StringField('Risicoanalyse', render_kw={'readonly':''})
     manual = StringField('Handleiding', render_kw={'readonly':''})
     safety_information = StringField('VIK', render_kw={'readonly':''})
     photo = StringField('Foto', render_kw={'readonly':''})

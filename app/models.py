@@ -168,6 +168,15 @@ class Asset(db.Model):
                 asset.location_id = locations[asset.location]
             db.session.commit()
 
+    @staticmethod
+    def default_init():
+        asset = Asset.query.first()
+        if not asset.quantity:
+            assets = Asset.query.all()
+            for asset in assets:
+                asset.quantity = 1
+            db.session.commit()
+
 
 class AssetLocation(db.Model):
     __tablename__ = 'asset_locations'

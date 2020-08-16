@@ -55,28 +55,28 @@ function upload_commissioning_file(row_id) {
 
 //when a new commissioning is uploaded, renew the commissioning-option-list and select the new commissioning file
 function update_commissioning_select(opaque, file_list) {
-    console.log(opaque, file_list);
     if (file_list.length > 0) {
         var file_name = file_list[0].name;
+        var row_id = opaque;
+        var jd = {
+            opaque: {row_id: row_id, file_name: file_name},
+            action: "get-document-options",
+            document: "commissioning"
+        }
+        $.getJSON(Flask.url_for("base.ajax_request", {'jds': JSON.stringify(jd)}),
+            function (jd) {
+                if (jd.status) {
+                    commissioning_options = create_option_list(jd.data.options);
+                    var row_id = jd.data.opaque.row_id;
+                    var file_name = jd.data.opaque.file_name;
+                    var commissioning_element = $("#commissioning-" + row_id);
+                    commissioning_element.html(commissioning_options);
+                    commissioning_element.val(file_name);
+                } else {
+                    alert(jd.details);
+                }
+            });
     }
-    var row_id = opaque;
-    var jd = {
-        "opaque": {row_id: row_id, file_name: file_name},
-        "action": "get-commissioning-list"
-    }
-    $.getJSON(Flask.url_for("base.ajax_request", {'jds' : JSON.stringify(jd)}),
-        function(jd) {
-            if (jd.status) {
-                commissioning_options = create_option_list(jd.data.commissioning_options);
-                var row_id = jd.data.opaque.row_id;
-                var file_name = jd.data.opaque.file_name;
-                var commissioning_element = $("#commissioning-" + row_id);
-                commissioning_element.html(commissioning_options);
-                commissioning_element.val(file_name);
-            } else {
-                alert(jd.details);
-            }
-    });
 }
 
 function table_add_row(row_id) {

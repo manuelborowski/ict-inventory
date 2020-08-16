@@ -125,3 +125,12 @@ p.copyright {
     margin-left: auto;
     margin-right: auto;
 }
+
+.form-control {
+    width: 50%;
+    display: inline-block;
+}
+
+.control-label {
+    width: 10%;
+}

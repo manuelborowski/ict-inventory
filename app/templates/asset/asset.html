@@ -26,34 +26,29 @@
     {{ wtf.form_field(form.power) }}
     {{ wtf.form_field(form.ce) }}
 
-    <div class="input-group">
-        {{ wtf.form_field(form.risk_analysis) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="risk_analysis_download" formaction="{{ url_for('asset.download') }}" value="Download">
-        </div>
+    <div class="form-group "><label class="control-label" for="risk_analysis">Risicoanalyse</label>
+        <input class="form-control" id="risk_analysis" readonly="" type="text" value="{{ form.risk_analysis.data }}">
+        <input type="button" onclick="download_file('risk_analysis')" value="Download" hidden>
     </div>
 
-    <div class="input-group">
-        {{ wtf.form_field(form.manual) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="manual_download" formaction="{{ url_for('asset.download') }}" value="Download">
-        </div>
-    </div>
-    <div class="input-group">
-        {{ wtf.form_field(form.safety_information) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="safety_information_download" formaction="{{ url_for('asset.download') }}" value="Download">
-        </div>
+    <div class="form-group "><label class="control-label" for="manual">Handleiding</label>
+        <input class="form-control" id="manual" readonly="" type="text" value="{{ form.manual.data }}">
+        <input type="button" onclick="download_file('manual')" value="Download">
     </div>
 
-    <div class="input-group">
-        {{ wtf.form_field(form.photo) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="photo_download" formaction="{{ url_for('asset.download') }}" value="Download">
-        </div>
+    <div class="form-group "><label class="control-label" for="safety_information">VIK</label>
+        <input class="form-control" id="safety_information"  readonly="" type="text" value="{{ form.safety_information.data }}">
+        <input type="button" onclick="download_file('safety_information')" value="Download">
     </div>
 
-    <img src="../../static/photo/{{ form.photo.data }}" height="377">
+    <div class="form-group "><label class="control-label" for="photo">Foto</label>
+        <input class="form-control" id="photo" readonly="" type="text" value="{{ form.photo.data }}">
+        <input type="button" onclick="download_file('photo')" value="Download">
+    </div>
+
+    {% if form.photo.data %}
+        <img src="../../static/photo/{{ form.photo.data }}" height="377">
+    {%  endif %}
     </br>
     </br>
 

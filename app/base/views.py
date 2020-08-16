@@ -11,7 +11,7 @@ import json
 @login_required
 @user_plus_required
 def download(document, file):
-    return download_single_document(document,file)
+    return download_single_document(document, file)
 
 
 @base.route('/base/upload/<string:document>/<string:url>', methods=['GET', 'POST'])
@@ -42,9 +42,10 @@ def upload_ajax():
 def ajax_request(jds):
     try:
         jd = json.loads(jds)
-        if jd['action'] == 'get-commissioning-list':
+        if jd['action'] == 'get-document-options':
+            document = jd['document']
             data = {
-                'commissioning_options': list(zip([''] + get_doc_list('commissioning'), [''] + get_doc_list('commissioning'))),
+                'options': list(zip([''] + get_doc_list(document), [''] + get_doc_list(document))),
                 'opaque': jd['opaque'],
             }
             return jsonify({"status": True, "data": data})

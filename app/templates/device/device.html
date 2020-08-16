@@ -1,6 +1,3 @@
-<!-- app/templates/auth/user.html -->
-<!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
-
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base_single_item.html" %}
 
@@ -11,59 +8,46 @@
     {{ wtf.form_field(form.power) }}
     {{ wtf.form_field(form.ce) }}
     {{ wtf.form_field(form.control_template) }}
-    <div class="input-group">
-        {{ wtf.form_field(form.risk_analysis) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="risk_analysis_download" formaction="{{ url_for('asset.download') }}" value="Download">
-            {% if role == "edit" %}
-                <input class="btn btn-default" id="risk_analysis_upload" type="button" value="Upload">
-            {% endif %}
-        </div>
+    {{ wtf.form_field(form.risk_analysis) }}
+
+{#    <div class="form-group"><label class="control-label" for="risk_analysis">Risicoanalyse</label>#}
+{#        <select class="form-control" id="risk_analysis" name="risk_analysis" disabled></select>#}
+{#        <input type="button" onclick="download_file('risk_analysis')" value="Download">#}
+{#        <input type="button" onclick="upload_file('risk_analysis')" value="Upload" hidden>#}
+{#    </div>#}
+
+
+    <div class="form-group "><label class="control-label" for="manual">Handleiding</label>
+        <input class="form-control" id="manual" readonly="" type="text" value="{{ form.manual.data }}">
+        <input type="button" onclick="download_file('manual')" value="Download">
+        <input type="button" onclick="upload_file('manual')" value="Upload" hidden>
     </div>
 
-    <div class="input-group">
-        {{ wtf.form_field(form.manual) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="manual_download" formaction="{{ url_for('asset.download') }}" value="Download">
-            {% if role == "edit" %}
-                <input class="btn btn-default" id="manual_upload" type="button" value="Upload">
-            {% endif %}
-        </div>
-    </div>
-    <div class="input-group">
-        {{ wtf.form_field(form.safety_information) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="safety_information_download" formaction="{{ url_for('asset.download') }}" value="Download">
-            {% if role == "edit" %}
-                <input class="btn btn-default" id="safety_information_upload" type="button" value="Upload">
-            {% endif %}
-        </div>
+    <div class="form-group "><label class="control-label" for="safety_information">VIK</label>
+        <input class="form-control" id="safety_information"  readonly="" type="text" value="{{ form.safety_information.data }}">
+        <input type="button" onclick="download_file('safety_information')" value="Download">
+        <input type="button" onclick="upload_file('safety_information')" value="Upload" hidden>
     </div>
 
-    <div class="input-group">
-        {{ wtf.form_field(form.photo) }}
-        <div class="input-group-btn">
-            <input class="btn btn-default" type="submit" name="photo_download" formaction="{{ url_for('asset.download') }}" value="Download">
-            {% if role == "edit" %}
-                <input class="btn btn-default" id="photo_upload" type="button" value="Upload">
-            {% endif %}
-        </div>
+    <div class="form-group "><label class="control-label" for="photo">Foto</label>
+        <input class="form-control" id="photo" readonly="" type="text" value="{{ form.photo.data }}">
+        <input type="button" onclick="download_file('photo')" value="Download">
+        <input type="button" onclick="upload_file('photo')" value="Upload" hidden>
     </div>
 
-    <img src="../../static/photo/{{ form.photo.data }}" height="377">
-    </br>
-    </br>
+    {% if form.photo.data %}
+        <img src="../../static/photo/{{ form.photo.data }}" height="377">
+    {%  endif %}
+    <br>
 
-    <input id='risk_analysis_fileid' type='file' name='risk_analysis_filename' style="display:none" hidden/>
-    <input id='photo_fileid' type='file' name='photo_filename' style="display:none" hidden/>
-    <input id='manual_fileid' type='file' name='manual_filename' style="display:none" hidden/>
-    <input id='safety_information_fileid' type='file' name='safety_information_filename' style="display:none" hidden/>
+
 {% endblock %}
-{% block script3 %}
-    $(document).ready(function() {
-        init_up_download('risk_analysis', 'device');
-        init_up_download('manual', 'device');
-        init_up_download('photo', 'device');
-        init_up_download('safety_information', 'device');
-    });
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var view_only = {{ (role == "view")|tojson }}
+        $("#risk_analysis").html({{ form.risk_analysis|tojson }});
+    </script>
+    <script type="text/javascript"> {% include "device/device.js" %}</script>
 {% endblock %}

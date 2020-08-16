@@ -41,3 +41,9 @@ $(document).ready(function() {
         });
     }
 });
+
+function download_file(document) {
+    var file = $("#" + document).val();
+    download_single_file(document, file);
+}
+

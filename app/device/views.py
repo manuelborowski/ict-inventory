@@ -77,14 +77,8 @@ def edit(id):
     if form.validate_on_submit():
         if request.form['button'] == 'Bewaar':
             form.populate_obj(device)
-            #check if a document needs to be uploaded
-            try:
-                upload_doc(request)
-            except Exception as e:
-                flash('Kan niet uploaden')
             db.session.commit()
             #flash(_(u'You have edited device {}/{}').format(device.brand, device.type))
-
         return redirect(url_for('device.devices'))
 
     return render_template('device/device.html', form=form, title='Pas een toestel aan', role='edit', subject='device', route='device.devices')

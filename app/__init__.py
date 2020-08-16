@@ -144,6 +144,9 @@ else:
     models.ControlCardTemplate.default_init()
     models.Device.device_control_template_init()
 
+    #init default asset quantity (1)
+    models.Asset.default_init()
+
     #flask db migrate
     #flask db upgrade
     #uncheck when migrating database

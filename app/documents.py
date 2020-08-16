@@ -74,7 +74,7 @@ def upload_doc(request):
 
 def download_single_document(document_type, file_name):
     try:
-        return send_file(os.path.join(app.root_path, '..', get_doc_path(document_type), file_name), as_attachment=True)
+        return send_file(os.path.join(app.root_path, '..', get_doc_path(document_type), file_name).replace('"', ''), as_attachment=True)
     except Exception as e:
         pass
     return ('', 204)

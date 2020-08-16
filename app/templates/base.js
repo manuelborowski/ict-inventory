@@ -44,7 +44,7 @@ var datepicker_options = {
 
 function download_single_file(document_type, file_name) {
     var download_form = $("#download-form")
-    var href = Flask.url_for("base.download", {document: document_type, file: file_name});
+    var href = Flask.url_for("base.download", {document: document_type, file: JSON.stringify(file_name)});
     download_form.prop("action", href);
     $("#download-submit").click();
 }
@@ -96,14 +96,12 @@ function upload_files_ajax() {
     });
 }
 
-function create_option_list(list) {
+function create_option_list(list, selected_value="") {
     var out = []
     $.each(list, function (i, v){
-        if (v[0] == 'disabled') {
-            out += "<option value='" + v[0] + "' disabled>" + v[1] + "</option>";
-        } else {
-            out += "<option value='" + v[0] + "'>" + v[1] + "</option>";
-        }
+        var disabled = (v[0] == 'disabled') ? "disabled " : "";
+        var selected = (v[0] == selected_value) ? "selected " : "";
+        out += "<option value='" + v[0] + "' " + disabled + selected + ">" + v[1] + "</option>";
     });
     return out;
 }
