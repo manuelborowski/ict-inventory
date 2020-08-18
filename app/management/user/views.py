@@ -74,6 +74,7 @@ def edit(id):
 def view(id):
     user = User.query.get_or_404(id)
     form = ViewForm(obj=user)
+    form.level.data = User.LEVEL.i2s(user.level)
     if form.validate_on_submit():
         return redirect(url_for('management.user.users'))
     return render_template('management/user/user.html', form=form, title='View a user', role='view', subject='management.user')

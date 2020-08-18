@@ -11,14 +11,14 @@ class CategoryFilter(FlaskForm):
         super(CategoryFilter, self).__init__(*args, **kwargs)
         self.category.choices=DeviceCategory.get_list_for_select_first_empty()
 
-    category = SelectField('', render_kw={'style': 'width:100%'})
+    category = SelectField('')
 
 class StatusFilter(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(StatusFilter, self).__init__(*args, **kwargs)
         self.status.choices=list(zip(Asset.Status.get_list_with_empty(), Asset.Status.get_list_with_empty()))
 
-    status = SelectField('', render_kw={'style': 'width:100%'})
+    status = SelectField('')
 
 class SupplierFilter(FlaskForm):
     def __init__(self, *args, **kwargs):
@@ -27,7 +27,7 @@ class SupplierFilter(FlaskForm):
         sl.insert(0, '')
         self.supplier.choices=list(zip(sl, sl))
 
-    supplier = SelectField('', render_kw={'style': 'width:100%'})
+    supplier = SelectField('')
 
 class DeviceFilter(FlaskForm):
     def __init__(self, *args, **kwargs):
@@ -36,7 +36,7 @@ class DeviceFilter(FlaskForm):
         dl.insert(0, '')
         self.device.choices=list(zip(dl, dl))
 
-    device = SelectField('', render_kw={'style': 'width:100%'})
+    device = SelectField('')
 
 class NonValidatingSelectFields(SelectField):
     def pre_validate(self, form):

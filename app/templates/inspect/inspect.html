@@ -12,11 +12,17 @@
 {%  endblock %}
 
 {% block content3 %}
-    {{ wtf.form_field(form.inspector) }}
-    {{ wtf.form_field(form.date) }}
-    {{ wtf.form_field(form.info) }}
-    {{ wtf.form_field(form.active) }}
-
+    <div style="display:flex">
+        <div style="width: 50%">
+            {{ wtf.form_field(form.inspector) }}
+            {{ wtf.form_field(form.date) }}
+            {{ wtf.form_field(form.info) }}
+            {{ wtf.form_field(form.active) }}
+        </div>
+        <div>
+            test
+        </div>
+    </div>
     <table id="check-table" class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -24,11 +30,12 @@
                 <th data-override="is-check" >is_check</th>
                 <th data-override="name">Inspectie item</th>
                 {%  if role == "view" %}
-                <th data-override="result">Ok</th>
+                <th data-override="result">Resultaat</th>
                 {%  else %}
-                <th data-override="result">Ja</th>
-                <th data-override="no">Nee</th>
-                <th data-override="na">NVT</th>
+                <th data-override="result">4</th>
+                <th>3</th>
+                <th>2</th>
+                <th>1</th>
                 {%  endif %}
                 <th data-override="remark">Opmerking</th>
             </tr>
@@ -42,6 +49,7 @@
 {{ super() }}
 <script>
     var check_template_data = {{ (check_template_data or []) | tojson }}
+    var check_nbr_levels = {{ (check_nbr_levels or 0) | tojson }}
     var view_only = {{ (role == 'view')|tojson }}
     var add_only = {{ (role == 'add')|tojson }}
 </script>

@@ -461,6 +461,7 @@ class ControlCardTemplate(db.Model):
     name = db.Column(db.String(256))
     info = db.Column(db.String(1024), default='')
     active = db.Column(db.Boolean, default=True)
+    nlevels = db.Column(db.Integer, default=4)
     checks = db.relationship('ControlCheckTemplate', cascade='all, delete', backref='template', lazy='dynamic')
     standards = db.Column(db.String(1024), default='')
     devices = db.relationship('Device', backref='control_template', lazy='dynamic')
@@ -508,6 +509,14 @@ class ControlCardTemplate(db.Model):
             db.session.commit()
         return template
 
+    @staticmethod
+    def level_to_color(level):
+        if level == 4: return 'green'
+        elif level == 3: return 'yellow'
+        elif level == 2: return 'orange'
+        elif level == 1: return 'red'
+        return 'red'
+
 
 class ControlCheckTemplate(db.Model):
     __tablename__ = 'control_check_templates'
@@ -550,7 +559,7 @@ class InspectCheck(db.Model):
     __tablename__ = 'inspect_checks'
 
     id = db.Column(db.Integer, primary_key=True)
-    result = db.Column(db.String(256))
+    result = db.Column(db.Integer, default=1)
     remark = db.Column(db.String(256))
     index = db.Column(db.Integer)
     card_id = db.Column(db.Integer, db.ForeignKey('inspect_cards.id', ondelete='CASCADE'))
@@ -559,7 +568,8 @@ class InspectCheck(db.Model):
         return f'{self.result}/{self.index}/{self.remark}'
 
     def ret_dict(self):
-        return {'id':self.id, 'result': self.result, 'index': self.index, 'remark': self.remark}
+        return {'id':self.id, 'result': self.result, 'index': self.index, 'remark': self.remark,
+                'color': ControlCardTemplate.level_to_color(self.result)}
 
 
 # database functions

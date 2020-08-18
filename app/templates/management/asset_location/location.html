@@ -2,7 +2,9 @@
 {% extends "base_single_item.html" %}
 
 {% block content3 %}
-{{ wtf.form_field(form.name) }}
-{{ wtf.form_field(form.active) }}
-{{ wtf.form_field(form.info) }}
+    <div class="form-control-50">
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.active) }}
+        {{ wtf.form_field(form.info) }}
+    </div>
 {% endblock %}

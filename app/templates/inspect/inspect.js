@@ -36,9 +36,13 @@ $(document).ready(function() {
             if (view_only) {
                 row += "<td id='check-" + i + "'></td>"
             } else {
-                row += "<td><input type='radio' id='yes-" + i + "' name='check-" + i + "' value='yes'></td>" +
-                "<td><input type='radio' id='no-" + i + "' name='check-" + i + "' value='no'></td>" +
-                "<td><input type='radio' id='na-" + i + "' name='check-" + i + "' value='na' checked></td>"
+                var checked = "checked";
+                for(var l=check_nbr_levels; l > 0; l--) {
+                    var id = ["level", l, i].join("-");
+                    var check = ["check", i].join("-");
+                    row += "<td><input type='radio' id=" + id + " name=" + check + " value='" + l + "' " + checked + "></td>"
+                    checked = "";
+                }
             }
                 row += "<td><input type='text' id='remark-" + i + "' size='100'></td>"
         } else {
@@ -52,10 +56,10 @@ $(document).ready(function() {
         $("#remark-" + i).val(v.remark);
         if (v.is_check) {
             if (view_only) {
-                var color = v.result == 'na' ? "gray" : v.result == "yes" ? "green" : "red";
-                $("#check-" + i).css("background", color);
+                $("#check-" + i).css("background", v.color);
             } else {
-                $("#" + v.result + "-" + i).prop("checked", true);
+                var id = ["level", v.result, i].join("-");
+                $("#" + id).prop("checked", true);
             }
         }
     });

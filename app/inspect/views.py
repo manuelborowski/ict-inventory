@@ -5,7 +5,7 @@ from .forms import AddForm, EditForm, ViewForm
 from .. import db, log, admin_required, user_plus_required
 from ..documents import upload_doc
 from . import inspect
-from ..models import Asset, InspectCard, InspectCheck
+from ..models import Asset, InspectCard, InspectCheck, ControlCardTemplate
 from ..documents import get_doc_list
 
 from ..support import build_filter, get_ajax_table
@@ -48,7 +48,7 @@ def add(id=-1):
             if check['is-check'] == 'false': continue
             new_check = InspectCheck(index=check['check-index'],
                                      remark=check['remark'],
-                                     result=check['result'],
+                                     result=int(check['result']),
                                      card=card
             )
             db.session.add(new_check)
@@ -78,7 +78,7 @@ def add_from_asset(asset_id=-1):
 
     return render_template('inspect/inspect.html', form=form, title='Voeg een inspectie toe', role='add',
                            route='inspect.show', subject='inspect',
-                           check_template_data=check_template_data)
+                           check_template_data=check_template_data, check_nbr_levels=control_template.nlevels)
 
 
 @inspect.route('/inspect/overview_from_asset/<int:asset_id>', methods=['GET', 'POST'])
@@ -141,7 +141,7 @@ def edit(id):
             if check['is-check'] == 'false': continue
             index = int(check['check-index'])
             check_cache[index].remark = check['remark']
-            check_cache[index].result = check['result']
+            check_cache[index].result = int(check['result'])
         db.session.commit()
         return redirect(url_for('inspect.show'))
 
@@ -162,7 +162,7 @@ def edit(id):
 
     return render_template('inspect/inspect.html', form=form, title='Wijzig een inspectie', role='edit',
                            route='inspect.show', subject='inspect',
-                           check_template_data=check_template_data)
+                           check_template_data=check_template_data, check_nbr_levels=inspect.template.nlevels)
 
 
 @inspect.route('/inspect/view/<int:id>', methods=['GET', 'POST'])
@@ -175,13 +175,17 @@ def view(id):
     check_template_data = []
     for i in sorted(template_check_cache):
         if not template_check_cache[i].active: continue
-        result = inspect_check_cache[i].result if template_check_cache[i].is_check else 'NVT'
-        remark = inspect_check_cache[i].remark if template_check_cache[i].is_check else ''
+        remark = color = result = ''
+        if template_check_cache[i].is_check:
+            result = inspect_check_cache[i].result
+            color = ControlCardTemplate.level_to_color(result)
+            remark = inspect_check_cache[i].remark
         check_template_data.append({
             'index': i,
             'name': template_check_cache[i].name,
             'is_check': template_check_cache[i].is_check,
             'result': result,
+            'color': color,
             'remark': remark,
         })
 

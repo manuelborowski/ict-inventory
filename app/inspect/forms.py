@@ -33,8 +33,8 @@ class AddForm(EditForm):
     pass
 
 class ViewForm(FlaskForm):
-    inspector = StringField('Controleur', render_kw={'readonly':''})
-    date = DateField('Datum', format='%d-%m-%Y', render_kw={'readonly':''})
-    info = StringField('Info', render_kw={'readonly':''})
-    active = BooleanField('Actief', render_kw={'disabled':''})
+    inspector = StringField('Controleur', render_kw={'readonly':True})
+    date = DateField('Datum', format='%d-%m-%Y', render_kw={'readonly':True})
+    info = StringField('Info', render_kw={'readonly':True})
+    active = BooleanField('Actief', render_kw={'disabled':True})
     id = IntegerField(widget=HiddenInput())

@@ -126,7 +126,7 @@ p.copyright {
     margin-right: auto;
 }
 
-.form-control {
+.form-control-50 .form-control {
     width: 50%;
     display: inline-block;
 }

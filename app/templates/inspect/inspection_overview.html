@@ -17,17 +17,19 @@
     <br/>
     <form id="base-single-action"  method="post">
         {% if overview_data %}
-        <div class="form-group "><label class="control-label" for="asset-name">Activa</label>
-            <input class="form-control" id="asset-name" readonly="" type="text" value="{{ overview_data.asset }}">
-        </div>
-        <div class="form-group "><label class="control-label" for="template-name">Inspectie fiche</label>
-            <input class="form-control" id="template-name" readonly="" type="text" value="{{ overview_data.template_name }}">
-        </div>
-        <div class="form-group "><label class="control-label" for="template-standards">Normen</label>
-            <input class="form-control" id="template-standards" readonly="" type="text" value="{{ overview_data.template_standards }}">
-        </div>
-        <div class="form-group "><label class="control-label" for="template-info">Info</label>
-            <input class="form-control" id="template-info" readonly="" type="text" value="{{ overview_data.template_info }}">
+        <div class="form-control-50">
+            <div class="form-group "><label class="control-label" for="asset-name">Activa</label>
+                <input class="form-control" id="asset-name" readonly="" type="text" value="{{ overview_data.asset }}">
+            </div>
+            <div class="form-group "><label class="control-label" for="template-name">Inspectie fiche</label>
+                <input class="form-control" id="template-name" readonly="" type="text" value="{{ overview_data.template_name }}">
+            </div>
+            <div class="form-group "><label class="control-label" for="template-standards">Normen</label>
+                <input class="form-control" id="template-standards" readonly="" type="text" value="{{ overview_data.template_standards }}">
+            </div>
+            <div class="form-group "><label class="control-label" for="template-info">Info</label>
+                <input class="form-control" id="template-info" readonly="" type="text" value="{{ overview_data.template_info }}">
+            </div>
         </div>
         {%  endif %}
         <br>

@@ -44,10 +44,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.1 : included database functions in models
 # V3.2 : default user initialization
 # V3.3 : update of topic devices
+# V3.4 : cleanup of item forms
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.3')
+    return dict(version = 'V3.4')
 
 
 #enable logging

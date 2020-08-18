@@ -2,10 +2,12 @@
 {% extends "base_single_item.html" %}
 
 {% block content3 %}
-    {{ wtf.form_field(form.name) }}
-    {{ wtf.form_field(form.info) }}
-    {{ wtf.form_field(form.standards) }}
-    {{ wtf.form_field(form.active) }}
+    <div class="form-control-50">
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.info) }}
+        {{ wtf.form_field(form.standards) }}
+        {{ wtf.form_field(form.active) }}
+    </div>
     <br>
     {% if role == "add" or role == "edit" %}
         <a class="btn btn-default" onclick="check_table_length++;check_table_add_row(check_table_length);">Nieuwe lijn</a>

@@ -1,10 +1,9 @@
-<!-- app/templates/supplier.html -->
-<!-- this form is used for adding a user as well for editing a user, hence the if-clause -->
-
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base_single_item.html" %}
 
 {% block content3 %}
-    {{ wtf.form_field(form.name) }}
-    {{ wtf.form_field(form.description) }}
+    <div class="form-control-50">
+        {{ wtf.form_field(form.name) }}
+        {{ wtf.form_field(form.description) }}
+    </div>
 {% endblock %}

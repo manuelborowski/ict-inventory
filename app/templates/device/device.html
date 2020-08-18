@@ -2,6 +2,7 @@
 {% extends "base_single_item.html" %}
 
 {% block content3 %}
+    <div class="form-control-50">
     {{ wtf.form_field(form.category) }}
     {{ wtf.form_field(form.brand) }}
     {{ wtf.form_field(form.type) }}
@@ -12,7 +13,7 @@
     {{ wtf.form_field(form.manual) }}
     {{ wtf.form_field(form.safety_information) }}
     {{ wtf.form_field(form.photo) }}
-
+    </div>
     {% if form.photo.data %}
         <img src="../../static/photo/{{ form.photo.data }}" height="377">
     {%  endif %}
