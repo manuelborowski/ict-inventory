@@ -19,7 +19,7 @@ $(document).ready(function() {
                     var row_id = $cell.parent()[0].id;
                     var selected = $("[name=check-" + row_id + "]:checked").val();
                     return selected},
-                6: function(cell_index, $cell) { return $cell.children()[0].value},
+                7: function(cell_index, $cell) { return $cell.children()[0].value},
 
             }
         });
@@ -63,6 +63,18 @@ $(document).ready(function() {
             }
         }
     });
+
+    // Show the legend
+    var level = levels_info.length;
+    if (level > 0) {
+        $.each(levels_info, function(i, v) {
+            $("#legend").append("<div style='display: flex;'>" +
+                "<div style='width:100px;margin:5px;color: black;font-size:20px;text-align:center;background:" + v.color +  ";'>" + level +"</div>" +
+                "<div style='margin:10px;color: black;font-size:15px;text-align:center'>" + v.info + "</div>" +
+                "</div>")
+            level--;
+        });
+    }
 
     if(view_only) {$("#check-table :input").attr("disabled", true);}
 });

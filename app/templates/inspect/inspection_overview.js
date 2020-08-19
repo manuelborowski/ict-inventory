@@ -17,9 +17,8 @@ $(document).ready(function() {
             header += "<th style='text-align: center;' title='" + title + "'>" + all_check.date + "</th>"
             $.each(all_check.checks, function(i, check){
                 if (check.is_check) {
-                    var color = check.result == 'na' ? "gray" : check.result == "yes" ? "green" : "red";
                     var remark = check.remark != '' ? "O" : "";
-                    rows[i] += "<td style='background:" + color + ";color:white;text-align:center' title='" + check.remark + "'>" + remark + "</td>"
+                    rows[i] += "<td style='background:" + check.color + ";text-align:center' title='" + check.remark + "'>" + remark + "</td>"
                 }
             });
         });
@@ -31,5 +30,17 @@ $(document).ready(function() {
     }
     overview_table_header.append(header);
     overview_table.append(body)
+
+    // Show the legend
+    var level = overview_data.levels_info.length;
+    if (level > 0) {
+        $.each(overview_data.levels_info, function(i, v) {
+            $("#legend").append("<div style='display: flex;'>" +
+                "<div style='width:100px;margin:5px;color: black;font-size:20px;text-align:center;background:" + v.color +  ";'>" + level +"</div>" +
+                "<div style='margin:10px;color: black;font-size:15px;text-align:center'>" + v.info + "</div>" +
+                "</div>")
+            level--;
+        });
+    }
 
 });

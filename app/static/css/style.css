@@ -131,6 +131,24 @@ p.copyright {
     display: inline-block;
 }
 
+
 .control-label {
     width: 10%;
+}
+
+.double-div-50 {
+    display: flex;
+}
+
+.double-div-50 > div {
+    width: 50%;
+}
+
+.double-div-50 > div .form-control {
+    display: inline-block;
+    width: 75%;
+}
+
+.double-div-50 > div .control-label {
+    width: 20%;
 }

@@ -17,19 +17,31 @@
     <br/>
     <form id="base-single-action"  method="post">
         {% if overview_data %}
-        <div class="form-control-50">
-            <div class="form-group "><label class="control-label" for="asset-name">Activa</label>
-                <input class="form-control" id="asset-name" readonly="" type="text" value="{{ overview_data.asset }}">
+        <div class="double-div-50">
+            <div>
+                <div class="form-group "><label class="control-label" for="asset-name">Activa</label>
+                    <input class="form-control" id="asset-name" readonly type="text" value="{{ overview_data.asset }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="template-name">Inspectie fiche</label>
+                    <input class="form-control" id="template-name" readonly type="text" value="{{ overview_data.template_name }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="template-standards">Normen</label>
+                    <input class="form-control" id="template-standards" readonly type="text" value="{{ overview_data.template_standards }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="template-info">Info</label>
+                    <input class="form-control" id="template-info" readonly type="text" value="{{ overview_data.template_info }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="invoice-date">Aankoopdatum</label>
+                    <input class="form-control" id="invoice-date" readonly type="text" value="{{ overview_data.invoice_date }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="supplier">Leverancier</label>
+                    <input class="form-control" id="supplier" readonly type="text" value="{{ overview_data.supplier }}">
+                </div>
+                <div class="form-group "><label class="control-label" for="invoice-number">Factuurnummer</label>
+                    <input class="form-control" id="invoice-number" readonly type="text" value="{{ overview_data.invoice_number }}">
+                </div>
             </div>
-            <div class="form-group "><label class="control-label" for="template-name">Inspectie fiche</label>
-                <input class="form-control" id="template-name" readonly="" type="text" value="{{ overview_data.template_name }}">
-            </div>
-            <div class="form-group "><label class="control-label" for="template-standards">Normen</label>
-                <input class="form-control" id="template-standards" readonly="" type="text" value="{{ overview_data.template_standards }}">
-            </div>
-            <div class="form-group "><label class="control-label" for="template-info">Info</label>
-                <input class="form-control" id="template-info" readonly="" type="text" value="{{ overview_data.template_info }}">
-            </div>
+            <div id="legend" style="margin-left: 20px;"></div>
         </div>
         {%  endif %}
         <br>
@@ -50,6 +62,7 @@
 {{ super() }}
 <script>
     var overview_data = {{ (overview_data or []) | tojson }}
+    var levels_info = {{ (levels_info or []) | tojson }}
 </script>
 <script type="text/javascript"> {% include "inspect/inspection_overview.js" %}</script>
 {% endblock %}

@@ -45,10 +45,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.2 : default user initialization
 # V3.3 : update of topic devices
 # V3.4 : cleanup of item forms
+# V3.5 : added ControlCardLevel table and updated inspections
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.4')
+    return dict(version = 'V3.5')
 
 
 #enable logging
@@ -148,6 +149,9 @@ else:
 
     #init default asset quantity (1)
     models.Asset.default_init()
+
+    #init default control card levels
+    models.ControlCardLevel.default_init()
 
     #flask db migrate
     #flask db upgrade

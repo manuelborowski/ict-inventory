@@ -5,7 +5,7 @@ from .forms import AddForm, EditForm, ViewForm
 from .. import db, log, admin_required, user_plus_required
 from ..documents import upload_doc
 from . import inspect
-from ..models import Asset, InspectCard, InspectCheck, ControlCardTemplate
+from ..models import Asset, InspectCard, InspectCheck, ControlCardTemplate, ControlCardLevel
 from ..documents import get_doc_list
 
 from ..support import build_filter, get_ajax_table
@@ -95,15 +95,29 @@ def overview_from_asset(asset_id=-1):
         inspect_check_cache = {c.index: c for c in inspect.checks}
         template_check_cache = {c.index: c for c in inspect.template.checks}
         check_data = []
+        min_level = 100
         for i in sorted(template_check_cache):
             if not template_check_cache[i].active: continue
-            result = inspect_check_cache[i].result if template_check_cache[i].is_check else 'na'
-            remark = inspect_check_cache[i].remark if template_check_cache[i].is_check else ''
+            remark = color = result = ''
+            if template_check_cache[i].is_check:
+                result = inspect_check_cache[i].result
+                min_level = result if result < min_level else min_level
+                color = ControlCardTemplate.level_to_color(result)
+                remark = inspect_check_cache[i].remark
             check_data.append({
                 'is_check': template_check_cache[i].is_check,
                 'result': result,
                 'remark': remark,
+                'color': color
             })
+        color = ControlCardLevel.query.filter(ControlCardLevel.level==min_level).first().color
+        check_data.append({
+            'is_check': True,
+            'result': min_level,
+            'remark': '',
+            'color': color
+        })
+
         date = inspect.date.strftime('%d-%m-%Y').replace('-', '<br>')
         all_checks_data.append({
             'date': date,
@@ -116,13 +130,28 @@ def overview_from_asset(asset_id=-1):
         'name': c.name,
         'is_check': c.is_check,
     } for c in sorted(template.checks, key=lambda x: x.index)]
+    inspection_items.append({
+        'name': 'Algemeen resultaat',
+        'is_check': False,
+    })
+
+    levels_info = [{
+        'level': l.level,
+        'color': l.color,
+        'info': l.info
+    } for l in ControlCardLevel.query.order_by(ControlCardLevel.level.desc()).all()]
+
     inspect_overview_data = {
         'asset': asset.name,
         'template_name': template.name,
         'template_standards': template.standards,
         'template_info': template.info,
+        'invoice_date': asset.purchase.invoice.since.strftime('%d-%m-%Y'),
+        'supplier': asset.purchase.invoice.supplier.name,
+        'invoice_number': asset.purchase.invoice.number,
         'template_items': inspection_items,
-        'all_checks': all_checks_data
+        'all_checks': all_checks_data,
+        'levels_info': levels_info,
     }
 
     return render_template('inspect/inspection_overview.html', title='Overzicht inspecties', overview_data=inspect_overview_data)
@@ -159,10 +188,16 @@ def edit(id):
             'result': result,
             'remark': remark,
         })
+    levels_info = [{
+        'level': l.level,
+        'color': l.color,
+        'info': l.info
+    } for l in ControlCardLevel.query.order_by(ControlCardLevel.level.desc()).all()]
 
     return render_template('inspect/inspect.html', form=form, title='Wijzig een inspectie', role='edit',
                            route='inspect.show', subject='inspect',
-                           check_template_data=check_template_data, check_nbr_levels=inspect.template.nlevels)
+                           check_template_data=check_template_data, check_nbr_levels=inspect.template.nlevels,
+                           levels_info=levels_info)
 
 
 @inspect.route('/inspect/view/<int:id>', methods=['GET', 'POST'])
@@ -188,10 +223,16 @@ def view(id):
             'color': color,
             'remark': remark,
         })
+    levels_info = [{
+        'level': l.level,
+        'color': l.color,
+        'info': l.info
+    } for l in ControlCardLevel.query.order_by(ControlCardLevel.level.desc()).all()]
 
     return render_template('inspect/inspect.html', form=form, title='Bekijk een inspectie', role='view',
                            route='inspect.show', subject='inspect',
-                           check_template_data=check_template_data)
+                           check_template_data=check_template_data,
+                           levels_info=levels_info)
 
 
 

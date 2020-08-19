@@ -518,6 +518,40 @@ class ControlCardTemplate(db.Model):
         return 'red'
 
 
+class ControlCardLevel(db.Model):
+    __tablename__ = 'control_card_levels'
+
+    id = db.Column(db.Integer, primary_key=True)
+    level = db.Column(db.Integer)
+    info = db.Column(db.String(256))
+    color = db.Column(db.String(256))
+    active = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f'{self.level}/{self.info}/{self.active}'
+
+    default_levels = [
+        [4, 'green', 'OK'],
+        [3, 'yellow', 'ERNST C  eenvoudige herstelling'],
+        [2, 'orange', 'ERNST B  dringend, risicovol'],
+        [1, 'red', 'ERNST A ernstig onmiddellijk ingrijpen']
+    ]
+
+    @staticmethod
+    def default_init():
+        level = ControlCardLevel.query.first()
+        if not level:
+            for default in ControlCardLevel.default_levels:
+                level = ControlCardLevel(
+                    level = default[0],
+                    color = default[1],
+                    info = default[2]
+                )
+                db.session.add(level)
+            db.session.commit()
+
+
+
 class ControlCheckTemplate(db.Model):
     __tablename__ = 'control_check_templates'
 
@@ -560,7 +594,7 @@ class InspectCheck(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     result = db.Column(db.Integer, default=1)
-    remark = db.Column(db.String(256))
+    remark = db.Column(db.String(256), default='')
     index = db.Column(db.Integer)
     card_id = db.Column(db.Integer, db.ForeignKey('inspect_cards.id', ondelete='CASCADE'))
 
