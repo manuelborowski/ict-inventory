@@ -152,3 +152,10 @@ p.copyright {
 .double-div-50 > div .control-label {
     width: 20%;
 }
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 0;
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 0;
+}
