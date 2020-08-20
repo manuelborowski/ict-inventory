@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-#app/asset/forms.py
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, SelectField, DecimalField,  IntegerField, BooleanField
 from wtforms.ext.sqlalchemy.fields import QuerySelectField

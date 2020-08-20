@@ -15,6 +15,9 @@
 <div class="content-section center">
     <h1>{{title}}</h1>
     <br/>
+    <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
+    <a class="btn btn-default" href="{{ url_for('inspect.add_from_asset', asset_id=overview_data.asset_id) }}">Nieuwe Inspectie</a>
+    <br><br>
     <form id="base-single-action"  method="post">
         {% if overview_data %}
         <div class="double-div-50">
@@ -52,8 +55,6 @@
             <thead></thead>
             <tbody></tbody>
         </table>
-
-        <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
     </form>
 </div>
 {% endblock %}

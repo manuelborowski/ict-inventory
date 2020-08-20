@@ -40,6 +40,12 @@ $(document).ready(function() {
             $("#location").val(location_name);
         });
     }
+    add_button("Nieuwe Inspectie", "javascript:add_inspection()");
+    append_download_upload_button('risk_analysis');
+    append_download_upload_button('manual');
+    append_download_upload_button('safety_information');
+    append_download_upload_button('photo');
+
 });
 
 function download_file(document) {
@@ -47,3 +53,6 @@ function download_file(document) {
     download_single_file(document, file);
 }
 
+function add_inspection() {
+    window.location.href = Flask.url_for("asset.add_inspection", {id: asset_id});
+}

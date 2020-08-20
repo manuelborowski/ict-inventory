@@ -128,11 +128,11 @@ function floating_menu_cb(e, opaque) {
 }
 
 function add_asset_with_purchase_id() {
-    var purchase_id = $("#purchase-" + row_id).html();
+    var purchase_id = $("#purchase-" + row_id).val();
     window.location.href = Flask.url_for("invoice.add_asset", {purchase_id: purchase_id});
 }
 
 function view_assets_with_purchase_id() {
-    var purchase_id = $("#purchase-" + row_id).html();
+    var purchase_id = $("#purchase-" + row_id).val();
     window.location.href = Flask.url_for("asset.assets", {purchase_id: purchase_id});
 }

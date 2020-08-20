@@ -51,6 +51,7 @@
     var check_nbr_levels = {{ (check_nbr_levels or 0) | tojson }}
     var view_only = {{ (role == 'view')|tojson }}
     var add_only = {{ (role == 'add')|tojson }}
+    var inspection_id = {{ form.id.data|tojson }}
 </script>
 <script type="text/javascript"> {% include "inspect/inspect.js" %}</script>
 {% endblock %}

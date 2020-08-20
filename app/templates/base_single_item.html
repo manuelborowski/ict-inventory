@@ -6,21 +6,22 @@
 <div class="content-section">
     <div class="center">
         <h1>{{title}}</h1>
-        <br/>
         <form id="base-single-action" action="{{ url_for(subject + '.' + role, id=form.id.data)}}" method="post">
             {{ form.csrf_token }}
-
-            {% block content3 %}
-            {% endblock %}
-
+                <div id="single-item-buttons" style="display:inline">
                 {% if role == "view" %}
                     <a class="btn btn-default" id="edit-button">Pas aan</a>
                 {% else %}
-                {% if current_user.is_at_least_user_plus %}
-                    <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
-                {% endif %}
+                    {% if current_user.is_at_least_user_plus %}
+                        <input class="btn btn-default" id="submit" name="button" type="submit" value="Bewaar">
+                    {% endif %}
             {% endif %}
             <a class="btn btn-default" href="javascript:history.back()">Annuleer</a>
+            </div>
+            <br><br>
+            {% block content3 %}
+            {% endblock %}
+
         </form>
     </div>
 </div>

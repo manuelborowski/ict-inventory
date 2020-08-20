@@ -76,5 +76,12 @@ $(document).ready(function() {
         });
     }
 
-    if(view_only) {$("#check-table :input").attr("disabled", true);}
+    if(view_only) {
+        $("#check-table :input").attr("disabled", true);
+        add_button("Nieuwe Inspectie", "javascript:add_inspection()");
+    }
 });
+
+function add_inspection() {
+    window.location.href = Flask.url_for("inspect.add_from_inspection", {id: inspection_id});
+}

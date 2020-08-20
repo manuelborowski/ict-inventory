@@ -32,10 +32,3 @@ function update_document_select(opaque, file_list) {
     }
 }
 
-function append_download_upload_button(document) {
-    $("#" + document).parent().append(
-        "<input type='button' onclick='download_file(\"" + document + "\")' value='Download'>" +
-        "<input type='button' onclick='upload_file(\"" + document + "\")' value='Upload' hidden>"
-    )
-}
-

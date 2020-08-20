@@ -57,6 +57,14 @@ def add(id=-1):
     return redirect(url_for('asset.assets'))
 
 
+@inspect.route('/inspect/add_from_inspection/<int:id>', methods=['GET', 'POST'])
+@login_required
+@user_plus_required
+def add_from_inspection(id=-1):
+    inspect = InspectCard.query.get(id)
+    return add_from_asset(inspect.asset.id)
+
+
 @inspect.route('/inspect/add_from_asset/<int:asset_id>', methods=['GET', 'POST'])
 @login_required
 @user_plus_required
@@ -75,8 +83,8 @@ def add_from_asset(asset_id=-1):
             'name': check_cache[i].name,
             'is_check': check_cache[i].is_check
         })
-
-    return render_template('inspect/inspect.html', form=form, title='Voeg een inspectie toe', role='add',
+    title = f'Voeg een inspectie toe voor: {asset.name}'
+    return render_template('inspect/inspect.html', form=form, title=title, role='add',
                            route='inspect.show', subject='inspect',
                            check_template_data=check_template_data, check_nbr_levels=control_template.nlevels)
 
@@ -143,6 +151,7 @@ def overview_from_asset(asset_id=-1):
 
     inspect_overview_data = {
         'asset': asset.name,
+        'asset_id': asset.id,
         'template_name': template.name,
         'template_standards': template.standards,
         'template_info': template.info,
@@ -153,8 +162,8 @@ def overview_from_asset(asset_id=-1):
         'all_checks': all_checks_data,
         'levels_info': levels_info,
     }
-
-    return render_template('inspect/inspection_overview.html', title='Overzicht inspecties', overview_data=inspect_overview_data)
+    title = f'Overzicht inspecties voor: {asset.name}'
+    return render_template('inspect/inspection_overview.html', title=title, overview_data=inspect_overview_data)
 
 @inspect.route('/inspect/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

@@ -46,10 +46,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.3 : update of topic devices
 # V3.4 : cleanup of item forms
 # V3.5 : added ControlCardLevel table and updated inspections
+# V3.6 : clean up in html/css. Added inspection functionality
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.5')
+    return dict(version = 'V3.6')
 
 
 #enable logging
