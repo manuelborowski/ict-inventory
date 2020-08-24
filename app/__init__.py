@@ -48,10 +48,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.5 : added ControlCardLevel table and updated inspections
 # V3.6 : clean up in html/css. Added inspection functionality
 # V3.7 : make tables leaner
+# V3.8 : update in requirements.txt
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.7')
+    return dict(version = 'V3.8')
 
 
 #enable logging
