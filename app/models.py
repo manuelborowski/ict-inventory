@@ -218,6 +218,11 @@ class AssetLocation(db.Model):
                 new_location = AssetLocation(name=location[0])
                 db.session.add(new_location)
             db.session.commit()
+        unknown_location = AssetLocation.query.filter(AssetLocation.name == 'ONBEKEND').first()
+        if not unknown_location:
+            unknown_location = AssetLocation(name='ONBEKEND', info='standaard locatie')
+            db.session.add(unknown_location)
+            db.session.commit()
 
 
 class Purchase(db.Model):
@@ -245,9 +250,9 @@ class Purchase(db.Model):
         return f'<Purchase: {self.id}, {self.value}, {self.device.brand}, {self.device.type}'
 
     def ret_dict(self):
-        return {'id':self.id, 'value':float(self.value),
+        return {'id':self.id, 'value':str(float(self.value)).replace('.', ','),
                 'commissioning':self.commissioning, 'device':self.device.ret_dict(), 'invoice': self.invoice.ret_dict(),
-                'asset_value': float(self.asset_value if self.asset_value else 0),
+                'asset_value': str(float(self.asset_value if self.asset_value else 0)).replace('.', ','),
                 'nbr_assets': self.nbr_assets if self.nbr_assets else 0}
 
 

@@ -60,7 +60,7 @@ def add(id=-1):
                 try:
                     new_purchase = Purchase(
                         invoice=invoice,
-                        value=float(purchase['value'].replace(',', '.')),
+                        value=float(purchase['value'].replace('.', '').replace(',', '.')),
                         device_id=int(purchase['device']),
                         commissioning=purchase['commissioning']
                     )
@@ -93,7 +93,7 @@ def edit(id):
             for purchase in purchase_data:
                 if int(purchase['purchase-id']) != -1:
                     update_purchase = Purchase.query.get(int(purchase['purchase-id']))
-                    update_purchase.value = float(purchase['value'].replace(',', '.')),
+                    update_purchase.value = float(purchase['value'].replace('.', '').replace(',', '.')),
                     update_purchase.device_id = int(purchase['device']),
                     update_purchase.commissioning = purchase['commissioning']
                 elif int(purchase['device']) != -1:
@@ -119,7 +119,7 @@ def edit(id):
     for purchase in invoice.purchases:
         purchase_data.append({
             'id': purchase.id,
-            'value': float(purchase.value),
+            'value': str(float(purchase.value)).replace('.', ','),
             'category_id': purchase.device.category_id,
             'device_id': purchase.device.id,
             'commissioning': purchase.commissioning
@@ -145,7 +145,7 @@ def view(id):
     for purchase in invoice.purchases:
         purchase_data.append({
             'id': purchase.id,
-            'value': float(purchase.value),
+            'value': str(float(purchase.value)).replace('.', ','),
             'category_id': purchase.device.category_id,
             'device_id': purchase.device.id,
             'commissioning': purchase.commissioning

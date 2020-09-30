@@ -79,7 +79,7 @@ class ViewForm(FlaskForm):
     status = StringField('Status', render_kw={'readonly':''})
     purchase = StringField('Aankoop', render_kw={'readonly':''})
     since = DateField('Datum', render_kw={'readonly':''}, format='%d-%m-%Y')
-    value = DecimalField('Bedrag (&euro;)', render_kw={'readonly':''})
+    value = StringField('Bedrag (&euro;)', render_kw={'readonly':''})
     supplier = StringField('Leverancier', render_kw={'readonly':''})
     category = StringField('Categorie', render_kw={'readonly':''})
     serial = StringField('SerieNr', render_kw={'readonly':''})

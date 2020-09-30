@@ -21,7 +21,7 @@ def get_devices():
 
 
 class EditForm(FlaskForm):
-    number = StringField('Factuur')
+    number = StringField('Factuurnummer')
     since = DateField('Datum', validators=[DataRequired()], format='%d-%m-%Y', default=datetime.date.today)
     supplier = QuerySelectField('Leverancier', query_factory=get_suppliers)
     info = StringField('Info')
@@ -32,7 +32,7 @@ class AddForm(EditForm):
     pass
 
 class ViewForm(FlaskForm):
-    number = StringField('Factuur', render_kw={'readonly':''})
+    number = StringField('Factuurnummer', render_kw={'readonly':''})
     since = DateField('Datum', render_kw={'readonly':''}, format='%d-%m-%Y')
     supplier = StringField('Leverancier', render_kw={'readonly':''})
     info = StringField('Info', render_kw={'readonly':''})

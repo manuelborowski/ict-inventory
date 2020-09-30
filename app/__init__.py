@@ -49,10 +49,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.6 : clean up in html/css. Added inspection functionality
 # V3.7 : make tables leaner
 # V3.8 : update in requirements.txt
+# V3.9 : bugfixed issue with floating menu.  Improved handling of currency numbers (1.234,45).  Bugfixed copy-from-asset
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.8')
+    return dict(version = 'V3.9')
 
 
 #enable logging

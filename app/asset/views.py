@@ -108,15 +108,19 @@ def add(id=-1, qr=-1, purchase_id=-1):
             #if no index available, create default 001
             nbr = re.search(r'\d+$', asset.name)
             if nbr is None:
-                asset.name = asset.name + '1'
+                new_asset_name = asset.name + '1'
             else:
                 idx = int(nbr.group()) + 1
-                asset.name = asset.name[:-len(nbr.group())] + str(idx)
-        form = AddForm(obj=asset)
-        form.serial.data=''
+                new_asset_name = asset.name[:-len(nbr.group())] + str(idx)
+        form = AddForm()
+        form.serial.data = ''
+        form.qr_code.data = ''
+        form.quantity.data = asset.quantity
+        form.purchase.data = asset.purchase
+        form.status.data = asset.status
         #No idea why only these 2 fields need to be copied explicitly???
-        form.name.data = asset.name
-        form.location.data = asset.location
+        form.name.data = new_asset_name
+        form.location.data = asset.location2.name
     else:
         form = AddForm()
     if purchase_id > -1:
@@ -138,7 +142,7 @@ def add(id=-1, qr=-1, purchase_id=-1):
                 asset.location_id = int(request.form['location-id'])
             except:
                 unknown_location = AssetLocation.query.filter(AssetLocation.name=='ONBEKEND').first()
-                asset.location2 = unknown_location
+                asset.location_id = unknown_location.id
         db.session.add(asset)
         db.session.commit()
         db.session.refresh(asset)
@@ -180,7 +184,7 @@ def view(id):
     form = ViewForm(obj=asset)
     form.since.data = asset.purchase.since
     form.category.data = asset.purchase.device.category
-    form.value.data = asset.purchase.value
+    form.value.data = str(float(asset.purchase.asset_value)).replace('.', ',')
     form.supplier.data = asset.purchase.supplier
 
     form.brand.data = asset.purchase.device.brand
