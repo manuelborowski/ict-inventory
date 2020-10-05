@@ -162,6 +162,8 @@ def add(id=-1, qr=-1, purchase_id=-1):
 def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
+    form.location.data = asset.location2.name
+    form.location_id.data = asset.location2.id
     if form.validate_on_submit():
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
@@ -186,6 +188,8 @@ def view(id):
     form.category.data = asset.purchase.device.category
     form.value.data = str(float(asset.purchase.asset_value)).replace('.', ',')
     form.supplier.data = asset.purchase.supplier
+    form.location.data = asset.location2.name
+    form.location_id.data = asset.location2.id
 
     form.brand.data = asset.purchase.device.brand
     form.type.data  = asset.purchase.device.type
