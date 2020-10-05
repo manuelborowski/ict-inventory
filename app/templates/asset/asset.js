@@ -36,7 +36,7 @@ $(document).ready(function() {
             var location_btn = $("input[name=location-select-btn]:checked");
             var location_id = location_btn.val();
             var location_name = location_btn.prop("id");
-            $("#location-id").val(location_id);
+            $("#location_id").val(location_id);
             $("#location").val(location_name);
         });
     }

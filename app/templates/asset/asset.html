@@ -30,15 +30,15 @@
         {{ wtf.form_field(form.manual) }}
         {{ wtf.form_field(form.safety_information) }}
         {{ wtf.form_field(form.photo) }}
+
+        {% if form.photo.data %}
+            <img src="../../static/photo/{{ form.photo.data }}" height="377">
+        {%  endif %}
+        </br>
+        </br>
+    {% endif %}
+    <div style="visibility:hidden;display:none">{{ wtf.form_field(form.location_id) }}</div>
     </div>
-
-    {% if form.photo.data %}
-        <img src="../../static/photo/{{ form.photo.data }}" height="377">
-    {%  endif %}
-    </br>
-    </br>
-
-{% endif %}
 <div id="floating_menu" class="floating-menu"></div>
 
 {% endblock %}

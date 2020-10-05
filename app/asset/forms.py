@@ -67,6 +67,7 @@ class EditForm(FlaskForm):
     purchase = QuerySelectField('Aankoop', query_factory=get_purchases)
     serial = StringField('SerieNr')
     id = IntegerField(widget=HiddenInput())
+    location_id = IntegerField(widget=HiddenInput(), default=-1)
 
 class AddForm(EditForm):
     pass
@@ -93,3 +94,4 @@ class ViewForm(FlaskForm):
     safety_information = StringField('VIK', render_kw={'readonly':''})
     photo = StringField('Foto', render_kw={'readonly':''})
     id = IntegerField(widget=HiddenInput())
+    location_id = IntegerField(widget=HiddenInput())

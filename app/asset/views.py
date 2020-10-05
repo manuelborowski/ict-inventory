@@ -121,6 +121,7 @@ def add(id=-1, qr=-1, purchase_id=-1):
         #No idea why only these 2 fields need to be copied explicitly???
         form.name.data = new_asset_name
         form.location.data = asset.location2.name
+        form.location_id.data = asset.location2.id
     else:
         form = AddForm()
     if purchase_id > -1:
@@ -137,12 +138,11 @@ def add(id=-1, qr=-1, purchase_id=-1):
             location=form.location.data,
             purchase=form.purchase.data,
             serial=form.serial.data)
-        if 'location-id' in request.form:
-            try:
-                asset.location_id = int(request.form['location-id'])
-            except:
-                unknown_location = AssetLocation.query.filter(AssetLocation.name=='ONBEKEND').first()
-                asset.location_id = unknown_location.id
+        if  form.location_id.data > -1:
+            asset.location_id = form.location_id.data
+        else:
+            unknown_location = AssetLocation.query.filter(AssetLocation.name=='ONBEKEND').first()
+            asset.location_id = unknown_location.id
         db.session.add(asset)
         db.session.commit()
         db.session.refresh(asset)
@@ -166,8 +166,8 @@ def edit(id):
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)
             if asset.qr_code=='': asset.qr_code=None
-            if 'location-id' in request.form:
-                asset.location_id = int(request.form['location-id'])
+            if form.location_id.data > -1:
+                asset.location_id = form.location_id.data
             db.session.commit()
             log.info('edit : {}'.format(asset.log()))
             #flash'You have edited asset {}').format(asset.name)
