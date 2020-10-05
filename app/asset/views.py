@@ -163,7 +163,6 @@ def edit(id):
     asset = Asset.query.get_or_404(id)
     form = EditForm(obj=asset)
     form.location.data = asset.location2.name
-    form.location_id.data = asset.location2.id
     if form.validate_on_submit():
         if request.form['button'] == 'Bewaar':
             form.populate_obj(asset)

@@ -52,10 +52,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.9 : bugfixed issue with floating menu.  Improved handling of currency numbers (1.234,45).  Bugfixed copy-from-asset
 # V3.10 : bugfix location_id when copying from an asset
 # V3.11 : bugfix issue with location
+# V3.12 : bugfix issue with location, part 2
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.11')
+    return dict(version = 'V3.12')
 
 
 #enable logging
