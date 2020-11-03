@@ -53,10 +53,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.10 : bugfix location_id when copying from an asset
 # V3.11 : bugfix issue with location
 # V3.12 : bugfix issue with location, part 2
+# V3.13 : bugfix : invoice date changed to today.  Device category was wrong
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.12')
+    return dict(version = 'V3.13')
 
 
 #enable logging

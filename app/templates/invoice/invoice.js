@@ -12,8 +12,6 @@ $(document).ready(function() {
 
     var since_element = $("#since");
     since_element.datepicker(datepicker_options);
-    var now = new Date();
-    since_element.val(now.getDate() + "-" + (now.getMonth() + 1) + "-" + now.getFullYear());
 
     // build purchase table
     for(r = 0; r < table_length; r++) {table_add_row(r);}

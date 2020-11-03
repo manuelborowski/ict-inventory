@@ -19,9 +19,9 @@ class EditForm(FlaskForm):
         self.photo.choices = list(zip([''] + get_doc_list('photo'), [''] + get_doc_list('photo')))
         self.manual.choices = list(zip([''] + get_doc_list('manual'), [''] + get_doc_list('manual')))
         self.safety_information.choices = list(zip([''] + get_doc_list('safety_information'), [''] + get_doc_list('safety_information')))
-        self.category.choices = DeviceCategory.get_list_for_select()
+        self.category_id.choices = DeviceCategory.get_list_for_select()
 
-    category = SelectField('Categorie', validators=[DataRequired()], coerce=int)
+    category_id = SelectField('Categorie', validators=[DataRequired()], coerce=int)
     brand = StringField('Merk', validators=[DataRequired()])
     type = StringField('Type', validators=[DataRequired()])
     power = DecimalField('Vermogen', default=0.0)
@@ -37,7 +37,11 @@ class AddForm(EditForm):
     pass
 
 class ViewForm(FlaskForm):
-    category = StringField('Categorie', render_kw={'readonly':''})
+    def __init__(self, *args, **kwargs):
+        super(ViewForm, self).__init__(*args, **kwargs)
+        self.category_id.choices = DeviceCategory.get_list_for_select()
+
+    category_id = SelectField('Categorie', render_kw={'readonly':''})
     brand = StringField('Merk', render_kw={'readonly':''})
     type = StringField('Type', render_kw={'readonly':''})
     power = DecimalField('Vermogen', render_kw={'readonly':''})
