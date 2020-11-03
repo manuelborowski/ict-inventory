@@ -54,10 +54,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.11 : bugfix issue with location
 # V3.12 : bugfix issue with location, part 2
 # V3.13 : bugfix : invoice date changed to today.  Device category was wrong
+# V3.14 : bugfix : it is not possible to use a dot as separator in currency
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.13')
+    return dict(version = 'V3.14')
 
 
 #enable logging

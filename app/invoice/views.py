@@ -60,7 +60,7 @@ def add(id=-1):
                 try:
                     new_purchase = Purchase(
                         invoice=invoice,
-                        value=float(purchase['value'].replace('.', '').replace(',', '.')),
+                        value=float(purchase['value'].replace(',', '.')),
                         device_id=int(purchase['device']),
                         commissioning=purchase['commissioning']
                     )
@@ -93,7 +93,7 @@ def edit(id):
             for purchase in purchase_data:
                 if int(purchase['purchase-id']) != -1:
                     update_purchase = Purchase.query.get(int(purchase['purchase-id']))
-                    update_purchase.value = float(purchase['value'].replace('.', '').replace(',', '.')),
+                    update_purchase.value = float(purchase['value'].replace(',', '.')),
                     update_purchase.device_id = int(purchase['device']),
                     update_purchase.commissioning = purchase['commissioning']
                 elif int(purchase['device']) != -1:
