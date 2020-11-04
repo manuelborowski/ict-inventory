@@ -108,10 +108,11 @@ def add(id=-1, qr=-1, purchase_id=-1):
             #if no index available, create default 001
             nbr = re.search(r'\d+$', asset.name)
             if nbr is None:
-                new_asset_name = asset.name + '1'
+                new_asset_name = asset.name + '001'
             else:
                 idx = int(nbr.group()) + 1
-                new_asset_name = asset.name[:-len(nbr.group())] + str(idx)
+                idx_len = len(nbr.group())
+                new_asset_name = asset.name[:-idx_len] + f'{idx:0{idx_len}d}'
         form = AddForm()
         form.serial.data = ''
         form.qr_code.data = ''

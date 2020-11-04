@@ -56,10 +56,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.13 : bugfix : invoice date changed to today.  Device category was wrong
 # V3.14 : bugfix : it is not possible to use a dot as separator in currency
 # V3.15 : bugfix : adding a new device
+# V3.16 : when copying from existing asset with trailing index number, take number of leading zero's into account
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.15')
+    return dict(version = 'V3.16')
 
 
 #enable logging
