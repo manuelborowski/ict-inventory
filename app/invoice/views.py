@@ -91,13 +91,13 @@ def edit(id):
             form.populate_obj(invoice)
             purchase_data = json.loads(request.form['purchase-data'])
             for purchase in purchase_data:
-                if int(purchase['purchase-id']) != -1:
-                    update_purchase = Purchase.query.get(int(purchase['purchase-id']))
-                    update_purchase.value = float(purchase['value'].replace(',', '.')),
-                    update_purchase.device_id = int(purchase['device']),
-                    update_purchase.commissioning = purchase['commissioning']
-                elif int(purchase['device']) != -1:
-                    try:
+                try:  # skip non-valid entries
+                    if int(purchase['purchase-id']) != -1:
+                        update_purchase = Purchase.query.get(int(purchase['purchase-id']))
+                        update_purchase.value = float(purchase['value'].replace(',', '.')),
+                        update_purchase.device_id = int(purchase['device']),
+                        update_purchase.commissioning = purchase['commissioning']
+                    elif int(purchase['device']) != -1:
                         new_purchase = Purchase(
                             invoice=invoice,
                             value=float(purchase['value'].replace(',', '.')),
@@ -105,8 +105,8 @@ def edit(id):
                             commissioning=purchase['commissioning']
                         )
                         db.session.add(new_purchase)
-                    except Exception:
-                        pass
+                except Exception:
+                    pass
             db.session.commit()
             log.info('edit : {}'.format(invoice.log()))
         return redirect(url_for('invoice.invoices'))
