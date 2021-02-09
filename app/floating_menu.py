@@ -5,7 +5,7 @@ fmi_delete = {"menu_id": "delete_menu_item", "menu_text": "Verwijder", "route": 
 fmi_copy = {"menu_id": "copy_menu_item", "menu_text": "Kopieer van", "route": "add", "flags": ["id_required"]}
 fmi_add = {"menu_id": "add_menu_item", "menu_text": "Voeg toe", "route": "add", "flags": []}
 fmi_view = {"menu_id": "view_menu_item", "menu_text": "Details", "route": "view", "flags": ["id_required"]}
-fmi_change_pwd = {"menu_id": "change_pwd_menu_item", "menu_text": "Verander paswoord", "route": "change_pwd","flags": ["id_required"]}
+fmi_change_password = {"menu_id": "change_password_menu_item", "menu_text": "Verander paswoord", "route": "change_password","flags": ["id_required"]}
 fmi_add_inspection = {"menu_id": "add_inspection_menu_item", "menu_text": "Inspectie toevoegen", "route": "add_inspection", "flags": ["id_required"]}
 fmi_inspection_overview = {"menu_id": "inspection_overview_menu_item", "menu_text": "Overzicht inspecties", "route": "inspection_overview", "flags": ["id_required"]}
 
@@ -18,8 +18,8 @@ default_menu = {
 
 user_menu = {
     User.LEVEL.USER: [fmi_view],
-    User.LEVEL.USER_PLUS: [fmi_edit, fmi_change_pwd],
-    User.LEVEL.ADMIN: [fmi_edit, fmi_copy, fmi_add, fmi_view, fmi_delete, fmi_change_pwd],
+    User.LEVEL.USER_PLUS: [fmi_edit, fmi_change_password],
+    User.LEVEL.ADMIN: [fmi_edit, fmi_copy, fmi_add, fmi_view, fmi_delete, fmi_change_password],
 }
 
 no_delete_menu = {

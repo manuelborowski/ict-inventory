@@ -38,3 +38,4 @@ class ChangePasswordForm(FlaskForm):
     old_password = PasswordField('Old password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired(), EqualTo('confirm_new_password')])
     confirm_new_password = PasswordField('Confirm new password')
+    id = IntegerField(widget=HiddenInput())

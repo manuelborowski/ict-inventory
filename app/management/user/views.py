@@ -92,9 +92,9 @@ def delete(id):
 
 @user.route('/management/user/change-password/<int:id>', methods=['GET', 'POST'])
 @login_required
-def change_pwd(id):
+def change_password(id):
     user = User.query.get_or_404(id)
-    form = ChangePasswordForm()
+    form = ChangePasswordForm(obj=user)
     if form.validate_on_submit():
         if user.verify_password(form.old_password.data):
             user.password = form.new_password.data
