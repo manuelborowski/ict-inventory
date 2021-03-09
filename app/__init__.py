@@ -59,10 +59,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.16 : when copying from existing asset with trailing index number, take number of leading zero's into account
 # V3.17 : update invoice : skip non-valid entries
 # V3.18: bugfix in change password
+# V3.19: upgrade nginx
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.18')
+    return dict(version = 'V3.19')
 
 
 #enable logging

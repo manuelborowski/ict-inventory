@@ -1,23 +1,20 @@
-#original server-block.  When installing a certificate for this site, the server-block
-#is completely changed by certbot
-#server {
-#    listen 5010;
-#    listen 80;
-#    server_name iai.exelbo.dynu.net;
-#
-#    location / {
-#        include uwsgi_params;
-#        uwsgi_pass unix:/home/aboro/projects/ict-inventory/ict-inventory.sock;
-#    }
-#}
-
 server {
-    listen 5010;
-    listen 80;
-    server_name iai.exelbo.dynu.net;
+    listen 5000;
+    server_name iai.ict.campussintursula.be;
 
     location / {
-        include uwsgi_params;
-        uwsgi_pass unix:/home/aboro/projects/ict-inventory/ict-inventory.sock;
+        include proxy_params;
+        proxy_pass http://127.0.0.1:5010;
     }
+
+    location /static {
+        alias /home/aboro/projects/ict-inventory/app/static;
+        expires 30d;
+    }
+}
+
+server {
+    listen 80;
+    server_name iai.ict.campussintursula.be;
+    return 301 https://iai.ict.campussintursula.be$request_uri;
 }
