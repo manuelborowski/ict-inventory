@@ -60,10 +60,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.17 : update invoice : skip non-valid entries
 # V3.18: bugfix in change password
 # V3.19: upgrade nginx
+# V3.20: requirements.txt: LATEST VERSIONS
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.19')
+    return dict(version = 'V3.20')
 
 
 #enable logging
