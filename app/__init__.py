@@ -62,10 +62,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.19: upgrade nginx
 # V3.20: requirements.txt: LATEST VERSIONS
 # V3.21: bugfix run.py
+# V3.22: added .IGNORE to include document directories in git
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.21')
+    return dict(version = 'V3.22')
 
 
 #enable logging
