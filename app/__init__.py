@@ -61,10 +61,11 @@ app = Flask(__name__, instance_relative_config=True)
 # V3.18: bugfix in change password
 # V3.19: upgrade nginx
 # V3.20: requirements.txt: LATEST VERSIONS
+# V3.21: bugfix run.py
 
 @app.context_processor
 def inject_version():
-    return dict(version = 'V3.20')
+    return dict(version = 'V3.21')
 
 
 #enable logging
