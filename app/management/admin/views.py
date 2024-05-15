@@ -11,7 +11,7 @@ from app.documents import  get_doc_path, get_doc_list, upload_doc, document_type
 
 import os
 import unicodecsv
-from app.models import Asset, Device, Supplier, Purchase, ControlCheckTemplate, ControlCardTemplate
+from app.models import Asset, Device, Supplier, Purchase, ControlCheckTemplate, ControlCardTemplate, AssetLocation, DeviceCategory
 
 import zipfile, xlrd
 
@@ -97,6 +97,10 @@ def importcsv():
             nbr_assets = 0
             nbr_devices = 0
             nbr_purchases = 0
+            locations = AssetLocation.query.filter(AssetLocation.active).all()
+            location_cache = {l.name: l for l in locations}
+            device_categories = DeviceCategory.query.filter(DeviceCategory.active).filter()
+            category_cache = {c.name: c for c in device_categories}
             for a in assets_file:
                 #check if supplier already exists
                 supplier = Supplier.query.filter(Supplier.name=='ONBEKEND').first()
@@ -118,23 +122,37 @@ def importcsv():
 
                     photo_file = a['Foto'].split('\\')[-1] if photo_key_present else ''
                     manual_file = a['Handleiding'].split('\\')[-1] if manual_key_present else ''
+                    category = category_cache[a["Categorie"]] if a["Categorie"] in category_cache else category_cache["ANDERE"]
                     device = Device(brand=a['Merk'], category=a['Categorie'], type=a['Typenummer'], photo=photo_file, manual=manual_file,
-                                    power=power, ce=True if a['CE']=='ok' else False)
+                                    power=power, ce=True if a['CE']=='ok' else False, category_id=category.id, control_template_id=1)
                     db.session.add(device)
                     nbr_devices += 1
                     #Create a new purchase
-                    purchase = Purchase.query.filter(Purchase.since=='1999/1/1').order_by('-id').first()
+                    purchase = Purchase.query.filter(Purchase.since=='1999/1/1').order_by(Purchase.id.desc()).first()
                     commissioning_file = a['Indienststelling'].split('\\')[-1] if commissioning_key_present else ''
                     if purchase:
                         #create a new purchase with a value +1
-                        purchase = Purchase(since = purchase.since, value = int(purchase.value)+1, device=device, supplier=supplier, commissioning=commissioning_file)
+                        purchase = Purchase(since=purchase.since, value=int(purchase.value)+1, device=device, supplier=supplier, commissioning=commissioning_file, invoice_id=1)
                     else:
                         #add a new purchase
                         purchase = Purchase(since='1999/1/1', value='0', device=device, supplier=supplier, commissioning=commissioning_file)
                     db.session.add(purchase)
                     nbr_purchases += 1
+
+                # check if first part of Toestel is a number, in which case it is treated as a quantity
+                name = a["Toestel"]
+                quantity = 1
+                name_split = name.split(" ")
+                if len(name_split) > 1:
+                    try:
+                        quantity = int(name_split[0])
+                        name_split.pop(0)
+                    except:
+                        pass
+                name = " ".join(name_split)
+                location = location_cache[a["Lokaal"]] if a["Lokaal"] in location_cache else location_cache["ONBEKEND"]
                 # #add the asset
-                asset = Asset(name=a['Toestel'], status=a['Status'], serial=a['Serienummer'], location=a['Lokaal'], purchase=purchase)
+                asset = Asset(name=name, status=a['Status'], serial=a['Serienummer'], location=a['Lokaal'], description=a["Beschrijving"], purchase=purchase, location_id=location.id, quantity=quantity)
                 db.session.add(asset)
                 nbr_assets += 1
 
